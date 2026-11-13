@@ -1,0 +1,7 @@
+{
+  "appId": "com.nihoban.app",
+  "appName": "Nihoban",
+  "webDir": "www",
+  "backgroundColor": "#F7F4EC",
+  "android": { "allowMixedContent": true }
+}

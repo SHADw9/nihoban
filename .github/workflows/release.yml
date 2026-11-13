@@ -1,0 +1,132 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+    paths-ignore: ['**.md']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FETCH_FONTS: '1'
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - id: v
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=1.0.${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+          fi
+
+  android:
+    needs: version
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+
+      - run: npm install
+      - run: npm run prepare-www
+
+      - name: Generate Android project
+        run: |
+          [ -d android ] || npx cap add android
+          npx capacitor-assets generate --android
+
+      - name: Add native TTS plugin, manifest and version
+        run: |
+          # native Japanese TTS plugin + MainActivity that registers it
+          mkdir -p android/app/src/main/java/com/nihoban/app
+          cp android-overlay/java/com/nihoban/app/*.java android/app/src/main/java/com/nihoban/app/
+          # Android 11+ must declare the TTS service to see installed engines
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          grep -q TTS_SERVICE "$MANIFEST" || sed -i '0,/<application/s||<queries><intent><action android:name="android.intent.action.TTS_SERVICE"/></intent></queries>\n    <application|' "$MANIFEST"
+          sed -i -E "s/(versionCode[ =]+)[0-9]+/\1${GITHUB_RUN_NUMBER}/; s/(versionName[ =]+)\"[^\"]*\"/\1\"${VERSION}\"/" android/app/build.gradle
+          grep -nE "versionCode|versionName" android/app/build.gradle
+          grep -n "TTS_SERVICE" "$MANIFEST"
+          ls android/app/src/main/java/com/nihoban/app/
+          npx cap sync android
+
+      - name: Build and sign APK
+        working-directory: android
+        env:
+          S_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          S_KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          S_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          S_KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+
+          # signing: GitHub secrets win, otherwise the keystore committed in android-signing/
+          if [ -n "$S_KEYSTORE_B64" ]; then
+            echo "$S_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            KS="$RUNNER_TEMP/release.jks"; KS_PASS="$S_KS_PASS"; KEY_ALIAS="$S_KEY_ALIAS"; KEY_PASS="$S_KEY_PASS"
+          else
+            set -a; . ../android-signing/signing.env; set +a
+            KS="$GITHUB_WORKSPACE/android-signing/nihoban.jks"
+          fi
+          export KS_PASS KEY_PASS
+
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          "$BT/zipalign" -p -f 4 app/build/outputs/apk/release/app-release-unsigned.apk "$RUNNER_TEMP/aligned.apk"
+          "$BT/apksigner" sign --ks "$KS" --ks-pass env:KS_PASS \
+            --ks-key-alias "$KEY_ALIAS" --key-pass env:KEY_PASS \
+            --out "$GITHUB_WORKSPACE/Nihoban-${VERSION}.apk" "$RUNNER_TEMP/aligned.apk"
+          "$BT/apksigner" verify --print-certs "$GITHUB_WORKSPACE/Nihoban-${VERSION}.apk" | head -3
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: Nihoban-${{ needs.version.outputs.version }}.apk
+
+  linux:
+    needs: version
+    runs-on: ubuntu-22.04
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install
+      - run: npm pkg set version="$VERSION"
+      - run: npm run dist:linux
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: dist-electron/*.AppImage
+
+  release:
+    needs: [version, android, linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: artifacts, merge-multiple: true }
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.version.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: Nihoban ${{ needs.version.outputs.version }}
+          generate_release_notes: true
+          files: |
+            artifacts/*.apk
+            artifacts/*.AppImage

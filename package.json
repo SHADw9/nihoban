@@ -1,0 +1,49 @@
+{
+  "name": "nihoban",
+  "version": "1.0.0",
+  "description": "Nihoban - Japanese learning app (JLPT N5-N1, English/Bangla)",
+  "author": "Nihoban",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "prepare-www": "node scripts/prepare-www.mjs",
+    "start": "npm run prepare-www && electron .",
+    "dist:linux": "npm run prepare-www && electron-builder --linux AppImage --x64 --publish never",
+    "android:add": "npx cap add android",
+    "android:assets": "capacitor-assets generate --android",
+    "android:sync": "npm run prepare-www && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.0.0",
+    "electron": "^37.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.nihoban.app",
+    "productName": "Nihoban",
+    "directories": {
+      "output": "dist-electron",
+      "buildResources": "build"
+    },
+    "files": [
+      "electron/**",
+      "www/**",
+      "package.json",
+      "!node_modules/@capacitor/**"
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Education",
+      "icon": "build/icon.png",
+      "artifactName": "Nihoban-${version}-x86_64.AppImage"
+    }
+  }
+}
