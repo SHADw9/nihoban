@@ -192,7 +192,7 @@ dialog{margin:auto 0 0;width:100%;max-width:100%;border-radius:24px 24px 0 0;max
 const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelectorAll(s)],M=$('#M'),DL=$('#DL');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let S={lang:'en',ml:'bn',typed:0,decks:[],kana:{},lvl:'N5',nv:10,nk:3,ng:1,fur:1,roma:1,th:'auto',srs:{},days:{}},D,B={},V={},Q=null,F=null,tot=0,Z=null;
-try{Object.assign(S,JSON.parse(localStorage.getItem('jb')||'{}'))}catch(e){}S.roma??=1;S.fur??=1;
+try{Object.assign(S,JSON.parse(localStorage.getItem('jb')||'{}'))}catch(e){}S.roma??=1;S.fur??=1;S.lPause??=7;
 const save=()=>{try{localStorage.setItem('jb',JSON.stringify(S))}catch(e){}};
 const LV=['N5','N4','N3','N2','N1'],TY={v:'শব্দ',k:'কাঞ্জি',g:'ব্যাকরণ'},T={vocab:'v',kanji:'k',grammar:'g'},GL=['ভুল','কঠিন','ঠিক','সহজ'];
 const day=(o=0)=>new Date(Date.now()+o*864e5).toLocaleDateString('en-CA');
@@ -435,7 +435,7 @@ ${ach.length?`<h3>${t('Recent achievements','সাম্প্রতিক অ�
 /* ---------- Study hub ---------- */
 V.learn=()=>{const q=queue(),wn=Object.keys(S.wr).filter(k=>D.m[k]&&!fixed(k)).length;
 M.innerHTML=`<h2>${t('Study','স্টাডি')}</h2><p class="mute">${t('Difficulty = your JLPT level','কঠিনতা = আপনার JLPT স্তর')}</p>${chips(LV.map(l=>[l,l]),S.lvl,'data-lvl')}<h3>${t('Question type','প্রশ্নের ধরন')}</h3>${chips(['mix','jb','bj','kk','kn'].map(m=>[m,qdl(m)]),S.qd||'mix','data-z="qd" data-v')}<p class="mute"><small>${t('Applies to word, kanji and grammar quizzes. Kana ↔ Kanji works for words and kanji.','শব্দ, কাঞ্জি ও ব্যাকরণ কুইজে প্রযোজ্য। কানা ↔ কাঞ্জি শব্দ ও কাঞ্জিতে কাজ করে।')}</small></p>
-<div class="tiles">${tile('#study','bolt',t('Daily review','দৈনিক রিভিউ'),`${q.length} ${t('cards waiting','কার্ড অপেক্ষায়')}`,'--cv')}${tileb('v','book',t('Word quiz','শব্দ কুইজ'),t('Meaning ↔ word','অর্থ ↔ শব্দ'),'--cv')}${tileb('k','pen',t('Kanji quiz','কাঞ্জি কুইজ'),t('Meaning of kanji','কাঞ্জির অর্থ'),'--ck')}${tileb('g','note',t('Grammar quiz','ব্যাকরণ কুইজ'),t('Pattern meanings','প্যাটার্নের অর্থ'),'--cg')}${tileb('p','note',t('Particles','পার্টিকল'),t('Fill the blank','শূন্যস্থান পূরণ'),'--cg')}${tileb('r','study',t('Reading','পাঠ অনুশীলন'),t('Sentences with furigana','ফুরিগানা সহ বাক্য'),'--ck')}${tileb('l','ear',t('Listening','শ্রবণ'),t('Hear it, pick the meaning','শুনে অর্থ বাছুন'),'--ck')}${tileb('mock','clock',t('Mock test','মক টেস্ট'),t('Timed, 28 questions','সময়সহ, ২৮টি প্রশ্ন'),'--cq')}${tileb('w','flag',t('Wrong answers','ভুল উত্তর'),`${wn} ${t('to fix','ঠিক করার বাকি')}`,'--cq',!wn)}${tile('#kana','pen',t('Kana practice','কানা অনুশীলন'),t('Chart & quizzes','চার্ট ও কুইজ'),'--cv')}</div>`};
+<div class="tiles">${tile('#study','bolt',t('Daily review','দৈনিক রিভিউ'),`${q.length} ${t('cards waiting','কার্ড অপেক্ষায়')}`,'--cv')}${tileb('v','book',t('Word quiz','শব্দ কুইজ'),t('Meaning ↔ word','অর্থ ↔ শব্দ'),'--cv')}${tileb('k','pen',t('Kanji quiz','কাঞ্জি কুইজ'),t('Meaning of kanji','কাঞ্জির অর্থ'),'--ck')}${tileb('g','note',t('Grammar quiz','ব্যাকরণ কুইজ'),t('Pattern meanings','প্যাটার্নের অর্থ'),'--cg')}${tileb('p','note',t('Particles','পার্টিকল'),t('Fill the blank','শূন্যস্থান পূরণ'),'--cg')}${tileb('r','study',t('Reading','পাঠ অনুশীলন'),t('Sentences with furigana','ফুরিগানা সহ বাক্য'),'--ck')}${tileb('mock','clock',t('Mock test','মক টেস্ট'),t('Timed, 28 questions','সময়সহ, ২৮টি প্রশ্ন'),'--cq')}${tileb('w','flag',t('Wrong answers','ভুল উত্তর'),`${wn} ${t('to fix','ঠিক করার বাকি')}`,'--cq',!wn)}${tile('#kana','pen',t('Kana practice','কানা অনুশীলন'),t('Chart & quizzes','চার্ট ও কুইজ'),'--cv')}</div>`};
 V.quiz=()=>Z?zview():V.learn();
 
 /* ---------- Quiz engine ---------- */
@@ -451,8 +451,8 @@ const p=m=='bj'?`<div class="ans">${esc(mean(x))}</div>`:m=='kk'?`<div class="mi
 return{x,k:ty+x.id,kind:m,mode:m,o:sh([x,...d].map(y=>O(lab(y),y==x,jp))),p,e:()=>expl(x)}}
 function pq(pl){for(let n=0;n<80;n++){const x=pl[Math.random()*pl.length|0],e=x.x[0],s=e[0],ix=[...s].map((c,i)=>PT.includes(c)?i:-1).filter(i=>i>=0);if(!ix.length)continue;const i=ix[Math.random()*ix.length|0],a=s[i];
 return{x,k:x.ty+x.id,kind:'p',o:sh([a,...sh(PT.filter(c=>c!=a)).slice(0,3)]).map(c=>O(c,c==a,1)),p:`<div class="mid">${esc(s.slice(0,i)+'＿'+s.slice(i+1))}</div><p class="mute">${esc(e[2])}</p>`,e:()=>`<p class="jp mid">${esc(s)}</p><p class="mute">${esc(e[2])}</p>${expl(x)}`}}}
-function rq(x,pl){const e=x.x[0],d=sh(pl.filter(y=>y!=x&&y.x[0][2]!=e[2])).slice(0,3);
-return{x,k:x.ty+x.id,kind:'r',o:sh([x,...d].map(y=>O(y.x[0][2],y==x))),p:`<div class="mid">${fur(e[1]||e[0])}</div><button class="lk" data-say="${esc(e[0])}">${ic('spk',16)} ${t('Listen','শুনুন')}</button>`,e:()=>`${bn()&&e[3]?`<p>${esc(mk(e[3]))}</p>`:''}${expl(x)}`}}
+function rq(x,pl){const e=x.x[0],d=sh(pl.filter(y=>y!=x&&y.x[0][2]!=e[2]&&(!e[3]||!y.x[0][3]||y.x[0][3]!=e[3]))).slice(0,3);
+return{x,k:x.ty+x.id,kind:'r',o:sh([x,...d].map(y=>O(bn()&&y.x[0][3]?mk(y.x[0][3]):y.x[0][2],y==x))),p:`<div class="mid">${fur(e[1]||e[0])}</div><button class="lk" data-say="${esc(e[0])}">${ic('spk',16)} ${t('Listen','শুনুন')}</button>`,e:()=>`${bn()&&e[3]?`<p>${esc(mk(e[3]))}</p>`:''}${expl(x)}`}}
 const lq=q=>(q.kind='l',q.say=q.x.r,q.p='',q);
 function zstart(kind,lv=S.lvl){QM=kind=='mock'||kind=='w'?'mix':S.qd||'mix';const n=10,Pl=ty=>D[ty].filter(x=>x.l==lv&&mean(x)&&((QM!='kk'&&QM!='kn')||ty=='g'||ok2(x))),Ex=()=>[...D.v,...D.g].filter(x=>x.l==lv&&x.x?.[0]),sl=(a,f,m=n)=>sh(a).slice(0,m).map(f).filter(Boolean);let qs=[];
 if(kind.length==1&&'vkg'.includes(kind)){const pl=Pl(kind);qs=sl(pl,x=>mq(x,pl))}
@@ -465,13 +465,13 @@ add(t('Vocabulary','শব্দ'),sl(pv,x=>mq(x,pv),8));add(t('Kanji','কা�
 if(!qs.length)return Z=null,false;
 Z={kind,lv,i:0,s:0,w:[],r:[],a:null,qs,dl:kind=='mock'?Date.now()+15e5:0};return true}
 function tick(){if(!Z?.dl)return;clearInterval(Z.iv);const f=()=>{if(!Z)return;const s=Math.max(0,Math.round((Z.dl-Date.now())/1e3)),el=$('#tm');if(el)el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(!s){clearInterval(Z.iv);Z.i=Z.qs.length;V.quiz()}};f();Z&&(Z.iv=setInterval(f,1000))}
-function zview(){if(Z.i>=Z.qs.length)return zres();const q=Z.qs[Z.i],an=Z.a!=null,ok=an&&q.o[Z.a].c;
+function zview(){clearInterval(Z.cd);if(Z.exam)try{speechSynthesis.cancel()}catch(e){};if(Z.i>=Z.qs.length)return zres();const q=Z.qs[Z.i],an=Z.a!=null,ok=an&&q.o[Z.a].c;
 M.innerHTML=`<div class="stat"><button class="lk" data-z="qx">${ic('back',16)} ${t('Exit','বের হন')}</button><span>${t('Question','প্রশ্ন')} ${Z.i+1}/${Z.qs.length}</span>${Z.dl?`<span id="tm" class="mute"></span>`:`<span class="mute">${ic('ok',14)} ${Z.s}</span>`}</div><div class="bar"><b style="width:${Z.i/Z.qs.length*100}%"></b></div>${q.sec||q.mode?`<p class="mute" style="margin-top:8px"><small>${esc(q.sec||qdl(q.mode))}</small></p>`:''}
-<div class="card fc" style="margin-top:12px;min-height:180px">${q.p}${q.kind=='l'?`<div class="chips"><button class="btn" data-z="pl" data-s=".85">${ic('spk',18)} ${t('Play','শুনুন')}</button><button class="btn o" data-z="pl" data-s=".5">${t('Slow','ধীরে')}</button></div>`:''}</div>
+<div class="card fc" style="margin-top:12px;min-height:180px">${q.p}${q.kind=='l'?(Z.exam?`<p id="cd" class="mute" role="status" style="margin:8px 0 0;min-height:1.5em">${t('Audio plays once…','অডিও একবারই বাজবে…')}</p>`:`<div class="chips"><button class="btn" data-z="pl" data-s=".85">${ic('spk',18)} ${t('Play','শুনুন')}</button><button class="btn o" data-z="pl" data-s=".5">${t('Slow','ধীরে')}</button></div>`):''}</div>
 <div class="opts">${q.o.map((o,i)=>`<button class="opt ${an?(o.c?'ok':i==Z.a?'no':''):''}" data-z="qa" data-i="${i}" ${an?'disabled':''}><kbd>${i+1}</kbd><span class="${o.jp?'jp':''}">${esc(o.l)}</span></button>`).join('')}</div>
 <div aria-live="polite" role="status">${an?`<div class="card fb ${ok?'g':''}"><b>${ok?t('Correct!','সঠিক!'):t('Not quite','হয়নি')}</b>${q.e()}<button class="lk" data-z="rp" style="text-align:left">${ic('flag',14)} ${t('Report this question','প্রশ্নটি রিপোর্ট করুন')}</button></div><div class="dock"><button class="btn" style="width:100%" data-z="qn">${Z.i+1<Z.qs.length?t('Next','পরের প্রশ্ন'):t('Results','ফলাফল')}</button></div>`:''}</div>`;
-if(q.kind=='l'&&!an)setTimeout(()=>sayr(q.say,.85),250);tick()}
-function zres(){clearInterval(Z.iv);const n=Z.qs.length,p=Math.round(Z.s/n*100),sc={};Z.qs.forEach(q=>(sc[q.sec||'']??=[0,0])[1]++);Z.r.forEach(r=>{if(r.ok)sc[r.q.sec||''][0]++});
+if(q.kind=='l'&&!an)Z.exam?lexPlay(q):setTimeout(()=>sayr(q.say,.85),250);tick()}
+function zres(){clearInterval(Z.iv);clearInterval(Z.cd);const n=Z.qs.length,p=Math.round(Z.s/n*100),sc={};Z.qs.forEach(q=>(sc[q.sec||'']??=[0,0])[1]++);Z.r.forEach(r=>{if(r.ok)sc[r.q.sec||''][0]++});
 if(!Z.done){Z.done=1;if(Z.kind=='mock'){S.mocks.push({d:day(),lv:Z.lv,s:Z.s,n,sc});S.mk++}else if(Z.s==n&&n>=5)S.pq++;save()}
 const rs=[...Z.r].sort((a,b)=>a.ok-b.ok);
 M.innerHTML=`<div class="card fc"><div class="big">${Z.s}/${n}</div><p class="ans">${p}%</p><p class="mute">${p>=80?t('Excellent!','দারুণ!'):p>=60?t('Good work — keep going.','ভালো — চালিয়ে যান।'):t('Review the mistakes below and try again.','নিচের ভুলগুলো দেখে আবার চেষ্টা করুন।')}</p></div>
@@ -479,7 +479,30 @@ ${Z.kind=='mock'?`<div class="card"><h3>${t('Section breakdown','বিভাগ
 <div class="card"><h3>${t('Answer review','উত্তর পর্যালোচনা')}</h3>${rs.map(r=>`<div class="rv ${r.ok?'g':'b'}">${ic(r.ok?'ok':'no',16)}<span class="jp">${esc(title(r.q.x))}</span><span class="mute">${esc(mean(r.q.x))}</span><button class="lk" data-k="${r.q.k}">${t('Details','বিস্তারিত')}</button></div>`).join('')||'<p class="mute">—</p>'}</div>
 <div class="chips">${Z.w.length?`<button class="btn" data-z="again">${t('Repeat missed','ভুলগুলো আবার')} (${Z.w.length})</button>`:''}<button class="btn o" data-z="qs" data-k="${Z.kind=='again'?'w':Z.kind}">${t('New set','নতুন সেট')}</button><a class="btn o" href="#learn">${t('Back to Study','স্টাডিতে ফিরুন')}</a></div>`}
 function qans(i){const q=Z.qs[Z.i];if(Z.a!=null)return;const ok=q.o[i].c;Z.a=i;Z.r.push({q,ok});if(ok){Z.s++;S.qc++;nf1(q.k)}else{Z.w.push(q);nw1(q.k);S.srs[q.k]??={ease:2.5,ivl:0,reps:0,lapse:1,due:Date.now()}}save();
-if(Z.kind=='mock'){Z.i++;Z.a=null}V.quiz();scrollTo(0,0)}
+if(Z.kind=='mock'||Z.exam){clearInterval(Z.cd);Z.i++;Z.a=null}V.quiz();scrollTo(0,0)}
+/* ---------- Listening exam mode: one-play audio + auto-advance ---------- */
+const lexHush=()=>{try{speechSynthesis.cancel()}catch(e){}};
+function lexStart(){
+ lexHush();clearInterval(Z?.cd);
+ M.innerHTML=`<a class="back" href="#learn">${ic('back',18)} ${t('Study','স্টাডি')}</a><h2>${t('Listening section','শ্রবণ অংশ')}</h2>
+ <div class="card"><p class="mute">${t('Each question’s audio plays once — no replay or pause. After the audio, a short countdown gives you time to choose your answer before the next question starts automatically.','প্রতিটি প্রশ্নের অডিও একবারই বাজবে — রিপ্লে বা পজ নেই। অডিও শেষ হলে ছোট কাউন্টডাউনে উত্তর বাছুন, তারপর নিজে থেকেই পরের প্রশ্ন শুরু হবে।')}</p></div>
+ <h3>${t('Answer time after audio','অডিওর পর উত্তর দেওয়ার সময়')}</h3>${chips([[5,'5 s'],[7,'7 s'],[10,'10 s']],S.lPause??7,'data-z="lp" data-v')}
+ <h3>${t('Level','স্তর')}</h3>${chips(LV.map(l=>[l,l]),S.lvl,'data-z="xl" data-v')}
+ <div class="chips" style="margin-top:14px"><button class="btn" data-z="qs" data-k="l">${ic('ear',18)} ${t('Start Section','সেকশন শুরু')}</button><button class="btn o" data-z="qs" data-k="l" data-prac="1">${t('Practice with replays','রিপ্লে সহ অনুশীলন')}</button></div>`;
+}
+function lexPlay(q){
+ const ix=Z.i,el=()=>$('#cd');const e0=el();if(e0)e0.innerHTML=`${ic('spk',16)} ${t('Playing audio… (plays once)','অডিও বাজছে… (একবারই)')}`;
+ let started=0,done=0;
+ const go=()=>{if(done)return;done=1;if(started||!Z||Z.a!=null||Z.i!==ix||Z.qs[ix]!==q)return;started=1;
+  let s=S.lPause??7;const paint=()=>{const e=el();if(e)e.innerHTML=`${t('Next question in','পরের প্রশ্ন')} <b>${s}</b>${t('s',' সেকেন্ড')}`};paint();
+  Z.cd=setInterval(()=>{if(!Z||Z.a!=null||Z.i!==ix){clearInterval(Z.cd);return}s--;if(s<=0){clearInterval(Z.cd);lexSkip()}else paint()},1000)};
+ try{const u=new SpeechSynthesisUtterance(q.say);u.lang='ja-JP';u.rate=.85;u.onend=go;u.onerror=go;speechSynthesis.cancel();speechSynthesis.speak(u);setTimeout(go,Math.max(4000,q.say.length*200))}catch(e){go()}
+}
+function lexSkip(){
+ if(!Z||Z.a!=null)return;
+ const q=Z.qs[Z.i];Z.r.push({q,ok:0});Z.w.push(q);nw1(q.k);S.srs[q.k]??={ease:2.5,ivl:0,reps:0,lapse:1,due:Date.now()};save();
+ Z.i++;Z.a=null;V.quiz();scrollTo(0,0);
+}
 
 /* ---------- Library ---------- */
 V.library=()=>{M.innerHTML=`<h2>${t('Library','লাইব্রেরি')}</h2><input id="gq" type="search" placeholder="${t('Search words, kanji and grammar','শব্দ, কাঞ্জি ও ব্যাকরণ খুঁজুন')}"><div id="gl"></div><div class="tiles" id="lt" style="margin-top:14px">${tile('#kana','pen',t('Kana','কানা'),'ひらがな · カタカナ','--cv')}${tile('#vocab','book',t('Vocabulary','শব্দ'),D.v.length,'--cv')}${tile('#kanji','pen',t('Kanji','কাঞ্জি'),D.k.length,'--ck')}${tile('#grammar','note',t('Grammar','ব্যাকরণ'),D.g.length,'--cg')}${tile('#decks','lib',t('Custom decks','ডেক'),S.decks.length,'--cq')}${tile('#notebook','flag',t('Mistake notebook','ভুলের খাতা'),Object.keys(S.wr).length,'--cq')}</div>`};
@@ -542,18 +565,20 @@ const _gr=gr;gr=function(g){const k=Q[0];_gr(g);g>=2?nf1(k):g==0&&nw1(k)};
 const _vs=V.study;V.study=()=>{_vs();setTimeout(()=>$$('.gs small').forEach(s=>s.textContent=s.textContent.replace(/^1 days/,'1 day')),0);if(!Q?.length)return;const x=D.m[Q[0]];$('.stat')?.insertAdjacentHTML('beforeend',`<a class="lk" href="#learn">${t('Pause','বিরতি')}</a>`);$('.fc')?.insertAdjacentHTML('afterbegin',`<button class="spk" data-say="${esc(x.ty=='v'?x.r:x.ty=='k'?x.c:x.p)}" aria-label="${t('Listen','শুনুন')}">${ic('spk',22)}</button>`)};
 const TAB={home:'home',learn:'learn',study:'learn',quiz:'learn',library:'library',kana:'library',vocab:'library',kanji:'library',grammar:'library',decks:'library',notebook:'library',progress:'progress',settings:''};
 route=function(){const r=location.hash.slice(1)||'home';if(!V[r]&&!T[r])return location.hash='home';
-if(r!='study')Q=null,DK=null;if(r!='quiz'){if(Z?.iv)clearInterval(Z.iv);Z=null}DL.open&&DL.close();
+if(r!='study')Q=null,DK=null;if(r!='quiz'){if(Z?.iv)clearInterval(Z.iv);if(Z?.cd)clearInterval(Z.cd);if(Z?.exam)lexHush();Z=null}DL.open&&DL.close();
 $$('nav a').forEach(a=>a.classList.toggle('on',a.hash=='#'+TAB[r]));document.body.classList.toggle('focus',r=='study'||(r=='quiz'&&!!Z));(V[r]||V.home)();scrollTo(0,0)};
 const okb=o=>o&&typeof o=='object'&&!Array.isArray(o)&&('srs'in o||'days'in o||'decks'in o)&&(!o.srs||typeof o.srs=='object')&&(!o.days||typeof o.days=='object')&&(!o.decks||Array.isArray(o.decks));
 const bkm=s=>{const e=$('#bkm');if(e)e.textContent=s};
 document.addEventListener('click',e=>{const el=e.target.closest('[data-z]');if(!el)return;e.stopPropagation();e.preventDefault();const d=el.dataset,z=d.z,r=cur();
-if(z=='qs'){zstart(d.k)?(location.hash=='#quiz'?V.quiz():location.hash='quiz'):V.learn()}
+if(z=='qs'){if(d.k=='l'&&!d.prac){lexStart();return}if(zstart(d.k)){if(d.k=='l'&&!d.prac)Z.exam=1;(location.hash=='#quiz'?V.quiz():location.hash='quiz')}else V.learn()}
 else if(z=='qa')qans(+d.i);
 else if(z=='qn'){Z.i++;Z.a=null;V.quiz();scrollTo(0,0)}
-else if(z=='qx')location.hash='learn';
+else if(z=='qx'){clearInterval(Z?.cd);lexHush();location.hash='learn'}
+else if(z=='xl'){S.lvl=d.v;save();lexStart()}
+else if(z=='lp'){S.lPause=+d.v;save();lexStart()}
 else if(z=='rp'){S.rep.push({k:Z.qs[Z.i].k,d:day()});save();el.disabled=true;el.textContent=t('Reported ✓','রিপোর্ট করা হয়েছে ✓')}
 else if(z=='pl')sayr(Z.qs[Z.i].say,+d.s);
-else if(z=='again'){Z={...Z,kind:'again',qs:Z.w.map(q=>({...q,o:sh(q.o)})),i:0,s:0,w:[],r:[],a:null,done:0,dl:0};V.quiz()}
+else if(z=='again'){Z={...Z,kind:'again',exam:0,qs:Z.w.map(q=>({...q,o:sh(q.o)})),i:0,s:0,w:[],r:[],a:null,done:0,dl:0};V.quiz()}
 else if(z=='qd'){S.qd=d.v;save();V.learn()}
 else if(z=='pal'){S.pal=d.v;save();applyPal();V.settings()}
 else if(z=='bm'){S.bm[d.id]?delete S.bm[d.id]:S.bm[d.id]=1;save();DL.open?det(d.id):V[r]()}
@@ -593,6 +618,22 @@ const aiBtn=(label,act,cls='btn')=>`<button class="${cls}" data-jai="${act}">${l
 const aiField=(label,id,html)=>`<label style="display:grid;gap:5px;margin:10px 0"><span>${label}</span>${html}</label>`;
 const aiCard=(content)=>`<section class="card">${content}</section>`;
 const aiNotice=(msg)=>`<p class="mute" style="margin:8px 0">${msg}</p>`;
+/* Hide the base Study (daily-review) content while the AI mock owns the #aiStudyPanel,
+   so leftovers like the "N left / Words N5" stat row don't appear above the mock. */
+const aiSolo=()=>{
+ if(aiPanelSelector!=='#aiStudyPanel')return;
+ const p=$ai('#aiStudyPanel');if(!p)return;
+ const sec=p.closest('section');
+ [...M.children].forEach(el=>{if(el!==sec)el.style.display='none'});
+};
+/* ✕ close for the Study mock popup: clears the panel and restores the base Study content */
+const aiCloseBtn=()=>aiPanelSelector==='#aiStudyPanel'?'<button class="ib" data-jai="closeMock" aria-label="Close" style="font-size:20px;line-height:1">✕</button>':'';
+const aiCloseMock=()=>{
+ if(aiPanelSelector!=='#aiStudyPanel')return;
+ aiSession=null;
+ const p=$ai('#aiStudyPanel');if(p)p.innerHTML='';
+ [...M.children].forEach(el=>{if(el.style&&el.style.display==='none')el.style.display=''});
+};
 const aiNav=()=>{
  const nav=$ai('header nav'); if(nav&&!nav.querySelector('[href="#jlptai"]')){
   const a=document.createElement('a');a.href='#jlptai';a.innerHTML='<span style="font-size:18px">✦</span><span>JLPT AI</span>';nav.append(a);
@@ -802,23 +843,50 @@ function showQuestionSet(arr,mode){
  aiSession={arr,mode,index:0,score:0,answered:false};renderAIQuestion();
 }
 function renderAIQuestion(){
- const p=$ai(aiPanelSelector);if(!p||!aiSession)return;const ss=aiSession,q=ss.arr[ss.index];if(!q){p.innerHTML=aiCard(`<h3>Session complete 🎉</h3><p>Score: ${ss.score}/${ss.arr.length}</p><div class="chips">${aiBtn('Review saved questions','saved')}${aiBtn('New mock','mock','btn o')}</div>`);return}
- p.innerHTML=aiCard(`<div class="vh"><span class="tag">${q.level} · ${q.type}</span><span class="mute">${ss.index+1}/${ss.arr.length}</span></div><div class="bar" style="margin:12px 0"><b style="width:${(ss.index+1)/ss.arr.length*100}%"></b></div>${q.passage?`<div class="ex jp">${escAI(q.passage)}</div>`:''}<h3 class="jp" style="font-size:22px;margin:18px 0">${escAI(q.question)}</h3><div class="opts">${q.options.map((o,i)=>`<button class="opt ${ss.answered?(i===q.answer?'ok':i===q.selected?'no':''):''}" data-jans="${i}" ${ss.answered?'disabled':''}><kbd>${i+1}</kbd>${escAI(o)}</button>`).join('')}</div>${ss.answered?`<div class="fb ${ss.selected===q.answer?'g':''}" style="padding:14px;background:var(--bg);border-radius:12px"><b>${ss.selected===q.answer?'Correct!':'Incorrect'} — ${escAI(q.options[q.answer])}</b><p class="jp">${escAI(q.explanationJa||'解説なし')}</p><p>${escAI(q.explanationBn||'No Bangla explanation available')}</p>${q.whyOptions?`<small>${escAI(q.whyOptions)}</small>`:''}</div><div class="chips">${aiBtn(ss.index===ss.arr.length-1?'Finish':'Next →','next')}</div>`:''}`);
+ aiSolo();
+ const p=$ai(aiPanelSelector);if(!p||!aiSession)return;const ss=aiSession,q=ss.arr[ss.index];if(!q){p.innerHTML=aiCard(`<h3>Session complete 🎉</h3><p>Score: ${ss.score}/${ss.arr.length}</p><div class="chips">${aiBtn('Review saved questions','saved')}${aiBtn('New mock','mock','btn o')}${aiCloseBtn()}</div>`);return}
+ p.innerHTML=aiCard(`<div class="vh"><span class="tag">${q.level} · ${q.type}</span><span class="mute">${ss.index+1}/${ss.arr.length}</span>${aiCloseBtn()}</div><div class="bar" style="margin:12px 0"><b style="width:${(ss.index+1)/ss.arr.length*100}%"></b></div>${q.passage?`<div class="ex jp">${escAI(q.passage)}</div>`:''}<h3 class="jp" style="font-size:22px;margin:18px 0">${escAI(q.question)}</h3><div class="opts">${q.options.map((o,i)=>`<button class="opt ${ss.answered?(i===q.answer?'ok':i===q.selected?'no':''):''}" data-jans="${i}" ${ss.answered?'disabled':''}><kbd>${i+1}</kbd>${escAI(o)}</button>`).join('')}</div>${ss.answered?`<div class="fb ${ss.selected===q.answer?'g':''}" style="padding:14px;background:var(--bg);border-radius:12px"><b>${ss.selected===q.answer?'Correct!':'Incorrect'} — ${escAI(q.options[q.answer])}</b><p class="jp">${escAI(q.explanationJa||'解説なし')}</p><p>${escAI(q.explanationBn||'No Bangla explanation available')}</p>${q.whyOptions?`<small>${escAI(q.whyOptions)}</small>`:''}</div><div class="chips">${aiBtn(ss.index===ss.arr.length-1?'Finish':'Next →','next')}</div>`:''}`);
 }
 function aiAnswer(i){const ss=aiSession,q=ss.arr[ss.index];if(!q||ss.answered)return;ss.selected=i;ss.answered=true;q.answered=true;q.selected=i;q.lastAnswered=Date.now();if(i===q.answer)ss.score++;save();renderAIQuestion()}
 function aiSaved(){
- const p=$ai(aiPanelSelector),a=bank();p.innerHTML=aiCard(`<h3>Saved Questions · Offline</h3><input id="aiSearch" placeholder="Search Japanese / level / type"><div class="chips">${levelsAI.map(l=>`<button data-aifilter="${l}">${l}</button>`).join('')}<button data-aifilter="all">All</button></div><div id="aiSavedList"></div><div class="chips">${aiBtn('Create offline mock','mock','btn o')}${aiBtn('Export JSON','export','btn o')}</div>`);
+ const p=$ai(aiPanelSelector),a=bank();p.innerHTML=aiCard(`<div class="vh"><h3 style="margin:0">Saved Questions · Offline</h3>${aiCloseBtn()}</div><input id="aiSearch" placeholder="Search Japanese / level / type"><div class="chips">${levelsAI.map(l=>`<button data-aifilter="${l}">${l}</button>`).join('')}<button data-aifilter="all">All</button></div><div id="aiSavedList"></div><div class="chips">${aiBtn('Create offline mock','mock','btn o')}${aiBtn('Export JSON','export','btn o')}</div>`);
  const render=(filter='all',search='')=>{const list=$ai('#aiSavedList');const items=a.filter(q=>(filter==='all'||q.level===filter)&&(`${q.question} ${q.level} ${q.type}`).toLowerCase().includes(search.toLowerCase()));list.innerHTML=items.length?items.map(q=>`<div class="rv"><span class="lvb">${q.level}</span><span style="flex:1">${escAI(q.question)}</span><button class="ib" data-jview="${q.id}">↗</button></div>`).join(''):aiNotice('No questions found.')};
  render();$ai('#aiSearch').oninput=e=>render('all',e.target.value);p.querySelectorAll('[data-aifilter]').forEach(b=>b.onclick=()=>render(b.dataset.aifilter,$ai('#aiSearch').value));
 }
+const aiTypeOf=q=>q.ty||((q.type||'').includes('漢')?'k':(q.type||'').includes('文')?'g':(q.type||'').includes('読')?'r':'v');
+const aiChipRow=(label,opts,cur,attr)=>`<div><div class="mute" style="font-size:13px;font-weight:600;margin-bottom:6px">${label}</div><div class="chips">${opts.map(([v,l])=>`<button type="button" class="${String(v)===String(cur)?'on':''}" ${attr}="${v}">${l}</button>`).join('')}</div></div>`;
+function aiMockMatches(lv,ty){return bank().filter(q=>(lv==='all'||q.level===lv)&&(ty==='all'||aiTypeOf(q)===ty))}
 function aiMock(){
- const p=$ai(aiPanelSelector),a=bank();if(!a.length){p.innerHTML=aiCard('<h3>No saved questions</h3><p>Generate questions with AI first.</p>');return}
- p.innerHTML=aiCard(`<h3>Offline JLPT mock test</h3><p>${a.length} saved questions available.</p>${aiField('Level','',`<select id="mockLevel"><option value="all">All levels</option>${levelsAI.map(l=>`<option>${l}</option>`).join('')}</select>`)}${aiField('Question type','',`<select id="mockType"><option value="all">All types</option>${qtAI.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}<option value="r">読解 · Reading</option></select>`)}${aiField('Question count','',`<input id="mockCount" type="number" min="10" max="30" value="10">`)}<p class="mute">This mock test runs completely offline.</p>${aiBtn('Start mock','startMock')}`);
+ aiSolo();
+ const p=$ai(aiPanelSelector),st=getAI();
+ if(!bank().length){p.innerHTML=aiCard(`<h3>Mock test</h3><p class="mute">No saved questions yet. Generate a batch first — the mock itself runs fully offline.</p>${aiBtn('✦ Generate questions','generate')}`);return}
+ const lv=st.mockLevel||'all',ty=st.mockType||'all',n=st.mockCount||10;
+ p.innerHTML=aiCard(`
+  <div class="vh" style="margin-bottom:14px"><h3 style="margin:0">Mock test</h3><span class="tag">${bank().length} saved</span>${aiCloseBtn()}</div>
+  ${aiChipRow('Level',[['all','All'],...levelsAI.map(l=>[l,l])],lv,'data-mlv')}
+  ${aiChipRow('Type',[['all','All'],['v','語彙 Vocab'],['k','漢字 Kanji'],['g','文法 Grammar'],['r','読解 Reading']],ty,'data-mty')}
+  ${aiChipRow('Questions',[[10,'10'],[20,'20'],[30,'30']],n,'data-mn')}
+  <p id="mockAvail" class="mute" role="status" style="margin:14px 0 0;min-height:1.4em"></p>
+  <div class="chips" style="margin-top:12px">${aiBtn('Start mock','startMock')}${aiBtn('Browse saved','saved','btn o')}</div>
+ `);
+ const upd=()=>{
+  const m=aiMockMatches(st.mockLevel||'all',st.mockType||'all'),want=st.mockCount||10,get=Math.min(want,m.length);
+  const el=$ai('#mockAvail',p);
+  if(!m.length){if(el)el.innerHTML='<span style="color:var(--no)">No questions match — widen the level or type.</span>'}
+  else if(el)el.textContent=`${m.length} ${m.length===1?'question':'questions'} match · ${get}-question test, randomized`;
+  const sb=$ai('[data-jai=startMock]',p);if(sb)sb.disabled=!m.length;
+ };
+ upd();
+ p.querySelectorAll('[data-mlv]').forEach(b=>b.onclick=()=>{st.mockLevel=b.dataset.mlv;save();p.querySelectorAll('[data-mlv]').forEach(x=>x.classList.toggle('on',x===b));upd()});
+ p.querySelectorAll('[data-mty]').forEach(b=>b.onclick=()=>{st.mockType=b.dataset.mty;save();p.querySelectorAll('[data-mty]').forEach(x=>x.classList.toggle('on',x===b));upd()});
+ p.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{st.mockCount=+b.dataset.mn;save();p.querySelectorAll('[data-mn]').forEach(x=>x.classList.toggle('on',x===b));upd()});
 }
 function aiStartMock(){
- const lv=$ai('#mockLevel')?.value||'all',ty=$ai('#mockType')?.value||'all',n=Math.max(10,Math.min(30,+($ai('#mockCount')?.value)||10));let a=bank().filter(q=>{const t=q.ty||((q.type||'').includes('漢')?'k':(q.type||'').includes('文')?'g':(q.type||'').includes('読')?'r':'v');return(lv==='all'||q.level===lv)&&(ty==='all'||t===ty)});
- if(!a.length){$ai(aiPanelSelector).innerHTML=aiCard('No questions available for this level.');return}
- a=a.sort(()=>Math.random()-.5).slice(0,Math.min(n,a.length));showQuestionSet(a,'mock');
+ const st=getAI(),p=$ai(aiPanelSelector);
+ const m=aiMockMatches(st.mockLevel||'all',st.mockType||'all');
+ if(!m.length){p.innerHTML=aiCard('<h3>Mock test</h3><p class="mute">No questions match this level/type. Try All.</p>');return}
+ const a=sh(m).slice(0,Math.min(st.mockCount||10,m.length));
+ showQuestionSet(a,'mock');
 }
 function aiView(id){
  const q=bank().find(x=>x.id===id);if(!q)return;const p=$ai(aiPanelSelector);p.innerHTML=aiCard(`<span class="tag">${q.level} · ${q.type}</span><h3 class="jp">${escAI(q.question)}</h3>${q.passage?`<p class="jp">${escAI(q.passage)}</p>`:''}<ol>${q.options.map(o=>`<li class="jp">${escAI(o)}</li>`).join('')}</ol><p><b>Answer:</b> ${escAI(q.options[q.answer])}</p><p class="jp">${escAI(q.explanationJa)}</p><p>${escAI(q.explanationBn)}</p>${aiBtn('Back to Saved Questions','saved')}`);
@@ -836,6 +904,7 @@ document.addEventListener('click',e=>{
  if(b.dataset.jview){aiView(b.dataset.jview);return}
  const a=b.dataset.jai;
  if(a==='settings')aiSettingsUI();
+ if(a==='closeMock')aiCloseMock();
  if(a==='closeSettings'){const DL=document.getElementById('DL');if(DL){if(typeof DL.close==='function')DL.close();else DL.removeAttribute('open')}}
  if(a==='generate')aiGenerate();if(a==='saved')aiSaved();if(a==='mock')aiMock();
  if(a==='studyMock'){aiPanelSelector='#aiStudyPanel';aiSession=null;aiMock()}
