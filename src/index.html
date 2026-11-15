@@ -956,11 +956,14 @@ let adv=false;const go=()=>{if(adv||!PB)return;adv=true;clearInterval(wd);PB.i++
 u.onend=go;
 /* retry engine hiccups twice so no chunk is silently skipped */
 u.onerror=()=>{if(!PB||adv)return;clearInterval(wd);if((st.r||0)<2){st.r=(st.r||0)+1;PB.timer=setTimeout(step8,150)}else go()};
-/* fallback for engines that never fire onend: after a generous cap (an 80-char
-   chunk at the slowest rate finishes well before this), cancel and move on
-   instead of stalling mid-question */
-const born=Date.now(),wd=setInterval(()=>{if(!PB||adv){clearInterval(wd);return}
-if(Date.now()-born>30000+(st.r?5000:0)){try{st.r=9,speechSynthesis.cancel()}catch(e){}go()}},1000);
+/* fallback for engines that never fire onend: after a generous cap, cancel and
+   move on instead of stalling mid-question; if the engine still reports it is
+   speaking (a slow long chunk), grant one 15s extension first */
+const born=Date.now();let ext=0;
+const wd=setInterval(()=>{if(!PB||adv){clearInterval(wd);return}
+if(Date.now()-born>30000+ext*15000+(st.r?5000:0)){
+try{if(speechSynthesis.speaking&&++ext<2)return}catch(e){}
+try{st.r=9,speechSynthesis.cancel()}catch(e){}go()}},1000);
 PB.wd=wd;speechSynthesis.speak(u)}
 catch(e){if(PB){clearInterval(PB.wd);PB.i++;PB.timer=setTimeout(step8,60)}}}
 function stepsFor(q){const st=[],sp=(t,v)=>split8(t).forEach(c=>st.push({t:c,v:v||0}));

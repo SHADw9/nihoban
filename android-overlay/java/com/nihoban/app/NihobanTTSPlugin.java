@@ -68,7 +68,9 @@ public class NihobanTTSPlugin extends Plugin {
         }
         tts.setSpeechRate(rate);
         tts.setPitch(pitch);
-        String id = UUID.randomUUID().toString();
+        // use the id the JS bridge supplied so its end/error events match the right utterance
+        String id = call.getString("id", null);
+        if (id == null || id.length() == 0) id = UUID.randomUUID().toString();
         Bundle params = new Bundle();
         int res = tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, id);
         if (res == TextToSpeech.SUCCESS) {
