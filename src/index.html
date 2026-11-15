@@ -183,6 +183,29 @@ body.focus nav{display:none}body.focus main{padding-bottom:28px}
 dialog{margin:auto 0 0;width:100%;max-width:100%;border-radius:24px 24px 0 0;max-height:90dvh}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.ac path{stroke-dashoffset:0!important;opacity:1!important}.ai-loading::before,.ai-orb,.ai-orb-ring,.btn.gen-busy::after{animation:none!important}.ai-gen-overlay{transition:none}}
+/* JLPT AI mock */
+.jx-sec{font:600 12px var(--ui);letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin:20px 0 8px}
+.jx-sec:first-child{margin-top:0}
+.card .chips{margin:0}
+.jx-go{width:100%;min-height:54px;font-size:17px;margin-top:22px}
+.jx-hint{display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:13px;line-height:1.5;color:var(--mute)}
+.jx-hint .ic{margin-top:2px}.jx-hint.ok{color:var(--ok)}.jx-hint.warn{color:var(--no)}
+.jx-alt{display:block;margin:14px auto 0;text-align:center;color:var(--mute)}
+.jx-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.jx-resume{border-left:5px solid var(--cq,var(--gold))}
+.jx-conn summary,.jx-b summary,.jx-rv summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px}
+.jx-conn summary::-webkit-details-marker,.jx-b summary::-webkit-details-marker,.jx-rv summary::-webkit-details-marker{display:none}
+.jx-conn summary b{flex:1}
+.jx-conn summary::after,.jx-b summary::after,.jx-rv summary::after{content:"+";color:var(--mute);font-weight:600;flex:none}
+.jx-conn[open]>summary::after,.jx-b[open]>summary::after,.jx-rv[open]>summary::after{content:"–"}
+.jx-dot{font-size:12px;font-weight:600;padding:2px 10px;border-radius:12px;background:var(--bg);color:var(--mute)}.jx-dot.ok{color:var(--ok)}
+.jx-f{display:grid;gap:6px;margin-top:14px;font-size:14px;font-weight:600}.jx-f input{font-weight:400}
+.jx-b,.jx-rv{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.jx-b .t,.jx-rv .t{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.jx-body{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:grid;gap:8px;font-size:15px}
+.jx-body ol{padding-left:22px;display:grid;gap:3px}
+.jx-body li.ok{color:var(--ok);font-weight:600}.jx-body li.no{color:var(--no)}
+.jx-ic{display:grid;place-items:center;flex:none}.jx-ic.g{color:var(--ok)}.jx-ic.b{color:var(--no)}
 </style></head><body>
 <header><a class="brand" href="#home"><i>日</i>Nihoban</a><nav aria-label="Main"><a href="#home"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg><span>হোম</span></a><a href="#learn"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2zM22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/></svg><span>স্টাডি</span></a><a href="#library"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg><span>লাইব্রেরি</span></a><a href="#progress"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg><span>অগ্রগতি</span></a></nav><div class="hr"><button class="lg" data-x="lg"></button><a class="set" href="#settings" aria-label="Settings"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></a></div></header>
 <main id="M"></main><dialog id="DL"></dialog>
@@ -192,7 +215,7 @@ dialog{margin:auto 0 0;width:100%;max-width:100%;border-radius:24px 24px 0 0;max
 const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelectorAll(s)],M=$('#M'),DL=$('#DL');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let S={lang:'en',ml:'bn',typed:0,decks:[],kana:{},lvl:'N5',nv:10,nk:3,ng:1,fur:1,roma:1,th:'auto',srs:{},days:{}},D,B={},V={},Q=null,F=null,tot=0,Z=null;
-try{Object.assign(S,JSON.parse(localStorage.getItem('jb')||'{}'))}catch(e){}S.roma??=1;S.fur??=1;S.lPause??=7;
+try{Object.assign(S,JSON.parse(localStorage.getItem('jb')||'{}'))}catch(e){}S.roma??=1;S.fur??=1;
 const save=()=>{try{localStorage.setItem('jb',JSON.stringify(S))}catch(e){}};
 const LV=['N5','N4','N3','N2','N1'],TY={v:'শব্দ',k:'কাঞ্জি',g:'ব্যাকরণ'},T={vocab:'v',kanji:'k',grammar:'g'},GL=['ভুল','কঠিন','ঠিক','সহজ'];
 const day=(o=0)=>new Date(Date.now()+o*864e5).toLocaleDateString('en-CA');
@@ -435,7 +458,7 @@ ${ach.length?`<h3>${t('Recent achievements','সাম্প্রতিক অ�
 /* ---------- Study hub ---------- */
 V.learn=()=>{const q=queue(),wn=Object.keys(S.wr).filter(k=>D.m[k]&&!fixed(k)).length;
 M.innerHTML=`<h2>${t('Study','স্টাডি')}</h2><p class="mute">${t('Difficulty = your JLPT level','কঠিনতা = আপনার JLPT স্তর')}</p>${chips(LV.map(l=>[l,l]),S.lvl,'data-lvl')}<h3>${t('Question type','প্রশ্নের ধরন')}</h3>${chips(['mix','jb','bj','kk','kn'].map(m=>[m,qdl(m)]),S.qd||'mix','data-z="qd" data-v')}<p class="mute"><small>${t('Applies to word, kanji and grammar quizzes. Kana ↔ Kanji works for words and kanji.','শব্দ, কাঞ্জি ও ব্যাকরণ কুইজে প্রযোজ্য। কানা ↔ কাঞ্জি শব্দ ও কাঞ্জিতে কাজ করে।')}</small></p>
-<div class="tiles">${tile('#study','bolt',t('Daily review','দৈনিক রিভিউ'),`${q.length} ${t('cards waiting','কার্ড অপেক্ষায়')}`,'--cv')}${tileb('v','book',t('Word quiz','শব্দ কুইজ'),t('Meaning ↔ word','অর্থ ↔ শব্দ'),'--cv')}${tileb('k','pen',t('Kanji quiz','কাঞ্জি কুইজ'),t('Meaning of kanji','কাঞ্জির অর্থ'),'--ck')}${tileb('g','note',t('Grammar quiz','ব্যাকরণ কুইজ'),t('Pattern meanings','প্যাটার্নের অর্থ'),'--cg')}${tileb('p','note',t('Particles','পার্টিকল'),t('Fill the blank','শূন্যস্থান পূরণ'),'--cg')}${tileb('r','study',t('Reading','পাঠ অনুশীলন'),t('Sentences with furigana','ফুরিগানা সহ বাক্য'),'--ck')}${tileb('mock','clock',t('Mock test','মক টেস্ট'),t('Timed, 28 questions','সময়সহ, ২৮টি প্রশ্ন'),'--cq')}${tileb('w','flag',t('Wrong answers','ভুল উত্তর'),`${wn} ${t('to fix','ঠিক করার বাকি')}`,'--cq',!wn)}${tile('#kana','pen',t('Kana practice','কানা অনুশীলন'),t('Chart & quizzes','চার্ট ও কুইজ'),'--cv')}</div>`};
+<div class="tiles">${tile('#study','bolt',t('Daily review','দৈনিক রিভিউ'),`${q.length} ${t('cards waiting','কার্ড অপেক্ষায়')}`,'--cv')}${tileb('v','book',t('Word quiz','শব্দ কুইজ'),t('Meaning ↔ word','অর্থ ↔ শব্দ'),'--cv')}${tileb('k','pen',t('Kanji quiz','কাঞ্জি কুইজ'),t('Meaning of kanji','কাঞ্জির অর্থ'),'--ck')}${tileb('g','note',t('Grammar quiz','ব্যাকরণ কুইজ'),t('Pattern meanings','প্যাটার্নের অর্থ'),'--cg')}${tileb('p','note',t('Particles','পার্টিকল'),t('Fill the blank','শূন্যস্থান পূরণ'),'--cg')}${tileb('r','study',t('Reading','পাঠ অনুশীলন'),t('Sentences with furigana','ফুরিগানা সহ বাক্য'),'--ck')}${tileb('l','ear',t('Listening','শ্রবণ'),t('Hear it, pick the meaning','শুনে অর্থ বাছুন'),'--ck')}${tileb('mock','clock',t('Mock test','মক টেস্ট'),t('Timed, 28 questions','সময়সহ, ২৮টি প্রশ্ন'),'--cq')}${tileb('w','flag',t('Wrong answers','ভুল উত্তর'),`${wn} ${t('to fix','ঠিক করার বাকি')}`,'--cq',!wn)}${tile('#kana','pen',t('Kana practice','কানা অনুশীলন'),t('Chart & quizzes','চার্ট ও কুইজ'),'--cv')}</div>`};
 V.quiz=()=>Z?zview():V.learn();
 
 /* ---------- Quiz engine ---------- */
@@ -451,8 +474,8 @@ const p=m=='bj'?`<div class="ans">${esc(mean(x))}</div>`:m=='kk'?`<div class="mi
 return{x,k:ty+x.id,kind:m,mode:m,o:sh([x,...d].map(y=>O(lab(y),y==x,jp))),p,e:()=>expl(x)}}
 function pq(pl){for(let n=0;n<80;n++){const x=pl[Math.random()*pl.length|0],e=x.x[0],s=e[0],ix=[...s].map((c,i)=>PT.includes(c)?i:-1).filter(i=>i>=0);if(!ix.length)continue;const i=ix[Math.random()*ix.length|0],a=s[i];
 return{x,k:x.ty+x.id,kind:'p',o:sh([a,...sh(PT.filter(c=>c!=a)).slice(0,3)]).map(c=>O(c,c==a,1)),p:`<div class="mid">${esc(s.slice(0,i)+'＿'+s.slice(i+1))}</div><p class="mute">${esc(e[2])}</p>`,e:()=>`<p class="jp mid">${esc(s)}</p><p class="mute">${esc(e[2])}</p>${expl(x)}`}}}
-function rq(x,pl){const e=x.x[0],d=sh(pl.filter(y=>y!=x&&y.x[0][2]!=e[2]&&(!e[3]||!y.x[0][3]||y.x[0][3]!=e[3]))).slice(0,3);
-return{x,k:x.ty+x.id,kind:'r',o:sh([x,...d].map(y=>O(bn()&&y.x[0][3]?mk(y.x[0][3]):y.x[0][2],y==x))),p:`<div class="mid">${fur(e[1]||e[0])}</div><button class="lk" data-say="${esc(e[0])}">${ic('spk',16)} ${t('Listen','শুনুন')}</button>`,e:()=>`${bn()&&e[3]?`<p>${esc(mk(e[3]))}</p>`:''}${expl(x)}`}}
+function rq(x,pl){const e=x.x[0],L=y=>{const z=y.x[0];return bn()&&z[3]?mk(z[3]):z[2]},d=sh(pl.filter(y=>y!=x&&L(y)!=L(x))).slice(0,3);
+return{x,k:x.ty+x.id,kind:'r',o:sh([x,...d].map(y=>O(L(y),y==x))),p:`<div class="mid">${fur(e[1]||e[0])}</div><button class="lk" data-say="${esc(e[0])}">${ic('spk',16)} ${t('Listen','শুনুন')}</button>`,e:()=>`${bn()&&e[3]?`<p>${esc(mk(e[3]))}</p>`:''}${expl(x)}`}}
 const lq=q=>(q.kind='l',q.say=q.x.r,q.p='',q);
 function zstart(kind,lv=S.lvl){QM=kind=='mock'||kind=='w'?'mix':S.qd||'mix';const n=10,Pl=ty=>D[ty].filter(x=>x.l==lv&&mean(x)&&((QM!='kk'&&QM!='kn')||ty=='g'||ok2(x))),Ex=()=>[...D.v,...D.g].filter(x=>x.l==lv&&x.x?.[0]),sl=(a,f,m=n)=>sh(a).slice(0,m).map(f).filter(Boolean);let qs=[];
 if(kind.length==1&&'vkg'.includes(kind)){const pl=Pl(kind);qs=sl(pl,x=>mq(x,pl))}
@@ -465,13 +488,13 @@ add(t('Vocabulary','শব্দ'),sl(pv,x=>mq(x,pv),8));add(t('Kanji','কা�
 if(!qs.length)return Z=null,false;
 Z={kind,lv,i:0,s:0,w:[],r:[],a:null,qs,dl:kind=='mock'?Date.now()+15e5:0};return true}
 function tick(){if(!Z?.dl)return;clearInterval(Z.iv);const f=()=>{if(!Z)return;const s=Math.max(0,Math.round((Z.dl-Date.now())/1e3)),el=$('#tm');if(el)el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(!s){clearInterval(Z.iv);Z.i=Z.qs.length;V.quiz()}};f();Z&&(Z.iv=setInterval(f,1000))}
-function zview(){clearInterval(Z.cd);if(Z.exam)try{speechSynthesis.cancel()}catch(e){};if(Z.i>=Z.qs.length)return zres();const q=Z.qs[Z.i],an=Z.a!=null,ok=an&&q.o[Z.a].c;
+function zview(){if(Z.i>=Z.qs.length)return zres();const q=Z.qs[Z.i],an=Z.a!=null,ok=an&&q.o[Z.a].c;
 M.innerHTML=`<div class="stat"><button class="lk" data-z="qx">${ic('back',16)} ${t('Exit','বের হন')}</button><span>${t('Question','প্রশ্ন')} ${Z.i+1}/${Z.qs.length}</span>${Z.dl?`<span id="tm" class="mute"></span>`:`<span class="mute">${ic('ok',14)} ${Z.s}</span>`}</div><div class="bar"><b style="width:${Z.i/Z.qs.length*100}%"></b></div>${q.sec||q.mode?`<p class="mute" style="margin-top:8px"><small>${esc(q.sec||qdl(q.mode))}</small></p>`:''}
-<div class="card fc" style="margin-top:12px;min-height:180px">${q.p}${q.kind=='l'?(Z.exam?`<p id="cd" class="mute" role="status" style="margin:8px 0 0;min-height:1.5em">${t('Audio plays once…','অডিও একবারই বাজবে…')}</p>`:`<div class="chips"><button class="btn" data-z="pl" data-s=".85">${ic('spk',18)} ${t('Play','শুনুন')}</button><button class="btn o" data-z="pl" data-s=".5">${t('Slow','ধীরে')}</button></div>`):''}</div>
+<div class="card fc" style="margin-top:12px;min-height:180px">${q.p}${q.kind=='l'?`<div class="chips"><button class="btn" data-z="pl" data-s=".85">${ic('spk',18)} ${t('Play','শুনুন')}</button><button class="btn o" data-z="pl" data-s=".5">${t('Slow','ধীরে')}</button></div>`:''}</div>
 <div class="opts">${q.o.map((o,i)=>`<button class="opt ${an?(o.c?'ok':i==Z.a?'no':''):''}" data-z="qa" data-i="${i}" ${an?'disabled':''}><kbd>${i+1}</kbd><span class="${o.jp?'jp':''}">${esc(o.l)}</span></button>`).join('')}</div>
 <div aria-live="polite" role="status">${an?`<div class="card fb ${ok?'g':''}"><b>${ok?t('Correct!','সঠিক!'):t('Not quite','হয়নি')}</b>${q.e()}<button class="lk" data-z="rp" style="text-align:left">${ic('flag',14)} ${t('Report this question','প্রশ্নটি রিপোর্ট করুন')}</button></div><div class="dock"><button class="btn" style="width:100%" data-z="qn">${Z.i+1<Z.qs.length?t('Next','পরের প্রশ্ন'):t('Results','ফলাফল')}</button></div>`:''}</div>`;
-if(q.kind=='l'&&!an)Z.exam?lexPlay(q):setTimeout(()=>sayr(q.say,.85),250);tick()}
-function zres(){clearInterval(Z.iv);clearInterval(Z.cd);const n=Z.qs.length,p=Math.round(Z.s/n*100),sc={};Z.qs.forEach(q=>(sc[q.sec||'']??=[0,0])[1]++);Z.r.forEach(r=>{if(r.ok)sc[r.q.sec||''][0]++});
+if(q.kind=='l'&&!an)setTimeout(()=>sayr(q.say,.85),250);tick()}
+function zres(){clearInterval(Z.iv);const n=Z.qs.length,p=Math.round(Z.s/n*100),sc={};Z.qs.forEach(q=>(sc[q.sec||'']??=[0,0])[1]++);Z.r.forEach(r=>{if(r.ok)sc[r.q.sec||''][0]++});
 if(!Z.done){Z.done=1;if(Z.kind=='mock'){S.mocks.push({d:day(),lv:Z.lv,s:Z.s,n,sc});S.mk++}else if(Z.s==n&&n>=5)S.pq++;save()}
 const rs=[...Z.r].sort((a,b)=>a.ok-b.ok);
 M.innerHTML=`<div class="card fc"><div class="big">${Z.s}/${n}</div><p class="ans">${p}%</p><p class="mute">${p>=80?t('Excellent!','দারুণ!'):p>=60?t('Good work — keep going.','ভালো — চালিয়ে যান।'):t('Review the mistakes below and try again.','নিচের ভুলগুলো দেখে আবার চেষ্টা করুন।')}</p></div>
@@ -479,30 +502,7 @@ ${Z.kind=='mock'?`<div class="card"><h3>${t('Section breakdown','বিভাগ
 <div class="card"><h3>${t('Answer review','উত্তর পর্যালোচনা')}</h3>${rs.map(r=>`<div class="rv ${r.ok?'g':'b'}">${ic(r.ok?'ok':'no',16)}<span class="jp">${esc(title(r.q.x))}</span><span class="mute">${esc(mean(r.q.x))}</span><button class="lk" data-k="${r.q.k}">${t('Details','বিস্তারিত')}</button></div>`).join('')||'<p class="mute">—</p>'}</div>
 <div class="chips">${Z.w.length?`<button class="btn" data-z="again">${t('Repeat missed','ভুলগুলো আবার')} (${Z.w.length})</button>`:''}<button class="btn o" data-z="qs" data-k="${Z.kind=='again'?'w':Z.kind}">${t('New set','নতুন সেট')}</button><a class="btn o" href="#learn">${t('Back to Study','স্টাডিতে ফিরুন')}</a></div>`}
 function qans(i){const q=Z.qs[Z.i];if(Z.a!=null)return;const ok=q.o[i].c;Z.a=i;Z.r.push({q,ok});if(ok){Z.s++;S.qc++;nf1(q.k)}else{Z.w.push(q);nw1(q.k);S.srs[q.k]??={ease:2.5,ivl:0,reps:0,lapse:1,due:Date.now()}}save();
-if(Z.kind=='mock'||Z.exam){clearInterval(Z.cd);Z.i++;Z.a=null}V.quiz();scrollTo(0,0)}
-/* ---------- Listening exam mode: one-play audio + auto-advance ---------- */
-const lexHush=()=>{try{speechSynthesis.cancel()}catch(e){}};
-function lexStart(){
- lexHush();clearInterval(Z?.cd);
- M.innerHTML=`<a class="back" href="#learn">${ic('back',18)} ${t('Study','স্টাডি')}</a><h2>${t('Listening section','শ্রবণ অংশ')}</h2>
- <div class="card"><p class="mute">${t('Each question’s audio plays once — no replay or pause. After the audio, a short countdown gives you time to choose your answer before the next question starts automatically.','প্রতিটি প্রশ্নের অডিও একবারই বাজবে — রিপ্লে বা পজ নেই। অডিও শেষ হলে ছোট কাউন্টডাউনে উত্তর বাছুন, তারপর নিজে থেকেই পরের প্রশ্ন শুরু হবে।')}</p></div>
- <h3>${t('Answer time after audio','অডিওর পর উত্তর দেওয়ার সময়')}</h3>${chips([[5,'5 s'],[7,'7 s'],[10,'10 s']],S.lPause??7,'data-z="lp" data-v')}
- <h3>${t('Level','স্তর')}</h3>${chips(LV.map(l=>[l,l]),S.lvl,'data-z="xl" data-v')}
- <div class="chips" style="margin-top:14px"><button class="btn" data-z="qs" data-k="l">${ic('ear',18)} ${t('Start Section','সেকশন শুরু')}</button><button class="btn o" data-z="qs" data-k="l" data-prac="1">${t('Practice with replays','রিপ্লে সহ অনুশীলন')}</button></div>`;
-}
-function lexPlay(q){
- const ix=Z.i,el=()=>$('#cd');const e0=el();if(e0)e0.innerHTML=`${ic('spk',16)} ${t('Playing audio… (plays once)','অডিও বাজছে… (একবারই)')}`;
- let started=0,done=0;
- const go=()=>{if(done)return;done=1;if(started||!Z||Z.a!=null||Z.i!==ix||Z.qs[ix]!==q)return;started=1;
-  let s=S.lPause??7;const paint=()=>{const e=el();if(e)e.innerHTML=`${t('Next question in','পরের প্রশ্ন')} <b>${s}</b>${t('s',' সেকেন্ড')}`};paint();
-  Z.cd=setInterval(()=>{if(!Z||Z.a!=null||Z.i!==ix){clearInterval(Z.cd);return}s--;if(s<=0){clearInterval(Z.cd);lexSkip()}else paint()},1000)};
- try{const u=new SpeechSynthesisUtterance(q.say);u.lang='ja-JP';u.rate=.85;u.onend=go;u.onerror=go;speechSynthesis.cancel();speechSynthesis.speak(u);setTimeout(go,Math.max(4000,q.say.length*200))}catch(e){go()}
-}
-function lexSkip(){
- if(!Z||Z.a!=null)return;
- const q=Z.qs[Z.i];Z.r.push({q,ok:0});Z.w.push(q);nw1(q.k);S.srs[q.k]??={ease:2.5,ivl:0,reps:0,lapse:1,due:Date.now()};save();
- Z.i++;Z.a=null;V.quiz();scrollTo(0,0);
-}
+if(Z.kind=='mock'){Z.i++;Z.a=null}V.quiz();scrollTo(0,0)}
 
 /* ---------- Library ---------- */
 V.library=()=>{M.innerHTML=`<h2>${t('Library','লাইব্রেরি')}</h2><input id="gq" type="search" placeholder="${t('Search words, kanji and grammar','শব্দ, কাঞ্জি ও ব্যাকরণ খুঁজুন')}"><div id="gl"></div><div class="tiles" id="lt" style="margin-top:14px">${tile('#kana','pen',t('Kana','কানা'),'ひらがな · カタカナ','--cv')}${tile('#vocab','book',t('Vocabulary','শব্দ'),D.v.length,'--cv')}${tile('#kanji','pen',t('Kanji','কাঞ্জি'),D.k.length,'--ck')}${tile('#grammar','note',t('Grammar','ব্যাকরণ'),D.g.length,'--cg')}${tile('#decks','lib',t('Custom decks','ডেক'),S.decks.length,'--cq')}${tile('#notebook','flag',t('Mistake notebook','ভুলের খাতা'),Object.keys(S.wr).length,'--cq')}</div>`};
@@ -565,20 +565,18 @@ const _gr=gr;gr=function(g){const k=Q[0];_gr(g);g>=2?nf1(k):g==0&&nw1(k)};
 const _vs=V.study;V.study=()=>{_vs();setTimeout(()=>$$('.gs small').forEach(s=>s.textContent=s.textContent.replace(/^1 days/,'1 day')),0);if(!Q?.length)return;const x=D.m[Q[0]];$('.stat')?.insertAdjacentHTML('beforeend',`<a class="lk" href="#learn">${t('Pause','বিরতি')}</a>`);$('.fc')?.insertAdjacentHTML('afterbegin',`<button class="spk" data-say="${esc(x.ty=='v'?x.r:x.ty=='k'?x.c:x.p)}" aria-label="${t('Listen','শুনুন')}">${ic('spk',22)}</button>`)};
 const TAB={home:'home',learn:'learn',study:'learn',quiz:'learn',library:'library',kana:'library',vocab:'library',kanji:'library',grammar:'library',decks:'library',notebook:'library',progress:'progress',settings:''};
 route=function(){const r=location.hash.slice(1)||'home';if(!V[r]&&!T[r])return location.hash='home';
-if(r!='study')Q=null,DK=null;if(r!='quiz'){if(Z?.iv)clearInterval(Z.iv);if(Z?.cd)clearInterval(Z.cd);if(Z?.exam)lexHush();Z=null}DL.open&&DL.close();
+if(r!='study')Q=null,DK=null;if(r!='quiz'){if(Z?.iv)clearInterval(Z.iv);Z=null}DL.open&&DL.close();
 $$('nav a').forEach(a=>a.classList.toggle('on',a.hash=='#'+TAB[r]));document.body.classList.toggle('focus',r=='study'||(r=='quiz'&&!!Z));(V[r]||V.home)();scrollTo(0,0)};
 const okb=o=>o&&typeof o=='object'&&!Array.isArray(o)&&('srs'in o||'days'in o||'decks'in o)&&(!o.srs||typeof o.srs=='object')&&(!o.days||typeof o.days=='object')&&(!o.decks||Array.isArray(o.decks));
 const bkm=s=>{const e=$('#bkm');if(e)e.textContent=s};
 document.addEventListener('click',e=>{const el=e.target.closest('[data-z]');if(!el)return;e.stopPropagation();e.preventDefault();const d=el.dataset,z=d.z,r=cur();
-if(z=='qs'){if(d.k=='l'&&!d.prac){lexStart();return}if(zstart(d.k)){if(d.k=='l'&&!d.prac)Z.exam=1;(location.hash=='#quiz'?V.quiz():location.hash='quiz')}else V.learn()}
+if(z=='qs'){zstart(d.k)?(location.hash=='#quiz'?V.quiz():location.hash='quiz'):V.learn()}
 else if(z=='qa')qans(+d.i);
 else if(z=='qn'){Z.i++;Z.a=null;V.quiz();scrollTo(0,0)}
-else if(z=='qx'){clearInterval(Z?.cd);lexHush();location.hash='learn'}
-else if(z=='xl'){S.lvl=d.v;save();lexStart()}
-else if(z=='lp'){S.lPause=+d.v;save();lexStart()}
+else if(z=='qx')location.hash='learn';
 else if(z=='rp'){S.rep.push({k:Z.qs[Z.i].k,d:day()});save();el.disabled=true;el.textContent=t('Reported ✓','রিপোর্ট করা হয়েছে ✓')}
 else if(z=='pl')sayr(Z.qs[Z.i].say,+d.s);
-else if(z=='again'){Z={...Z,kind:'again',exam:0,qs:Z.w.map(q=>({...q,o:sh(q.o)})),i:0,s:0,w:[],r:[],a:null,done:0,dl:0};V.quiz()}
+else if(z=='again'){Z={...Z,kind:'again',qs:Z.w.map(q=>({...q,o:sh(q.o)})),i:0,s:0,w:[],r:[],a:null,done:0,dl:0};V.quiz()}
 else if(z=='qd'){S.qd=d.v;save();V.learn()}
 else if(z=='pal'){S.pal=d.v;save();applyPal();V.settings()}
 else if(z=='bm'){S.bm[d.id]?delete S.bm[d.id]:S.bm[d.id]=1;save();DL.open?det(d.id):V[r]()}
@@ -605,336 +603,464 @@ setInterval(()=>{try{if(!S.rem||typeof Notification=='undefined'||Notification.p
 hdr();applyPal();
 </script>
 <script>
-/* Nihoban JLPT AI — offline question bank + Gemini/local endpoint */
+/* Nihoban JLPT AI — one clean flow: pick → start → results.
+   Saved questions work offline; AI is only used to top up the bank. */
 (()=>{
-const $ai=(s,e=document)=>e.querySelector(s);
-const escAI=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const getAI=()=>{S.aiSettings??={provider:'gemini',key:'',endpoint:'',model:'gemini-3.5-flash-lite'};S.aiQuestions??=[];S.aiRuns??=[];return S.aiSettings};
-const bank=()=>{S.aiQuestions??=[];return S.aiQuestions};
-const levelsAI=['N5','N4','N3','N2','N1'];
-const qtAI=[['mix','Mix · মিক্স'],['v','語彙 · Vocab'],['k','漢字 · Kanji'],['g','文法 · Grammar']];
-let aiPanelSelector='#aiPanel';
-const aiBtn=(label,act,cls='btn')=>`<button class="${cls}" data-jai="${act}">${label}</button>`;
-const aiField=(label,id,html)=>`<label style="display:grid;gap:5px;margin:10px 0"><span>${label}</span>${html}</label>`;
-const aiCard=(content)=>`<section class="card">${content}</section>`;
-const aiNotice=(msg)=>`<p class="mute" style="margin:8px 0">${msg}</p>`;
-/* Hide the base Study (daily-review) content while the AI mock owns the #aiStudyPanel,
-   so leftovers like the "N left / Words N5" stat row don't appear above the mock. */
-const aiSolo=()=>{
- if(aiPanelSelector!=='#aiStudyPanel')return;
- const p=$ai('#aiStudyPanel');if(!p)return;
- const sec=p.closest('section');
- [...M.children].forEach(el=>{if(el!==sec)el.style.display='none'});
-};
-/* ✕ close for the Study mock popup: clears the panel and restores the base Study content */
-const aiCloseBtn=()=>aiPanelSelector==='#aiStudyPanel'?'<button class="ib" data-jai="closeMock" aria-label="Close" style="font-size:20px;line-height:1">✕</button>':'';
-const aiCloseMock=()=>{
- if(aiPanelSelector!=='#aiStudyPanel')return;
- aiSession=null;
- const p=$ai('#aiStudyPanel');if(p)p.innerHTML='';
- [...M.children].forEach(el=>{if(el.style&&el.style.display==='none')el.style.display=''});
-};
-const aiNav=()=>{
- const nav=$ai('header nav'); if(nav&&!nav.querySelector('[href="#jlptai"]')){
-  const a=document.createElement('a');a.href='#jlptai';a.innerHTML='<span style="font-size:18px">✦</span><span>JLPT AI</span>';nav.append(a);
- }
-};
-V.jlptai=()=>{
- aiPanelSelector='#aiPanel';const st=getAI(),qs=bank(),lv=st.level||S.lvl||'N5',ty=st.qtype||'mix',count=+(st.count||10),saved=qs.length;
- const typeChips=qtAI.map(([v,l])=>`<button type="button" class="${ty===v?'on':''}" data-qtype="${v}">${l}</button>`).join('');
- M.innerHTML=`
- <div class="hero" style="margin-bottom:8px">
-  <div>
-   <p class="mute" style="letter-spacing:.04em;font-size:12px;font-weight:600">AI PRACTICE · OFFLINE</p>
-   <h2 style="margin:2px 0 4px">JLPT AI <span style="color:var(--acc)">✦</span></h2>
-   <p class="mute" style="font-size:14px">Generate practice questions · saved on this device</p>
-  </div>
-  <button class="btn o" data-jai="settings" style="flex:none">⚙ Settings</button>
- </div>
+const DEF='gemini-3.5-flash-lite',LVS=['N5','N4','N3','N2','N1'];
+const TYPES=[['mix','Mix'],['v','Vocab'],['k','Kanji'],['g','Grammar'],['r','Reading']];
+const TL={v:'Vocabulary',k:'Kanji',g:'Grammar',r:'Reading'};
+const TJ={v:'語彙',k:'漢字',g:'文法',r:'読解'};
 
- <div class="tiles" style="margin-bottom:14px">
-  <div class="card" style="margin:0;text-align:center;padding:14px 10px">
-   <div class="mute" style="font-size:12px">Saved</div>
-   <h2 style="margin:2px 0;font-size:28px">${saved}</h2>
-   <small class="mute">questions</small>
-  </div>
-  <div class="card" style="margin:0;text-align:center;padding:14px 10px">
-   <div class="mute" style="font-size:12px">Level</div>
-   <h2 style="margin:2px 0;font-size:28px">${escAI(lv)}</h2>
-   <small class="mute">selected</small>
-  </div>
-  <div class="card" style="margin:0;text-align:center;padding:14px 10px">
-   <div class="mute" style="font-size:12px">Type</div>
-   <h2 style="margin:2px 0;font-size:17px;line-height:1.3">${escAI((qtAI.find(x=>x[0]===ty)||qtAI[0])[1])}</h2>
-   <small class="mute">focus</small>
-  </div>
- </div>
+/* ---------- state helpers ---------- */
+const cfg=()=>{const c=S.aiSettings??={provider:'gemini',key:'',endpoint:'',model:DEF};S.aiQuestions??=[];S.aiRuns??=[];return c};
+const opt=()=>{const c=cfg();c.level??=S.lvl||'N5';c.qtype??='mix';c.fb??='each';c.count=[10,20,30].includes(+c.count)?+c.count:10;return c};
+const bank=()=>(cfg(),S.aiQuestions);
+const tyOf=q=>q.ty||((q.type||'').includes('漢')?'k':(q.type||'').includes('文')?'g':(q.type||'').includes('読')?'r':'v');
+const ready=()=>{const c=cfg();return c.provider==='local'?!!c.endpoint:!!c.key};
+const pool=(lv,ty)=>bank().filter(q=>q.level===lv&&(ty==='mix'||tyOf(q)===ty)&&q.options?.length===4);
+let view='home',ses=null,ctl=null,busy=false,bu={q:'',lv:'all',n:60};
 
- ${aiCard(`
-  <h3 style="margin:0 0 14px">Generate questions</h3>
-  <div style="display:grid;gap:14px">
-   <div>
-    <div class="mute" style="font-size:13px;font-weight:600;margin-bottom:6px">JLPT Level</div>
-    <div class="chips" id="aiLevelChips">${levelsAI.map(l=>`<button type="button" class="${l===lv?'on':''}" data-level="${l}">${l}</button>`).join('')}</div>
-   </div>
-   <div>
-    <div class="mute" style="font-size:13px;font-weight:600;margin-bottom:6px">Question type</div>
-    <div class="chips" id="aiTypeChips">${typeChips}</div>
-   </div>
-   <div>
-    <div class="mute" style="font-size:13px;font-weight:600;margin-bottom:6px">How many (10–30)</div>
-    <input id="aiCount" type="number" min="10" max="30" step="1" value="${Math.max(10,Math.min(30,count))}" style="max-width:120px">
-   </div>
-  </div>
-  <p class="mute" style="margin:14px 0 0;font-size:13px">Questions stay offline. Practice them anytime without the internet.</p>
-  <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-   ${aiBtn('✦ Generate','generate')}
-   ${saved?aiBtn('Browse saved','saved','btn o'):''}
-   ${saved?aiBtn('Start mock','mock','btn o'):''}
-  </div>
-  <p id="aiStatus" class="mute" role="status" style="margin-top:12px;min-height:1.5em"></p>
- `)}
-
- <div id="aiGenOverlay" class="ai-gen-overlay" hidden>
-  <div class="ai-gen-card">
-   <div class="ai-orb-wrap"><div class="ai-orb"></div><div class="ai-orb-ring"></div></div>
-   <div class="ai-gen-title">Creating questions</div>
-   <div class="ai-gen-sub" id="aiGenSub">Preparing…</div>
-   <div class="ai-progress"><i id="aiGenBar" style="width:8%"></i></div>
-   <div class="ai-gen-steps" id="aiGenSteps"></div>
-  </div>
- </div>
-
- <div id="aiPanel"></div>`;
-
- $ai('#aiLevelChips')?.addEventListener('click',e=>{
-  const b=e.target.closest('[data-level]'); if(!b)return;
-  st.level=b.dataset.level; save();
-  [...$ai('#aiLevelChips').querySelectorAll('button')].forEach(x=>x.classList.toggle('on',x===b));
- });
- $ai('#aiTypeChips')?.addEventListener('click',e=>{
-  const b=e.target.closest('[data-qtype]'); if(!b)return;
-  st.qtype=b.dataset.qtype; save();
-  [...$ai('#aiTypeChips').querySelectorAll('button')].forEach(x=>x.classList.toggle('on',x===b));
- });
- $ai('#aiCount')?.addEventListener('change',e=>{
-  st.count=Math.max(10,Math.min(30,+e.target.value||10)); e.target.value=st.count; save();
- });
-};
-function renderSavedPreview(){
- const el=$ai('#aiSavedPreview');if(!el)return;const a=bank().slice(-3).reverse();
- el.innerHTML=a.length?a.map(q=>`<div class="rv"><span class="lvb">${escAI(q.level)}</span><span style="flex:1">${escAI(q.question||q.q||'')}</span><small class="mute">${escAI(q.type||'語彙')}</small></div>`).join(''):aiNotice('No questions have been saved yet.');
-}
-function aiSettingsUI(){
- const st=getAI();
- const DL=document.getElementById('DL');
- if(!DL){ // fallback to panel
-  $ai('#aiPanel').innerHTML=aiCard(`<h3>AI Provider settings</h3><p class="mute">API key stays in this browser.</p>
-   ${aiField('Provider','',`<select id="aiProvider"><option value="gemini" ${st.provider==='gemini'?'selected':''}>Google Gemini</option><option value="local" ${st.provider==='local'?'selected':''}>Custom / Local model</option></select>`)}
-   ${aiField('Gemini API key','',`<input id="aiKey" type="password" autocomplete="off" placeholder="Paste your API key" value="${escAI(st.key)}">`)}
-   ${aiField('Gemini model','',`<input id="aiModel" value="${escAI(st.model||'gemini-3.5-flash-lite')}">`)}
-   ${aiField('Custom endpoint URL','',`<input id="aiEndpoint" placeholder="http://localhost:1234/v1/chat/completions" value="${escAI(st.endpoint)}">`)}
-   ${aiField('Local model name','',`<input id="aiLocalModel" placeholder="local-model" value="${escAI(st.localModel||'local-model')}">`)}
-   <div class="chips">${aiBtn('Save settings','saveSettings')}${aiBtn('Test connection','test','btn o')}${aiBtn('Close','back','btn o')}</div><p id="aiStatus" role="status"></p>`);
-  return;
- }
- DL.innerHTML=`
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px">
-   <h3 style="margin:0">AI Settings</h3>
-   <button class="ib" data-jai="closeSettings" aria-label="Close" style="font-size:20px;line-height:1">✕</button>
-  </div>
-  <p class="mute" style="margin-bottom:14px;font-size:13px">Your API key is stored only in this browser. Keep it private.</p>
-  ${aiField('Provider','',`<select id="aiProvider"><option value="gemini" ${st.provider==='gemini'?'selected':''}>Google Gemini</option><option value="local" ${st.provider==='local'?'selected':''}>Custom / Local model (OpenAI-compatible)</option></select>`)}
-  ${aiField('Gemini API key','',`<input id="aiKey" type="password" autocomplete="off" placeholder="Paste your API key" value="${escAI(st.key)}">`)}
-  ${aiField('Gemini model','',`<input id="aiModel" value="${escAI(st.model||'gemini-3.5-flash-lite')}">`)}
-  ${aiField('Custom endpoint URL','',`<input id="aiEndpoint" placeholder="http://localhost:1234/v1/chat/completions" value="${escAI(st.endpoint)}">`)}
-  ${aiField('Local model name','',`<input id="aiLocalModel" placeholder="local-model" value="${escAI(st.localModel||'local-model')}">`)}
-  <p class="mute" style="font-size:12px;margin:8px 0 14px">Local endpoints need CORS enabled. Gemini uses Google’s generateContent API.</p>
-  <div class="chips" style="margin-top:4px">
-   ${aiBtn('Save','saveSettings')}
-   ${aiBtn('Test','test','btn o')}
-   ${aiBtn('Close','closeSettings','btn o')}
-  </div>
-  <p id="aiStatus" class="mute" role="status" style="margin-top:12px;min-height:1.3em"></p>
- `;
- if(typeof DL.showModal==='function') DL.showModal();
- else DL.setAttribute('open','');
-}
+/* ---------- AI call ---------- */
 function aiPrompt(level,n,ty){
-ty=ty||'mix';
-const only={v:'Generate only vocabulary (語彙) questions.',k:'Generate only kanji (漢字) questions, e.g. readings or meanings.',g:'Generate only grammar (文法) questions.',mix:`Mix appropriate ${level} question types (vocabulary/kanji reading, grammar, and short reading comprehension).`}[ty];
-const tf=ty=='mix'?'語彙|漢字|文法|読解':{v:'語彙',k:'漢字',g:'文法'}[ty];
-return `Create exactly ${n} original practice questions in the style and difficulty of JLPT ${level}. These are practice items, NOT official or copied JLPT questions. ${only} For each item provide:
+ const only={v:'Generate only vocabulary (語彙) questions.',k:'Generate only kanji (漢字) questions, e.g. readings or meanings.',g:'Generate only grammar (文法) questions.',r:'Generate only short reading-comprehension (読解) questions; each one needs a short Japanese passage.',mix:`Mix appropriate ${level} question types (vocabulary, kanji reading, grammar, and short reading comprehension).`}[ty];
+ const tf=ty==='mix'?'語彙|漢字|文法|読解':TJ[ty];
+ return `Create exactly ${n} original practice questions in the style and difficulty of JLPT ${level}. These are practice items, NOT official or copied JLPT questions. ${only} Vary the topics (seed ${Math.random().toString(36).slice(2,8)}). For each item provide:
 {"level":"${level}","type":"${tf}","question":"Japanese question text, natural and level appropriate","passage":"optional short Japanese passage, otherwise empty","options":["A","B","C","D"],"answer":0,"explanationJa":"brief explanation in natural Japanese","explanationBn":"A clear and detailed explanation in Bangla","whyOptions":"optional short clarification"}
 Answer index must be 0-3. Exactly four options. Use Japanese for question/options and BOTH Japanese and Bangla for explanations. Avoid ambiguity; one correct answer. Return ONLY a valid JSON array, no markdown.`;
 }
-async function callAI(prompt){
- const st=getAI();
- if(st.provider==='gemini'){
-  if(!st.key)throw Error('Please add your Gemini API key in AI Settings.');
-  const url=`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(st.model||'gemini-3.5-flash-lite')}:generateContent?key=${encodeURIComponent(st.key)}`;
-  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:.75,responseMimeType:'application/json'}})});
-  const data=await r.json();if(!r.ok)throw Error(data.error?.message||`Gemini HTTP ${r.status}`);
-  return data.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'';
- }
- if(!st.endpoint)throw Error('Please set a custom endpoint URL.');
- const r=await fetch(st.endpoint,{method:'POST',headers:{'Content-Type':'application/json',...(st.localKey?{Authorization:'Bearer '+st.localKey}:{})},body:JSON.stringify({model:st.localModel||'local-model',messages:[{role:'user',content:prompt}],temperature:.75})});
- const data=await r.json();if(!r.ok)throw Error(data.error?.message||`Endpoint HTTP ${r.status}`);
- return data.choices?.[0]?.message?.content||data.output||JSON.stringify(data);
-}
-function parseAI(raw){
- raw=raw.trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
- const a=JSON.parse(raw);if(!Array.isArray(a))throw Error('AI response was not a JSON array.');
- return a.map(q=>{const s=q.type||'';return{id:crypto.randomUUID?.()||String(Date.now()+Math.random()),ty:s.includes('漢')?'k':s.includes('文')?'g':s.includes('読')?'r':'v',level:q.level||'N5',type:s||'文法',question:q.question||q.q||'',passage:q.passage||'',options:q.options||q.o||[],answer:+q.answer,explanationJa:q.explanationJa||q.explanation_jp||'',explanationBn:q.explanationBn||q.explanation_bn||'',whyOptions:q.whyOptions||'',createdAt:Date.now(),source:'ai',answered:false,selected:null}}).filter(q=>q.question&&q.options.length===4&&q.answer>=0&&q.answer<4);
-}
-async function aiGenerate(){
- const st=getAI();
- const level=st.level||$ai('[data-level].on')?.dataset.level||S.lvl||'N5';
- const ty=st.qtype||$ai('[data-qtype].on')?.dataset.qtype||'mix';
- const n=Math.max(10,Math.min(30,+(st.count||$ai('#aiCount')?.value)||10));
- const status=$ai('#aiStatus');
- const btn=$ai('[data-jai=generate]');
- const overlay=$ai('#aiGenOverlay');
- const sub=$ai('#aiGenSub');
- const bar=$ai('#aiGenBar');
- const stepsEl=$ai('#aiGenSteps');
- st.level=level;st.qtype=ty;st.count=n;save();
-
- const setProgress=(pct,msg,stepHtml)=>{
-  if(sub)sub.textContent=msg;
-  if(bar)bar.style.width=Math.max(6,Math.min(100,pct))+'%';
-  if(stepsEl&&stepHtml!=null)stepsEl.innerHTML=stepHtml;
-  if(status)status.innerHTML=`<span class="ai-loading">${escAI(msg)}</span>`;
- };
-
- if(btn){btn.classList.add('gen-busy');btn.disabled=true}
- if(overlay){overlay.hidden=false;overlay.classList.add('show')}
- setProgress(8,'Preparing prompt…','<span class="step on">1. Prompt</span><span class="step">2. Generate</span><span class="step">3. Save</span>');
-
+async function callAI(prompt,signal){
+ const c=cfg(),local=c.provider==='local';
+ if(local&&!c.endpoint)throw Error('Add your endpoint URL first.');
+ if(!local&&!c.key)throw Error('Add your Gemini API key first.');
+ let r;
  try{
-  let all=[];const chunks=Math.ceil(n/10);
-  for(let i=0;i<chunks;i++){
-   const num=Math.min(10,n-all.length);
-   const from=all.length+1,to=all.length+num;
-   const pct=12+Math.round((all.length/n)*70);
-   setProgress(pct,`Generating ${from}–${to} of ${n}…`,`<span class="step done">1. Prompt</span><span class="step on">2. Generate (${from}–${to})</span><span class="step">3. Save</span>`);
-   all.push(...parseAI(await callAI(aiPrompt(level,num,ty))));
+  r=local
+   ?await fetch(c.endpoint,{method:'POST',signal,headers:{'Content-Type':'application/json',...(c.localKey?{Authorization:'Bearer '+c.localKey}:{})},body:JSON.stringify({model:c.localModel||'local-model',messages:[{role:'user',content:prompt}],temperature:.75})})
+   :await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.model||DEF)}:generateContent?key=${encodeURIComponent(c.key)}`,{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:.75,responseMimeType:'application/json'}})});
+ }catch(e){if(e.name==='AbortError')throw e;throw Error('Can’t reach the AI. Check your internet connection.')}
+ const d=await r.json().catch(()=>({}));
+ if(!r.ok){const m=d.error?.message||'';throw Error(r.status===429?'AI rate limit reached. Wait a minute and try again.':/api key/i.test(m)?'That API key isn’t valid.':m||`AI error (HTTP ${r.status})`)}
+ return local?(d.choices?.[0]?.message?.content||d.output||''):(d.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'');
+}
+function parseAI(raw,fb='v'){
+ let s=String(raw||'').trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+ const a0=s.indexOf('['),a1=s.lastIndexOf(']');if(a0>=0&&a1>a0)s=s.slice(a0,a1+1);
+ let a;try{a=JSON.parse(s)}catch(e){throw Error('The AI sent an unreadable answer. Try again.')}
+ if(!Array.isArray(a))a=a?.questions||[];
+ return a.map(q=>{
+  const s=String(q.type||''),o=(q.options||q.o||[]).map(x=>String(x).trim()),ans=+q.answer,qt=String(q.question||q.q||'').trim();
+  if(!qt||o.length!==4||new Set(o).size!==4||!(ans>=0&&ans<4))return null;
+  const ord=sh([0,1,2,3]),ty=s.includes('漢')?'k':s.includes('文')?'g':s.includes('読')?'r':s?'v':fb;
+  return{id:crypto.randomUUID?.()||String(Date.now()+Math.random()),ty,level:q.level||'N5',type:s||TJ[ty],question:qt,passage:String(q.passage||''),options:ord.map(i=>o[i]),answer:ord.indexOf(ans),explanationJa:q.explanationJa||q.explanation_jp||'',explanationBn:q.explanationBn||q.explanation_bn||'',whyOptions:q.whyOptions||'',createdAt:Date.now(),source:'ai',answered:false,selected:null};
+ }).filter(Boolean);
+}
+
+/* ---------- generate (parallel chunks, retry once, cancellable) ---------- */
+const overlay=()=>{const el=document.createElement('div');el.className='ai-gen-overlay show';el.innerHTML=`<div class="ai-gen-card" role="status"><div class="ai-orb-wrap"><div class="ai-orb"></div><div class="ai-orb-ring"></div></div><div class="ai-gen-title">Creating questions</div><div class="ai-gen-sub" id="jxSub"></div><div class="ai-progress"><i id="jxBar"></i></div><button class="btn o" data-jai="cancel" style="min-height:40px;padding:6px 18px">Cancel</button></div>`;document.body.append(el);return el};
+async function generate(lv,ty,need){
+ need=Math.max(10,Math.min(30,Math.ceil(need/10)*10));
+ ctl=new AbortController();const sig=ctl.signal,ov=overlay(),sub=ov.querySelector('#jxSub'),bar=ov.querySelector('#jxBar');
+ let got=[],done=0,err=null;
+ const prog=()=>{sub.textContent=`${done} of ${need} ready…`;bar.style.width=Math.max(8,done/need*100)+'%'};prog();
+ try{
+  await Promise.all(Array.from({length:need/10},async()=>{
+   for(let a=0;a<2;a++){
+    try{got.push(...parseAI(await callAI(aiPrompt(lv,10,ty),sig),ty==='mix'?'v':ty));done+=10;prog();return}
+    catch(e){if(sig.aborted)throw e;err=e;await new Promise(r=>setTimeout(r,900))}
+   }}));
+  if(!got.length)throw err||Error('No valid questions came back. Try again.');
+  const seen=new Set(bank().map(q=>q.question));
+  got=got.filter((q,i)=>!seen.has(q.question)&&got.findIndex(z=>z.question===q.question)===i);
+  got.forEach(q=>q.level=lv);
+  bank().unshift(...got);S.aiRuns.unshift({level:lv,ty,count:got.length,at:Date.now(),ids:got.map(q=>q.id)});S.aiRuns=S.aiRuns.slice(0,50);save();
+  return got;
+ }catch(e){if(sig.aborted)return null;throw e}
+ finally{ov.remove();ctl=null}
+}
+
+/* ---------- session ---------- */
+const persist=()=>{S.aiSess=ses&&!ses.res?{ids:ses.ids,ans:ses.ans,i:ses.i,ms:ses.ms,fb:ses.fb,lv:ses.lv,ty:ses.ty,retry:ses.retry||0}:null;save()};
+function resumable(){const s=S.aiSess;if(!s?.ids?.length||s.ids.length!==s.ans?.length)return null;const qs=s.ids.map(id=>bank().find(q=>q.id===id));return qs.every(Boolean)&&s.i<qs.length?{...s,qs}:null}
+function pick(p,n){const f=a=>sh(a);return[...f(p.filter(q=>!q.lastAnswered)),...f(p.filter(q=>q.lastAnswered))].slice(0,n)}
+function begin(qs,extra={}){const c=opt();ses={ids:qs.map(q=>q.id),qs,ans:qs.map(()=>null),i:0,ms:0,last:Date.now(),lock:0,fb:c.fb,lv:c.level,ty:c.qtype,...extra};persist();view='test';render();scrollTo(0,0)}
+async function start(){
+ if(busy)return;const c=opt(),n=c.count,p=pool(c.level,c.qtype),err=$('#jxErr');if(err)err.textContent='';
+ let qs=pick(p,n),note='';
+ if(p.length<n){
+  if(ready()){
+   busy=true;
+   try{const fresh=await generate(c.level,c.qtype,n-p.length);if(!fresh)return;qs=[...qs,...fresh].slice(0,n)}
+   catch(e){if(!p.length){$('#jxErr').textContent=e.message;return}note='AI unavailable — using saved questions'}
+   finally{busy=false}
+  }else if(!p.length){
+   const d=$('#jxConn');d.open=true;d.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>$('#jxKey,#jxEp')?.focus({preventScroll:true}),350);
+   $('#jxErr').textContent='Add an AI key to create questions — or take the built-in mock instead.';return;
   }
-  if(all.length<n)throw Error(`AI returned only ${all.length}/${n} valid questions. Please generate again.`);
-  all=all.slice(0,n);
-  setProgress(92,'Saving offline…','<span class="step done">1. Prompt</span><span class="step done">2. Generate</span><span class="step on">3. Save</span>');
-  bank().unshift(...all);
-  S.aiRuns.unshift({level,ty,count:n,at:Date.now(),ids:all.map(q=>q.id)});
-  save();
-  setProgress(100,`✓ ${all.length} questions ready`,`<span class="step done">1. Prompt</span><span class="step done">2. Generate</span><span class="step done">3. Save</span>`);
-  await new Promise(r=>setTimeout(r,450));
-  if(overlay){overlay.classList.remove('show');overlay.hidden=true}
-  if(status)status.innerHTML=`<span style="color:var(--ok);font-weight:600">✓ ${all.length} questions saved offline</span>`;
-  showQuestionSet(all,'practice');
- }catch(e){
-  if(overlay){overlay.classList.remove('show');overlay.hidden=true}
-  if(status)status.innerHTML=`<span style="color:var(--no)">Error: ${escAI(e.message)}</span>`;
- }finally{
-  if(btn){btn.classList.remove('gen-busy');btn.disabled=false}
  }
+ begin(qs,{note});
 }
-let aiSession=null;
-function showQuestionSet(arr,mode){
- aiSession={arr,mode,index:0,score:0,answered:false};renderAIQuestion();
+function answer(i){
+ if(!ses||ses.res||ses.ans[ses.i]!=null||Date.now()<ses.lock)return;
+ const q=ses.qs[ses.i],now=Date.now();ses.ms+=Math.min(now-ses.last,12e4);ses.last=now;ses.ans[ses.i]=i;q.answered=true;q.selected=i;q.lastAnswered=now;persist();
+ if(ses.fb==='each'){rTest();$('.fb')?.scrollIntoView({block:'nearest',behavior:'smooth'})}else next();
 }
-function renderAIQuestion(){
- aiSolo();
- const p=$ai(aiPanelSelector);if(!p||!aiSession)return;const ss=aiSession,q=ss.arr[ss.index];if(!q){p.innerHTML=aiCard(`<h3>Session complete 🎉</h3><p>Score: ${ss.score}/${ss.arr.length}</p><div class="chips">${aiBtn('Review saved questions','saved')}${aiBtn('New mock','mock','btn o')}${aiCloseBtn()}</div>`);return}
- p.innerHTML=aiCard(`<div class="vh"><span class="tag">${q.level} · ${q.type}</span><span class="mute">${ss.index+1}/${ss.arr.length}</span>${aiCloseBtn()}</div><div class="bar" style="margin:12px 0"><b style="width:${(ss.index+1)/ss.arr.length*100}%"></b></div>${q.passage?`<div class="ex jp">${escAI(q.passage)}</div>`:''}<h3 class="jp" style="font-size:22px;margin:18px 0">${escAI(q.question)}</h3><div class="opts">${q.options.map((o,i)=>`<button class="opt ${ss.answered?(i===q.answer?'ok':i===q.selected?'no':''):''}" data-jans="${i}" ${ss.answered?'disabled':''}><kbd>${i+1}</kbd>${escAI(o)}</button>`).join('')}</div>${ss.answered?`<div class="fb ${ss.selected===q.answer?'g':''}" style="padding:14px;background:var(--bg);border-radius:12px"><b>${ss.selected===q.answer?'Correct!':'Incorrect'} — ${escAI(q.options[q.answer])}</b><p class="jp">${escAI(q.explanationJa||'解説なし')}</p><p>${escAI(q.explanationBn||'No Bangla explanation available')}</p>${q.whyOptions?`<small>${escAI(q.whyOptions)}</small>`:''}</div><div class="chips">${aiBtn(ss.index===ss.arr.length-1?'Finish':'Next →','next')}</div>`:''}`);
+function next(){
+ if(!ses||Date.now()<ses.lock)return;
+ if(ses.i+1>=ses.qs.length)return finish();
+ ses.i++;ses.lock=Date.now()+350;ses.last=Date.now();persist();rTest();scrollTo(0,0);
 }
-function aiAnswer(i){const ss=aiSession,q=ss.arr[ss.index];if(!q||ss.answered)return;ss.selected=i;ss.answered=true;q.answered=true;q.selected=i;q.lastAnswered=Date.now();if(i===q.answer)ss.score++;save();renderAIQuestion()}
-function aiSaved(){
- const p=$ai(aiPanelSelector),a=bank();p.innerHTML=aiCard(`<div class="vh"><h3 style="margin:0">Saved Questions · Offline</h3>${aiCloseBtn()}</div><input id="aiSearch" placeholder="Search Japanese / level / type"><div class="chips">${levelsAI.map(l=>`<button data-aifilter="${l}">${l}</button>`).join('')}<button data-aifilter="all">All</button></div><div id="aiSavedList"></div><div class="chips">${aiBtn('Create offline mock','mock','btn o')}${aiBtn('Export JSON','export','btn o')}</div>`);
- const render=(filter='all',search='')=>{const list=$ai('#aiSavedList');const items=a.filter(q=>(filter==='all'||q.level===filter)&&(`${q.question} ${q.level} ${q.type}`).toLowerCase().includes(search.toLowerCase()));list.innerHTML=items.length?items.map(q=>`<div class="rv"><span class="lvb">${q.level}</span><span style="flex:1">${escAI(q.question)}</span><button class="ib" data-jview="${q.id}">↗</button></div>`).join(''):aiNotice('No questions found.')};
- render();$ai('#aiSearch').oninput=e=>render('all',e.target.value);p.querySelectorAll('[data-aifilter]').forEach(b=>b.onclick=()=>render(b.dataset.aifilter,$ai('#aiSearch').value));
+function finish(){
+ const n=ses.qs.length,sc={};let s=0;
+ ses.qs.forEach((q,i)=>{const k=TL[tyOf(q)],ok=ses.ans[i]===q.answer;(sc[k]??=[0,0])[1]++;if(ok){sc[k][0]++;s++}});
+ ses.res={s,n,sc};
+ if(!ses.retry){(S.mocks??=[]).push({d:day(),lv:ses.lv,s,n,sc,ai:1});S.mk=(S.mk||0)+1}
+ S.aiSess=null;save();view='result';render();scrollTo(0,0);
 }
-const aiTypeOf=q=>q.ty||((q.type||'').includes('漢')?'k':(q.type||'').includes('文')?'g':(q.type||'').includes('読')?'r':'v');
-const aiChipRow=(label,opts,cur,attr)=>`<div><div class="mute" style="font-size:13px;font-weight:600;margin-bottom:6px">${label}</div><div class="chips">${opts.map(([v,l])=>`<button type="button" class="${String(v)===String(cur)?'on':''}" ${attr}="${v}">${l}</button>`).join('')}</div></div>`;
-function aiMockMatches(lv,ty){return bank().filter(q=>(lv==='all'||q.level===lv)&&(ty==='all'||aiTypeOf(q)===ty))}
-function aiMock(){
- aiSolo();
- const p=$ai(aiPanelSelector),st=getAI();
- if(!bank().length){p.innerHTML=aiCard(`<h3>Mock test</h3><p class="mute">No saved questions yet. Generate a batch first — the mock itself runs fully offline.</p>${aiBtn('✦ Generate questions','generate')}`);return}
- const lv=st.mockLevel||'all',ty=st.mockType||'all',n=st.mockCount||10;
- p.innerHTML=aiCard(`
-  <div class="vh" style="margin-bottom:14px"><h3 style="margin:0">Mock test</h3><span class="tag">${bank().length} saved</span>${aiCloseBtn()}</div>
-  ${aiChipRow('Level',[['all','All'],...levelsAI.map(l=>[l,l])],lv,'data-mlv')}
-  ${aiChipRow('Type',[['all','All'],['v','語彙 Vocab'],['k','漢字 Kanji'],['g','文法 Grammar'],['r','読解 Reading']],ty,'data-mty')}
-  ${aiChipRow('Questions',[[10,'10'],[20,'20'],[30,'30']],n,'data-mn')}
-  <p id="mockAvail" class="mute" role="status" style="margin:14px 0 0;min-height:1.4em"></p>
-  <div class="chips" style="margin-top:12px">${aiBtn('Start mock','startMock')}${aiBtn('Browse saved','saved','btn o')}</div>
- `);
- const upd=()=>{
-  const m=aiMockMatches(st.mockLevel||'all',st.mockType||'all'),want=st.mockCount||10,get=Math.min(want,m.length);
-  const el=$ai('#mockAvail',p);
-  if(!m.length){if(el)el.innerHTML='<span style="color:var(--no)">No questions match — widen the level or type.</span>'}
-  else if(el)el.textContent=`${m.length} ${m.length===1?'question':'questions'} match · ${get}-question test, randomized`;
-  const sb=$ai('[data-jai=startMock]',p);if(sb)sb.disabled=!m.length;
- };
- upd();
- p.querySelectorAll('[data-mlv]').forEach(b=>b.onclick=()=>{st.mockLevel=b.dataset.mlv;save();p.querySelectorAll('[data-mlv]').forEach(x=>x.classList.toggle('on',x===b));upd()});
- p.querySelectorAll('[data-mty]').forEach(b=>b.onclick=()=>{st.mockType=b.dataset.mty;save();p.querySelectorAll('[data-mty]').forEach(x=>x.classList.toggle('on',x===b));upd()});
- p.querySelectorAll('[data-mn]').forEach(b=>b.onclick=()=>{st.mockCount=+b.dataset.mn;save();p.querySelectorAll('[data-mn]').forEach(x=>x.classList.toggle('on',x===b));upd()});
+
+/* ---------- views ---------- */
+const chp=(arr,cur,k)=>`<div class="chips">${arr.map(([v,l])=>`<button type="button" class="${String(v)===String(cur)?'on':''}" data-jai="${k}" data-v="${v}">${l}</button>`).join('')}</div>`;
+const lvCounts=()=>LVS.map(l=>[l,bank().filter(q=>q.level===l).length]).filter(x=>x[1]).map(x=>`${x[0]} · ${x[1]}`).join('   ');
+function hint(){
+ const c=opt(),m=pool(c.level,c.qtype).length,n=c.count;
+ if(m>=n)return['ok',`${ic('ok',16)}<span>${m} saved ${c.level} questions match. Starts instantly and works offline.</span>`];
+ if(ready())return['',`<span>${m?`${m} saved · ${n-m} new will be created with AI first.`:`${n} new questions will be created with AI first.`}</span>`];
+ if(m)return['warn',`<span>Only ${m} saved match, so the test will have ${m} questions. Add an AI key below for more.</span>`];
+ return['warn','<span>No saved questions yet. Add an AI key below, or take the built-in mock.</span>'];
 }
-function aiStartMock(){
- const st=getAI(),p=$ai(aiPanelSelector);
- const m=aiMockMatches(st.mockLevel||'all',st.mockType||'all');
- if(!m.length){p.innerHTML=aiCard('<h3>Mock test</h3><p class="mute">No questions match this level/type. Try All.</p>');return}
- const a=sh(m).slice(0,Math.min(st.mockCount||10,m.length));
- showQuestionSet(a,'mock');
+function updHint(){const h=$('#jxHint');if(!h)return;const[k,html]=hint();h.className='jx-hint '+k;h.innerHTML=html}
+function updConn(){const d=$('#jxDot');if(d){d.textContent=ready()?'Connected':'Not set up';d.className='jx-dot'+(ready()?' ok':'')}updHint()}
+function connHtml(){
+ const c=cfg(),loc=c.provider==='local';
+ return `<summary><b>AI connection</b><span id="jxDot" class="jx-dot${ready()?' ok':''}">${ready()?'Connected':'Not set up'}</span></summary>
+ <div class="jx-sec" style="margin-top:14px">Provider</div>${chp([['gemini','Google Gemini'],['local','Custom / local']],c.provider,'prov')}
+ ${loc?`<label class="jx-f">Endpoint URL<input id="jxEp" placeholder="http://localhost:1234/v1/chat/completions" value="${esc(c.endpoint)}" autocomplete="off"></label>
+ <label class="jx-f">Model name<input id="jxLm" placeholder="local-model" value="${esc(c.localModel||'')}" autocomplete="off"></label>
+ <label class="jx-f">API key (optional)<input id="jxLk" type="password" value="${esc(c.localKey||'')}" autocomplete="off"></label>
+ <p class="mute"><small>OpenAI-compatible endpoint. It needs CORS enabled.</small></p>`
+ :`<label class="jx-f">Gemini API key<input id="jxKey" type="password" placeholder="Paste your key" value="${esc(c.key)}" autocomplete="off"></label>
+ <p class="mute" style="margin-top:6px"><small>Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--pri)">aistudio.google.com/apikey</a>. It stays in this browser only.</small></p>
+ <label class="jx-f">Model<input id="jxModel" placeholder="${DEF}" value="${esc(c.model||'')}" autocomplete="off"></label>`}
+ <div style="display:flex;gap:12px;align-items:center;margin-top:16px;flex-wrap:wrap"><button class="btn o" data-jai="test" style="min-height:42px;padding:8px 18px">Test connection</button><span id="jxTest" role="status" style="font-size:14px"></span></div>`;
 }
-function aiView(id){
- const q=bank().find(x=>x.id===id);if(!q)return;const p=$ai(aiPanelSelector);p.innerHTML=aiCard(`<span class="tag">${q.level} · ${q.type}</span><h3 class="jp">${escAI(q.question)}</h3>${q.passage?`<p class="jp">${escAI(q.passage)}</p>`:''}<ol>${q.options.map(o=>`<li class="jp">${escAI(o)}</li>`).join('')}</ol><p><b>Answer:</b> ${escAI(q.options[q.answer])}</p><p class="jp">${escAI(q.explanationJa)}</p><p>${escAI(q.explanationBn)}</p>${aiBtn('Back to Saved Questions','saved')}`);
+function rHome(){
+ const c=opt(),rs=resumable(),nb=bank().length,[hk,hh]=hint();
+ M.innerHTML=`<h2>JLPT AI Mock</h2><p class="mute" style="margin:-6px 0 14px"><small>Practice questions made by AI and saved on this device.</small></p>
+ ${rs?`<div class="card jx-resume jx-row"><div><b>Mock in progress</b><p class="mute"><small>${rs.ans.filter(x=>x!=null).length}/${rs.ids.length} answered · ${rs.lv}</small></p></div><div class="chips" style="margin:0"><button class="btn" data-jai="resume" style="min-height:42px;padding:8px 20px">Resume</button><button class="btn o" data-jai="discard" style="min-height:42px;padding:8px 16px">Discard</button></div></div>`:''}
+ <div class="card">
+  <div class="jx-sec">Level</div>${chp(LVS.map(l=>[l,l]),c.level,'lv')}
+  <div class="jx-sec">Question type</div>${chp(TYPES,c.qtype,'ty')}
+  <div class="jx-sec">Questions</div>${chp([10,20,30].map(x=>[x,x]),c.count,'n')}
+  <div class="jx-sec">Show answers</div>${chp([['each','After each question'],['end','At the end']],c.fb,'fb')}
+  <button class="btn jx-go" data-jai="start">Start mock test</button>
+  <div id="jxHint" class="jx-hint ${hk}" aria-live="polite">${hh}</div>
+  <p id="jxErr" class="jx-hint warn" role="alert" style="min-height:0;margin-top:6px"></p>
+  <button class="lk jx-alt" data-jai="builtin">No AI? Take the built-in mock test →</button>
+ </div>
+ <div class="card jx-row"><div><b>${nb}</b> saved question${nb==1?'':'s'}<p class="mute"><small>${nb?lvCounts():'They appear here after your first mock.'}</small></p></div>${nb?`<button class="btn o" data-jai="bank" style="min-height:42px;padding:8px 18px">Browse</button>`:''}</div>
+ <details id="jxConn" class="card jx-conn" ${ready()?'':'open'}>${connHtml()}</details>`;
 }
-// Place offline mock in Study and the saved AI bank in Library.
-const baseStudy=V.study,baseLibrary=V.library;
-V.study=()=>{baseStudy();const host=$ai('#main')||M;const box=document.createElement('section');box.className='card';box.style.marginTop='14px';box.innerHTML=`<div class="vh"><div><h3 style="margin:0">JLPT AI Mock Test</h3><p class="mute">Saved AI questions · Offline practice</p></div>${aiBtn('Start mock','studyMock')}</div><div id="aiStudyPanel"></div>`;host.append(box)};
-V.library=()=>{baseLibrary();const host=$ai('#main')||M;const box=document.createElement('section');box.className='card';box.style.marginTop='14px';box.innerHTML=`<div class="vh"><div><h3 style="margin:0">JLPT Saved Questions</h3><p class="mute">Offline question bank · ${bank().length} saved</p></div>${aiBtn('Open Question Library','librarySaved')}</div><div id="aiLibraryPanel"></div>`;host.append(box)};
-/* offline mock in the Study hub tiles */
-const baseLearn=V.learn;
-V.learn=()=>{baseLearn();const tl=$ai('.tiles',M);if(!tl)return;const b=document.createElement('button');b.className='tile';b.style.setProperty('--c','var(--cq)');b.innerHTML=`${ic('clock',26)}<b>JLPT AI Mock</b><small>${bank().length} saved questions · offline</small>`;b.onclick=()=>{location.hash='study';setTimeout(()=>{aiPanelSelector='#aiStudyPanel';aiSession=null;aiMock()},100)};tl.append(b)};
+function rTest(){
+ const q=ses.qs[ses.i];if(!q)return finish();
+ const n=ses.qs.length,a=ses.ans[ses.i],an=a!=null,ok=an&&a===q.answer,each=ses.fb==='each';
+ const score=ses.qs.reduce((t,x,i)=>t+(ses.ans[i]===x.answer),0);
+ M.innerHTML=`<div class="stat"><button class="lk" data-jai="exit">${ic('back',16)} Exit</button><span>Question ${ses.i+1}/${n}</span><span class="mute">${each?`${ic('ok',14)} ${score}`:TL[tyOf(q)]}</span></div>
+ <div class="bar"><b style="width:${(ses.i+(an?1:0))/n*100}%"></b></div>
+ <p class="mute" style="margin-top:8px"><small>${esc(q.level)} · ${TL[tyOf(q)]}${ses.note&&ses.i===0?' · '+esc(ses.note):''}</small></p>
+ ${q.passage?`<div class="card jp" style="margin:12px 0 0;line-height:1.9">${esc(q.passage)}</div>`:''}
+ <div class="card fc" style="margin-top:12px;min-height:140px"><button class="spk" data-say="${esc(q.question)}" aria-label="Listen">${ic('spk',22)}</button><div class="mid" style="padding:0 36px">${esc(q.question)}</div></div>
+ <div class="opts">${q.options.map((o,i)=>`<button class="opt ${an&&each?(i===q.answer?'ok':i===a?'no':''):''}" data-jai="ans" data-v="${i}" ${an?'disabled':''}><kbd>${i+1}</kbd><span class="jp">${esc(o)}</span></button>`).join('')}</div>
+ <div aria-live="polite">${an&&each?`<div class="card fb ${ok?'g':''}"><b>${ok?'Correct!':'Not quite — '+esc(q.options[q.answer])}</b>${q.explanationJa?`<p class="jp">${esc(q.explanationJa)}</p>`:''}${q.explanationBn?`<p>${esc(q.explanationBn)}</p>`:''}${q.whyOptions?`<p class="mute"><small>${esc(q.whyOptions)}</small></p>`:''}</div><div class="dock"><button class="btn" style="width:100%" data-jai="next">${ses.i+1<n?'Next':'See results'}</button></div>`:''}</div>`;
+}
+function rResult(){
+ const{s,n,sc}=ses.res,p=Math.round(s/n*100),rows=ses.qs.map((q,i)=>({q,i,ok:ses.ans[i]===q.answer})).sort((a,b)=>a.ok-b.ok||a.i-b.i),miss=rows.filter(r=>!r.ok).length,sec=Math.round(ses.ms/1e3);
+ M.innerHTML=`<div class="card fc"><div class="big">${s}/${n}</div><p class="ans">${p}%</p><p class="mute">${p>=80?'Excellent!':p>=60?'Good work — keep going.':'Check the mistakes below and try again.'} · ${Math.floor(sec/60)}m ${sec%60}s</p></div>
+ <div class="chips">${miss?`<button class="btn" data-jai="retry">Retry missed (${miss})</button>`:''}<button class="btn ${miss?'o':''}" data-jai="again">New mock</button></div>
+ ${Object.keys(sc).length>1?`<div class="card"><h3>By type</h3>${Object.entries(sc).map(([k,[a,b]])=>`<div class="stat"><span>${k}</span><span class="mute">${a}/${b}</span></div><div class="bar"><b style="width:${a/b*100}%"></b></div>`).join('')}</div>`:''}
+ <h3>Review</h3>${rows.map(r=>`<details class="jx-rv"><summary><span class="jx-ic ${r.ok?'g':'b'}">${ic(r.ok?'ok':'no',18)}</span><span class="t jp">${esc(r.q.question)}</span></summary>${qBody(r.q,ses.ans[r.i])}</details>`).join('')}`;
+}
+function qBody(q,pa){
+ return `<div class="jx-body">${q.passage?`<p class="jp mute">${esc(q.passage)}</p>`:''}<p class="jp" style="font-weight:600">${esc(q.question)}</p><ol>${q.options.map((o,j)=>`<li class="jp ${j===q.answer?'ok':j===pa?'no':''}">${esc(o)}</li>`).join('')}</ol>${q.explanationJa?`<p class="jp">${esc(q.explanationJa)}</p>`:''}${q.explanationBn?`<p>${esc(q.explanationBn)}</p>`:''}${q.whyOptions?`<p class="mute"><small>${esc(q.whyOptions)}</small></p>`:''}</div>`;
+}
+function rBank(){
+ M.innerHTML=`<div class="stat"><button class="lk" data-jai="home">${ic('back',16)} Back</button><span class="mute" id="jxCount"></span></div><h2>Question bank</h2>
+ <input id="jxq" type="search" placeholder="Search questions" value="${esc(bu.q)}" autocomplete="off">
+ <div class="chips" id="jxLv">${[['all','All'],...LVS.map(l=>[l,l])].map(([v,l])=>`<button type="button" class="${v===bu.lv?'on':''}" data-jai="bf" data-v="${v}">${l}</button>`).join('')}</div>
+ <div id="jxList"></div>
+ <div class="chips"><button class="btn o" data-jai="export">Export JSON</button><button class="btn o" data-jai="delall">Delete all</button></div>`;
+ fillBank();
+}
+function fillBank(){
+ const q=bu.q.toLowerCase().trim(),a=bank().filter(x=>(bu.lv==='all'||x.level===bu.lv)&&(!q||`${x.question} ${x.passage} ${x.options.join(' ')}`.toLowerCase().includes(q))),s=a.slice(0,bu.n);
+ $('#jxCount').textContent=`${a.length} of ${bank().length}`;
+ $('#jxList').innerHTML=s.length?s.map(x=>`<details class="jx-b"><summary><span class="lvb">${esc(x.level)}</span><span class="t jp">${esc(x.question)}</span></summary>${qBody(x,-1)}<div style="margin-top:10px"><button class="lk" style="color:var(--no)" data-jai="del" data-v="${esc(x.id)}">Delete</button></div></details>`).join('')+(a.length>s.length?`<p><button class="btn o" data-jai="more">Show more</button></p>`:''):`<p class="mute" style="padding:24px 0;text-align:center">No questions found.</p>`;
+}
+function render(){document.body.classList.toggle('focus',view==='test');({home:rHome,test:rTest,result:rResult,bank:rBank})[view]()}
+
+V.jlptai=()=>{view='home';ses=null;render()};
+TAB.jlptai='jlptai';
+
+/* ---------- actions ---------- */
+async function testConn(){
+ const o=$('#jxTest');o.style.color='var(--mute)';o.textContent='Testing…';
+ try{await callAI('Return exactly this JSON and nothing else: {"ok":true}');o.style.color='var(--ok)';o.textContent='✓ Connected'}
+ catch(e){o.style.color='var(--no)';o.textContent=e.message}
+}
+function setOpt(k,v,attr){const c=opt();c[k]=v;save();$$(`[data-jai="${attr}"]`).forEach(b=>b.classList.toggle('on',b.dataset.v===String(v)));updHint()}
 document.addEventListener('click',e=>{
- const b=e.target.closest('[data-jai],[data-jans],[data-jview]');if(!b)return;
- if(b.dataset.jans!==undefined){aiAnswer(+b.dataset.jans);return}
- if(b.dataset.jview){aiView(b.dataset.jview);return}
- const a=b.dataset.jai;
- if(a==='settings')aiSettingsUI();
- if(a==='closeMock')aiCloseMock();
- if(a==='closeSettings'){const DL=document.getElementById('DL');if(DL){if(typeof DL.close==='function')DL.close();else DL.removeAttribute('open')}}
- if(a==='generate')aiGenerate();if(a==='saved')aiSaved();if(a==='mock')aiMock();
- if(a==='studyMock'){aiPanelSelector='#aiStudyPanel';aiSession=null;aiMock()}
- if(a==='librarySaved'){aiPanelSelector='#aiLibraryPanel';aiSession=null;aiSaved()}
- if(a==='back')V.jlptai();
- if(a==='next'){aiSession.index++;aiSession.answered=false;renderAIQuestion()}
- if(a==='startMock')aiStartMock();
- if(a==='saveSettings'){
-  const st=getAI();
-  st.provider=$ai('#aiProvider')?.value||st.provider;
-  st.key=($ai('#aiKey')?.value||'').trim();
-  st.model=($ai('#aiModel')?.value||'').trim()||'gemini-3.5-flash-lite';
-  st.endpoint=($ai('#aiEndpoint')?.value||'').trim();
-  st.localModel=($ai('#aiLocalModel')?.value||'').trim()||'local-model';
-  save();
-  const msg=$ai('#aiStatus');
-  if(msg)msg.innerHTML='<span style="color:var(--ok);font-weight:600">✓ Settings saved</span>';
+ const b=e.target.closest('[data-jai]');if(!b||cur()!=='jlptai')return;
+ const a=b.dataset.jai,v=b.dataset.v;
+ switch(a){
+  case'lv':return setOpt('level',v,'lv');
+  case'ty':return setOpt('qtype',v,'ty');
+  case'n':return setOpt('count',+v,'n');
+  case'fb':return setOpt('fb',v,'fb');
+  case'start':return start();
+  case'builtin':if(zstart('mock',opt().level))location.hash='quiz';return;
+  case'ans':return answer(+v);
+  case'next':return next();
+  case'exit':case'home':case'again':view='home';ses=null;return render();
+  case'resume':{const r=resumable();if(!r)return rHome();ses={...r,last:Date.now(),lock:0};view='test';render();return}
+  case'discard':S.aiSess=null;save();return rHome();
+  case'retry':{const m=ses.qs.filter((q,i)=>ses.ans[i]!==q.answer);if(m.length)begin(m,{retry:1});return}
+  case'bank':view='bank';bu={q:'',lv:'all',n:60};render();return scrollTo(0,0);
+  case'bf':bu.lv=v;bu.n=60;$$('#jxLv button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));return fillBank();
+  case'more':bu.n+=60;return fillBank();
+  case'del':S.aiQuestions=bank().filter(q=>q.id!==v);save();return fillBank();
+  case'delall':if(!b._c){b._c=1;b.textContent='Tap again to delete all';return}S.aiQuestions=[];S.aiSess=null;save();return fillBank();
+  case'export':{const u=URL.createObjectURL(new Blob([JSON.stringify(bank(),null,2)],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='nihoban-jlpt-ai-questions.json';l.click();URL.revokeObjectURL(u);return}
+  case'prov':cfg().provider=v;save();$('#jxConn').innerHTML=connHtml();return updHint();
+  case'test':return testConn();
+  case'cancel':return ctl?.abort();
  }
- if(a==='test'){
-  const st=getAI();
-  const msg=$ai('#aiStatus');
-  const t=st.provider==='gemini'
-   ?(st.key?'API key set. Generate a small batch to verify.':'Add API key first.')
-   :(st.endpoint?'Endpoint set. Generate a small batch to verify.':'Add endpoint first.');
-  if(msg)msg.textContent=t;
- }
- if(a==='export'){const blob=new Blob([JSON.stringify(bank(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='nihoban-jlpt-ai-questions.json';link.click();URL.revokeObjectURL(url)}
 });
-const originalRoute=route; // add nav link after app's own header render
-aiNav();setTimeout(aiNav,500);
+document.addEventListener('input',e=>{
+ if(cur()!=='jlptai')return;const id=e.target.id;
+ if(id==='jxq'){bu.q=e.target.value;bu.n=60;return fillBank()}
+ const k={jxKey:'key',jxModel:'model',jxEp:'endpoint',jxLm:'localModel',jxLk:'localKey'}[id];
+ if(k){cfg()[k]=e.target.value.trim();save();updConn()}
+});
+document.addEventListener('keydown',e=>{
+ if(cur()!=='jlptai'||view!=='test'||!ses||ses.res||e.metaKey||e.ctrlKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+ const an=ses.ans[ses.i]!=null;
+ if(!an&&e.key.length===1&&'1234'.includes(e.key))answer(+e.key-1);
+ else if(an&&(e.key==='Enter'||e.key===' ')&&e.target.tagName!=='BUTTON'){e.preventDefault();next()}
+});
+
+/* ---------- nav link + Study-hub tile ---------- */
+const aiNav=()=>{
+ const nav=$('header nav');if(!nav||nav.querySelector('[href="#jlptai"]'))return;
+ const a=document.createElement('a');a.href='#jlptai';a.innerHTML=`${ic('star',22)}<span>JLPT AI</span>`;a.classList.toggle('on',cur()==='jlptai');nav.append(a);
+};
+aiNav();new MutationObserver(aiNav).observe($('header'),{childList:true,subtree:true});
+const baseLearn=V.learn;
+V.learn=()=>{baseLearn();$('.tiles',M)?.insertAdjacentHTML('beforeend',tile('#jlptai','star','JLPT AI Mock',`${bank().length} saved · works offline`,'--cq'))};
+})();
+</script>
+<script>
+/* Nihoban JLPT Chōkai — full listening section practice (Mondai 1–5), exam-style:
+   audio via the device TTS (Android native TTS) and each question plays ONCE.
+   Questions are generated with the app's existing AI settings (S.aiSettings, shared
+   with the JLPT AI mock) and cached offline in S.ck.bank. No hand-written bank. */
+(()=>{
+const CLV=['N5','N4','N3','N2','N1'];
+const SEC={N5:[1,2,4],N4:[1,2,4],N3:[1,2,3,4,5],N2:[1,2,3,4,5],N1:[1,2,3,4,5]};
+const CN={N5:{1:8,2:8,4:8},N4:{1:9,2:9,4:10},N3:{1:5,2:5,3:5,4:7,5:6},N2:{1:6,2:6,3:6,4:8,5:6},N1:{1:6,2:6,3:6,4:9,5:8}};
+const RATE={N5:.78,N4:.84,N3:.9,N2:.96,N1:1};
+const KJ={1:'課題理解',2:'ポイント理解',3:'概要理解',4:'即時応答',5:'統合理解'};
+const MDL={1:['Task','করণীয় বোঝা'],2:['Point','মূল বিন্দু'],3:['Summary','সারাংশ'],4:['Quick response','তাৎক্ষণিক জবাব'],5:['Integrated','সমন্বিত বোঝা']};
+const MDI={1:'book',2:'clock',3:'note',4:'ear',5:'map'},MDC={1:'--cv',2:'--ck',3:'--cg',4:'--cq',5:'--acc'};
+const INTRO={1:'まず、質問を聞いてください。それから話を聞いて、答えを一つ選んでください。',2:'まず、質問を聞いてください。それから話を聞いて、正しい答えを一つ選んでください。',3:'話を聞いてください。それから、質問と選択肢を聞いてください。',4:'発話を聞いてください。それから、それに対する返事を聞いて、返事の番号を選んでください。',5:'メモを取りながら、話を聞いてください。'};
+const NUMJP=['一','二','三','四'],CH=5;
+S.ck??={bank:[],runs:[]};
+const bank=()=>S.ck.bank,pool=(lv,md)=>bank().filter(q=>q.lv==lv&&q.md==md),qkey=q=>q.lv+q.md+'|'+(q.sit||q.q||q.mono||q.a);
+const cfg=()=>S.aiSettings??={provider:'gemini',key:'',endpoint:'',model:'gemini-3.5-flash-lite'};
+const ready=()=>{const c=cfg();return c.provider==='local'?!!c.endpoint:!!c.key};
+const uid=()=>crypto.randomUUID?.()||String(Date.now()+Math.random());
+let CK=null,PB=null,ctl=null,busy=false,view='home',bu={lv:S.lvl||'N5'};
+
+/* ---------- AI (same settings/provider as the JLPT AI mock) ---------- */
+async function callAI(p,signal){const c=cfg(),loc=c.provider==='local';
+if(loc&&!c.endpoint)throw Error(t('Add your endpoint URL first.','আগে এন্ডপয়েন্ট URL দিন।'));
+if(!loc&&!c.key)throw Error(t('Add your Gemini API key first.','আগে Gemini API key দিন।'));
+let r;
+try{r=loc?await fetch(c.endpoint,{method:'POST',signal,headers:{'Content-Type':'application/json',...(c.localKey?{Authorization:'Bearer '+c.localKey}:{})},body:JSON.stringify({model:c.localModel||'local-model',messages:[{role:'user',content:p}],temperature:.75})})
+:await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.model||'gemini-3.5-flash-lite')}:generateContent?key=${encodeURIComponent(c.key)}`,{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:p}]}],generationConfig:{temperature:.75,responseMimeType:'application/json'}})})}
+catch(e){if(e.name==='AbortError')throw e;throw Error(t('Can’t reach the AI. Check your connection.','AI-এ পৌঁছানো যাচ্ছে না। ইন্টারনেট দেখুন।'))}
+const d=await r.json().catch(()=>({}));
+if(!r.ok){const m=d.error?.message||'';throw Error(r.status===429?t('AI rate limit reached. Wait a minute.','AI রেট লিমিট শেষ। এক মিনিট অপেক্ষা করুন।'):/api key/i.test(m)?t('That API key isn’t valid.','API key টি সঠিক নয়।'):m||`AI error (HTTP ${r.status})`)}
+return loc?(d.choices?.[0]?.message?.content||d.output||''):(d.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join('')||'')}
+
+function prompt(lv,md,n){const spec={
+1:` Mondai 1 (課題理解, task-based comprehension). For each item: "sit" is the situation and question the narrator reads aloud BEFORE the dialogue, exam-style Japanese (e.g. 女の人と男の人が話しています。男の人はこの後、まず何をしなければなりませんか。); "script" is a 3-7 turn dialogue with "A:"/"B:" prefixes in which speakers mention a distractor then decide or change plans; "options" is 4 short Japanese choices; "answer" is 0-3.`,
+2:` Mondai 2 (ポイント理解, point comprehension). For each item: "q" is the focus question the narrator asks BEFORE the dialogue (e.g. 男の人はどうして電車に乗り遅れましたか。); "script" is a 3-7 turn dialogue with "A:"/"B:" prefixes that answers it while including one tempting wrong detail; "options" is 4 short Japanese choices; "answer" is 0-3.`,
+3:` Mondai 3 (概要理解, summary comprehension). For each item: "mono" is one long spoken monologue (announcement, radio item or mini-lecture, 150-350 Japanese characters); "q" is a big-picture question asked AFTER the monologue (theme, main point or what the speaker wants); "options" is 4 short distinct Japanese choices; "answer" is 0-3.`,
+4:` Mondai 4 (即時応答, quick response). For each item: "a" is one or two short sentences Speaker A says (a question, request or remark; use natural ${lv} keigo, casual contractions and implied refusals); "options" is EXACTLY THREE replies Speaker B might say; "answer" is the most appropriate reply, 0-2.`,
+5:` Mondai 5 (統合理解, integrated comprehension). For each item: "memo" is short printed material in Japanese (a flyer, notice or schedule, under 100 characters); "script" is a 10-16 turn multi-speaker discussion with "A:"/"B:"/"C:" prefixes comparing details against the memo; "q" is one question asked after the discussion; "options" is 4 Japanese choices; "answer" is 0-3.`}[md];
+return `Create ${n} original JLPT ${lv} LISTENING practice questions for ${spec} Difficulty, speech style and vocabulary must match ${lv} exactly. Vary situations, speakers and topics (seed ${Math.random().toString(36).slice(2,8)}). Each item is one JSON object: {"md":${md},"sit":"...","q":"...","mono":"...","a":"...","memo":"...","script":["A: ..."],"options":["..."],"answer":0,"explJa":"short explanation in natural Japanese","explBn":"clear explanation in Bangla"} — include ONLY the fields Mondai ${md} uses, never all of them. "script" lines are natural spoken Japanese without romaji. Return ONLY a valid JSON array, no markdown.`}
+
+function parseCk(raw){let s=String(raw||'').trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+const a0=s.indexOf('['),a1=s.lastIndexOf(']');if(a0>=0&&a1>a0)s=s.slice(a0,a1+1);
+let a;try{a=JSON.parse(s)}catch(e){throw Error(t('The AI sent an unreadable answer. Try again.','AI-এর উত্তর পড়া যায়নি। আবার চেষ্টা করুন।'))}
+if(!Array.isArray(a))a=a?.questions||[];
+return a.map(o=>{const md=+o.md;if(![1,2,3,4,5].includes(md))return null;
+const opts=(o.options||[]).map(x=>String(x).trim()),need=md==4?3:4;
+if(opts.length!==need||new Set(opts).size!==need||!(+o.answer>=0&&+o.answer<need))return null;
+const sc=(o.script||[]).map(x=>String(x).trim()).filter(Boolean);
+if(md==1&&(!String(o.sit||'').trim()||sc.length<2))return null;
+if(md==2&&(!String(o.q||'').trim()||sc.length<2))return null;
+if(md==3&&(!String(o.mono||'').trim()||!String(o.q||'').trim()))return null;
+if(md==4&&!String(o.a||'').trim())return null;
+if(md==5&&(!String(o.memo||'').trim()||sc.length<2||!String(o.q||'').trim()))return null;
+return{id:uid(),lv:'',md,sit:String(o.sit||'').trim(),q:String(o.q||'').trim(),mono:String(o.mono||'').trim(),a:String(o.a||'').trim(),memo:String(o.memo||'').trim(),script:sc,options:opts,answer:+o.answer,explJa:String(o.explJa||'').trim(),explBn:String(o.explBn||'').trim(),at:Date.now()}}).filter(Boolean)}
+
+async function gen(lv,md,need){busy=true;ctl=new AbortController();const sig=ctl.signal;
+const ov=document.createElement('div');ov.className='ai-gen-overlay show';
+ov.innerHTML=`<div class="ai-gen-card" role="status"><div class="ai-orb-wrap"><div class="ai-orb"></div><div class="ai-orb-ring"></div></div><div class="ai-gen-title">${t('Creating listening questions','শ্রবণ প্রশ্ন তৈরি হচ্ছে')}</div><div class="ai-gen-sub" id="ckSub"></div><div class="ai-progress"><i id="ckBar"></i></div><button class="btn o" data-ck="cancel" style="min-height:40px;padding:6px 18px">${t('Cancel','বাতিল')}</button></div>`;
+document.body.append(ov);const sub=ov.querySelector('#ckSub'),bar=ov.querySelector('#ckBar');
+let got=[],done=0,err=null;
+const prog=()=>{sub.textContent=`${done} / ${need}`;bar.style.width=Math.max(8,done/need*100)+'%'};prog();
+try{await Promise.all(Array.from({length:Math.ceil(need/CH)},async()=>{
+for(let a=0;a<2;a++){try{const p=parseCk(await callAI(prompt(lv,md,CH),sig));p.forEach(q=>q.lv=lv);got.push(...p);done+=CH;prog();return}
+catch(e){if(sig.aborted)throw e;err=e;await new Promise(r=>setTimeout(r,900))}}}));
+if(sig.aborted)return null;
+if(!got.length)throw err||Error(t('No valid questions came back. Try again.','কোনো বৈধ প্রশ্ন আসেনি। আবার চেষ্টা করুন।'));
+const seen=new Set(bank().map(qkey));got=got.filter(q=>{const k=qkey(q);if(seen.has(k))return false;seen.add(k);return true});
+S.ck.bank.unshift(...got);S.ck.bank=S.ck.bank.slice(0,400);save();return got}
+catch(e){if(sig.aborted)return null;throw e}
+finally{ov.remove();busy=false;ctl=null}}
+
+/* ---------- TTS playback: exam-style, audio plays ONCE ---------- */
+let VO=[];
+const jaVoices=()=>{try{VO=VO.length?VO:speechSynthesis.getVoices().filter(v=>/^ja([-_]|$)/i.test(v.lang))}catch(e){VO=[]}return VO};
+try{speechSynthesis.onvoiceschanged=()=>VO=[]}catch(e){}
+const voice=i=>{const a=jaVoices();return a.length?a[i%a.length]:null};
+function stopAll(){if(PB){clearTimeout(PB.timer);PB=null}try{speechSynthesis.cancel()}catch(e){}}
+let ACX=null;
+const chime=sec=>{try{ACX??=new(window.AudioContext||window.webkitAudioContext)();if(ACX.state=='suspended')ACX.resume();
+const t0=ACX.currentTime+.08,tone=(f,dt,d)=>{const o=ACX.createOscillator(),g=ACX.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t0+dt);g.gain.linearRampToValueAtTime(.22,t0+dt+.03);g.gain.exponentialRampToValueAtTime(.0001,t0+dt+d);o.connect(g);g.connect(ACX.destination);o.start(t0+dt);o.stop(t0+dt+d+.05)};
+if(sec){tone(1046,0,.3);tone(784,.42,.65)}else tone(880,0,.16)}catch(e){}};
+function play(steps,done){PB={steps,i:0,done};step8()}
+function step8(){if(!PB||!CK)return;const st=PB.steps[PB.i];
+if(!st){const d=PB.done;PB=null;d&&d();return}
+if(st.p){PB.timer=setTimeout(()=>{if(!PB)return;PB.i++;step8()},st.p);return}
+try{const u=new SpeechSynthesisUtterance(st.t);u.lang='ja-JP';u.rate=RATE[CK.lv]||.9;const v=voice(st.v||0);if(v)u.voice=v;
+u.onend=u.onerror=()=>{if(!PB)return;PB.i++;PB.timer=setTimeout(step8,260)};speechSynthesis.speak(u)}
+catch(e){if(PB){PB.i++;PB.timer=setTimeout(step8,60)}}}
+function stepsFor(q){const st=[];if(q.secStart)st.push({t:`問題${q.md}。${INTRO[q.md]}`},{p:600});
+if(q.md==1)st.push({t:q.sit});else if(q.md==2)st.push({t:q.q});else if(q.md==3)st.push({t:q.mono});else if(q.md==4)st.push({t:q.a});
+(q.script||[]).forEach((l,i)=>st.push({t:String(l).replace(/^[ABC][:：]\s*/,''),v:i%2}));
+if(q.md==3||q.md==5)st.push({t:q.q});
+if(q.md!=1&&q.md!=2)q.options.forEach((o,i)=>st.push({t:`${NUMJP[i]}、${o}`,v:1}));
+return st}
+/* ---------- session ---------- */
+function buildQueue(secs){const queue=[];
+secs.forEach(s=>{if(!s.items.length)return;
+if(s.items.length>=3){const ex=s.items.shift();queue.push({...ex,ex:1,secStart:1})}else queue.push({...s.items[0],ex:0,secStart:1});
+s.items.forEach(q=>queue.push({...q,ex:0,secStart:0}))});
+return queue}
+async function start(lv,md){if(busy)return;const err=$('#ckErr');if(err)err.textContent='';
+if(!('speechSynthesis'in window)){if(err)err.textContent=t('This browser has no speech synthesis.','এই ব্রাউজারে speech synthesis নেই।');return}
+const secs=(md?[md]:SEC[lv]).map(m=>({md:m,n:CN[lv][m],items:pool(lv,m).slice(0,CN[lv][m])}));
+const miss=secs.reduce((a,s)=>a+s.n-s.items.length,0);
+if(miss&&!ready()){const c=$('#ckConn');if(c){c.open=true;c.scrollIntoView({behavior:'smooth',block:'center'})}
+if(err)err.textContent=t(`${miss} questions missing — add an AI key to create them. Missing ones are skipped.`,`${miss}টি প্রশ্ন অনুপস্থিত — তৈরি করতে AI কী দিন। অনুপস্থিতগুলো বাদ যাবে।`)}
+else if(miss){for(const s of secs){const m=s.n-s.items.length;if(!m)continue;
+const got=await gen(lv,s.md,m);if(!got)return;s.items=pool(lv,s.md).slice(0,s.n)}}
+secs.forEach(s=>s.items=s.items.slice(0,s.n));
+const queue=buildQueue(secs);
+if(!queue.some(q=>!q.ex)){if(err)err.textContent=t('No listening questions available yet.','এখনও কোনো শ্রবণ প্রশ্ন নেই।');return}
+CK={lv,md:md||0,queue,i:-1,s:0,n:queue.filter(q=>!q.ex).length,recs:[],ch:null,ph:'play'};
+view='test';next()}
+function next(){if(!CK)return;CK.i++;if(CK.i>=CK.queue.length)return res();
+const q=CK.queue[CK.i];CK.ch=null;CK.ph='play';chime(q.secStart);
+play(stepsFor(q),()=>{if(!CK||CK.queue[CK.i]!==q)return;
+CK.ph=CK.ch!=null?'fb':'pick';renderCK();if(q.ex)sayEx(q)})}
+function sayEx(q){try{const u=new SpeechSynthesisUtterance(`例の正解は${NUMJP[q.answer]}番です`);u.lang='ja-JP';u.rate=RATE[CK.lv]||.9;
+u.onend=u.onerror=()=>setTimeout(()=>{if(CK&&CK.queue[CK.i]==q)next()},700);speechSynthesis.speak(u)}
+catch(e){setTimeout(()=>{if(CK&&CK.queue[CK.i]==q)next()},800)}}
+function ckAns(i){if(!CK||view!='test')return;const q=CK.queue[CK.i];if(!q||q.ex||CK.ch!=null)return;
+const printed=q.md==1||q.md==2;
+if(!(printed?(CK.ph=='play'||CK.ph=='pick'):CK.ph=='pick'))return;
+CK.ch=i;const ok=i==q.answer;CK.recs.push({q,ok});if(ok)CK.s++;
+if(printed&&CK.ph=='play')return renderCK();
+CK.ph='fb';renderCK()}
+function res(){view='res';stopAll();const n=CK.n,s=CK.s,sc={};
+CK.recs.forEach(r=>{const k='問題'+r.q.md;(sc[k]??=[0,0])[1]++;if(r.ok)sc[k][0]++});
+S.ck.runs.unshift({d:day(),lv:CK.lv,s,n,sc,md:CK.md});S.ck.runs=S.ck.runs.slice(0,20);
+S.mocks??=[];S.mocks.unshift({d:day(),lv:CK.lv,s,n,ck:1});S.mk=(S.mk||0)+1;save();
+const rows=[...CK.recs].sort((a,b)=>a.ok-b.ok),p=Math.round(s/n*100);
+M.innerHTML=`<div class="card fc"><div class="big">${s}/${n}</div><p class="ans">${p}%</p><p class="mute">${p>=80?t('Excellent!','দারুণ!'):p>=60?t('Good work — keep going.','ভালো — চালিয়ে যান।'):t('Review the mistakes below and try again.','নিচের ভুলগুলো দেখে আবার চেষ্টা করুন।')}</p></div>
+<div class="card"><h3>${t('Section breakdown','বিভাগভিত্তিক ফলাফল')}</h3>${Object.entries(sc).map(([k,[a,b]])=>`<div class="stat"><span>${k} ${KJ[k.slice(2)]}</span><span class="mute">${a}/${b}</span></div><div class="bar"><b style="width:${b?a/b*100:0}%"></b></div>`).join('')}</div>
+<div class="chips">${rows.some(r=>!r.ok)?`<button class="btn" data-ck="again">${t('Retry missed','ভুলগুলো আবার')} (${rows.filter(r=>!r.ok).length})</button>`:''}<button class="btn o" data-ck="new">${t('New test','নতুন টেস্ট')}</button><a class="btn o" href="#learn">${t('Back to Study','স্টাডিতে ফিরুন')}</a></div>
+<h3>${t('Answer review','উত্তর পর্যালোচনা')}</h3>${rows.map(r=>`<details class="jx-rv"><summary><span class="jx-ic ${r.ok?'g':'b'}">${ic(r.ok?'ok':'no',18)}</span><span class="t jp">問題${r.q.md} · ${esc(r.q.q||r.q.sit||r.q.a)}</span></summary>${fbBody(r.q)}</details>`).join('')}`}
+
+/* ---------- views ---------- */
+const conn=()=>{const c=cfg(),loc=c.provider==='local';
+return `<summary><b>${t('AI connection','AI কানেকশন')}</b><span class="jx-dot${ready()?' ok':''}">${ready()?'Connected':'Not set up'}</span></summary>
+<div class="jx-sec" style="margin-top:14px">${t('Provider','প্রোভাইডার')}</div>${chips([['gemini','Google Gemini'],['local',t('Custom / local','কাস্টম / লোকাল')]],c.provider,'data-ck="prov" data-v')}
+${loc?`<label class="jx-f">${t('Endpoint URL','এন্ডপয়েন্ট URL')}<input id="ckEp" placeholder="http://localhost:1234/v1/chat/completions" value="${esc(c.endpoint||'')}" autocomplete="off"></label>
+<label class="jx-f">${t('Model name','মডেলের নাম')}<input id="ckLm" placeholder="local-model" value="${esc(c.localModel||'')}" autocomplete="off"></label>
+<label class="jx-f">${t('API key (optional)','API key (ঐচ্ছিক)')}<input id="ckLk" type="password" value="${esc(c.localKey||'')}" autocomplete="off"></label>`
+:`<label class="jx-f">Gemini API key<input id="ckKey" type="password" placeholder="${t('Paste your key','কী পেস্ট করুন')}" value="${esc(c.key||'')}" autocomplete="off"></label>
+<label class="jx-f">${t('Model','মডেল')}<input id="ckModel" placeholder="gemini-3.5-flash-lite" value="${esc(c.model||'')}" autocomplete="off"></label>`}
+<div style="display:flex;gap:12px;align-items:center;margin-top:16px;flex-wrap:wrap"><button class="btn o" data-ck="test" style="min-height:42px;padding:8px 18px">${t('Test connection','কানেকশন পরীক্ষা')}</button><span id="ckTest" role="status" style="font-size:14px"></span></div>`};
+function rHome(){const full=SEC[bu.lv].reduce((a,m)=>a+CN[bu.lv][m],0);
+let have=0;SEC[bu.lv].forEach(m=>have+=Math.min(CN[bu.lv][m],pool(bu.lv,m).length));
+const hint=()=>have>=full?`<span class="jx-dot ok">${t('Ready','প্রস্তুত')}</span> ${t(`${have} questions saved — works offline.`,`${have}টি প্রশ্ন সংরক্ষিত — অফলাইনে চলবে।`)}`:ready()?t(`${have}/${full} saved · missing ${full-have} will be created with AI first.`,`${have}/${full}টি সংরক্ষিত · বাকি ${full-have}টি AI আগে তৈরি করবে।`):t(`Only ${have}/${full} saved — add an AI key below for the rest.`,`মাত্র ${have}/${full}টি সংরক্ষিত — বাকিগুলোর জন্য নিচে AI কী দিন।`);
+M.innerHTML=`<a class="back" href="#learn">${ic('back',18)} ${t('Study','স্টাডি')}</a><h2>${t('JLPT Listening (Chōkai)','JLPT শ্রবণ (聴解)')}</h2>
+<p class="mute" style="margin:-4px 0 12px"><small>${t('Exam style: audio plays ONCE — no repeats. Answer while it plays or right after. Uses your device Japanese TTS voice (Android native TTS).','পরীক্ষার ধরন: অডিও একবারই বাজবে — আর নয়। বাজার সময়েই বা সঙ্গে সঙ্গে উত্তর দিন। ডিভাইসের জাপানি TTS ভয়েস (অ্যান্ড্রয়েড নেটিভ TTS) ব্যবহৃত হয়।')}</small></p>
+<div class="card"><h3>${t('Level','স্তর')}</h3>${chips(CLV.map(l=>[l,l]),bu.lv,'data-ck="lv" data-v')}
+<h3>${t('Sections','সেকশন')}</h3><div class="tiles"><button class="tile" style="--c:var(--cq)" data-ck="go" data-md="0">${ic('ear',26)}<b>${t('Full test','সম্পূর্ণ টেস্ট')}</b><small>問題1–${Math.max(...SEC[bu.lv])} · ${full} ${t('questions','প্রশ্ন')}</small></button>${SEC[bu.lv].map(m=>`<button class="tile" style="--c:var(${MDC[m]})" data-ck="go" data-md="${m}">${ic(MDI[m],26)}<b>問題${m} · ${t(MDL[m][0],MDL[m][1])}</b><small>${KJ[m]} · ${CN[bu.lv][m]} ${t('questions','প্রশ্ন')}</small></button>`).join('')}</div>
+<p class="jx-hint" aria-live="polite">${hint()}</p><p id="ckErr" class="jx-hint warn" role="alert" style="min-height:0"></p></div>
+${S.ck.runs.length?`<div class="card"><h3>${t('Recent results','সাম্প্রতিক ফলাফল')}</h3>${S.ck.runs.slice(0,5).map(r=>`<div class="stat"><span>${r.d} · ${r.lv}${r.md?' · 問題'+r.md:''}</span><b>${r.s}/${r.n} (${Math.round(r.s/r.n*100)}%)</b></div>`).join('')}</div>`:''}
+<details id="ckConn" class="card jx-conn"${ready()?'':' open'}>${conn()}</details>
+<p class="mute" style="margin-top:10px"><small>${bank().length} ${t('saved listening questions','সংরক্ষিত শ্রবণ প্রশ্ন')} · ${CLV.map(l=>`${l}:${pool(l).length}`).join(' · ')}</small></p>`}
+const fbBody=q=>`<div class="jx-body">${q.memo?`<p class="jp mute">${esc(q.memo)}</p>`:''}${q.q?`<p class="jp" style="font-weight:600">${esc(q.q)}</p>`:''}${q.mono?`<p class="jp">${esc(q.mono)}</p>`:''}${q.a?`<p class="jp">${esc(q.a)}</p>`:''}${q.script?.length?`<p class="jp">${q.script.map(esc).join('<br>')}</p>`:''}<ol>${q.options.map((o,j)=>`<li class="jp ${j==q.answer?'ok':''}">${esc(o)}</li>`).join('')}</ol>${q.explJa?`<p class="jp">${esc(q.explJa)}</p>`:''}${q.explBn?`<p>${esc(q.explBn)}</p>`:''}</div>`;
+function fb(q){const r=CK.recs[CK.recs.length-1],last=CK.i+1>=CK.queue.length;
+return `<div aria-live="polite"><div class="card fb ${r&&r.ok?'g':''}"><b>${r&&r.ok?t('Correct!','সঠিক!'):t('Not quite','হয়নি')} — ${t('Answer','উত্তর')}: ${esc(q.options[q.answer])}</b>${fbBody(q)}</div><div class="dock"><button class="btn" style="width:100%" data-ck="next">${last?t('Results','ফলাফল'):t('Next question','পরের প্রশ্ন')}</button></div></div>`}
+function renderCK(){if(view!='test'||!CK)return;const q=CK.queue[CK.i];if(!q)return;
+const printed=q.md==1||q.md==2;
+const opts=printed?`<div class="opts">${q.options.map((o,i)=>`<button class="opt" data-ck="ans" data-i="${i}" ${q.ex||CK.ph=='fb'||CK.ch!=null?'disabled':''} ${CK.ch==i?'style="box-shadow:inset 0 0 0 3px var(--acc)"':''}><kbd>${i+1}</kbd><span class="jp">${esc(o)}</span></button>`).join('')}</div>`
+:CK.ph=='pick'&&!q.ex?`<div class="opts">${q.options.map((o,i)=>`<button class="opt" data-ck="ans" data-i="${i}"><kbd>${i+1}</kbd><span class="mute">${t('Heard on audio','অডিওতে শোনা')}</span></button>`).join('')}</div>`:'';
+M.innerHTML=`<div class="stat"><button class="lk" data-ck="exit">${ic('back',16)} ${t('Exit','বের হন')}</button><span>${t('Question','প্রশ্ন')} ${CK.i+1}/${CK.queue.length}</span><span class="mute">${ic('ok',14)} ${CK.s}</span></div>
+<div class="bar"><b style="width:${(CK.i+(CK.ph=='fb'?1:0))/CK.queue.length*100}%"></b></div>
+<p class="mute" style="margin-top:8px"><small>問題${q.md} · ${KJ[q.md]} · ${t(MDL[q.md][0],MDL[q.md][1])}${q.ex?` · ${t('Example','উদাহরণ')}`:''}</small></p>
+${q.md==5?`<div class="card jp" style="margin-top:12px;line-height:1.9">${esc(q.memo)}</div>`:''}
+<div class="card fc" style="margin-top:12px;min-height:140px">${CK.ph=='play'?`<span class="ai-loading">${t('Listening…','শুনছি…')}</span><span class="mute"><small>${t('Audio plays once','অডিও একবারই বাজবে')}</small></span>`:CK.ph=='pick'?(printed?`<span class="mute"><small>${t('Choose an answer','উত্তর বাছাই করুন')}</small></span>`:''):''}</div>
+${opts}${CK.ph=='fb'?fb(q):''}`}
+async function testConn(){const o=$('#ckTest');if(!o)return;o.style.color='var(--mute)';o.textContent='Testing…';
+try{await callAI('Return exactly this JSON and nothing else: {"ok":true}');o.style.color='var(--ok)';o.textContent='✓ Connected'}
+catch(e){o.style.color='var(--no)';o.textContent=e.message}}
+
+/* ---------- events + wiring ---------- */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ck]');if(!b)return;
+const a=b.dataset.ck;if(a!='nav'&&cur()!=='listening')return;e.stopPropagation();e.preventDefault();
+switch(a){
+case'nav':location.hash='listening';return;
+case'lv':bu.lv=b.dataset.v;return rHome();
+case'go':return start(bu.lv,b.dataset.md=='0'?null:+b.dataset.md);
+case'ans':return ckAns(+b.dataset.i);
+case'next':return CK&&(CK.i+1>=CK.queue.length?res():next());
+case'exit':stopAll();CK=null;view='home';return rHome();
+case'again':{const w=CK.recs.filter(r=>!r.ok).map(r=>r.q);if(!w.length)return;
+CK={lv:CK.lv,md:CK.md,queue:w.map(q=>({...q,ex:0,secStart:0})),i:-1,s:0,n:w.length,recs:[],ch:null,ph:'play'};view='test';return next()}
+case'new':return CK?start(CK.lv,CK.md||null):0;
+case'prov':cfg().provider=b.dataset.v;save();{const c=$('#ckConn');if(c)c.innerHTML=conn()}return;
+case'test':return testConn();
+case'cancel':return ctl&&ctl.abort()}});
+document.addEventListener('input',e=>{if(cur()!=='listening')return;
+const k={ckKey:'key',ckModel:'model',ckEp:'endpoint',ckLm:'localModel',ckLk:'localKey'}[e.target.id];
+if(k){cfg()[k]=e.target.value.trim();save();const d=$('#ckConn .jx-dot');
+if(d){d.textContent=ready()?'Connected':'Not set up';d.className='jx-dot'+(ready()?' ok':'')}}});
+document.addEventListener('keydown',e=>{if(cur()!=='listening'||!CK||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+if(CK.ph=='fb'&&(e.key=='Enter'||e.key==' ')){e.preventDefault();return CK.i+1>=CK.queue.length?res():next()}
+const q=CK.queue[CK.i];if(!q||q.ex||CK.ch!=null)return;
+if(!((q.md==1||q.md==2)?CK.ph=='play'||CK.ph=='pick':CK.ph=='pick'))return;
+if(/^[1-4]$/.test(e.key)){const i=+e.key-1;if(i<q.options.length)ckAns(i)}});
+V.listening=()=>{stopAll();CK=null;view='home';rHome()};
+TAB.listening='learn';
+const _route=route;route=function(){if(cur()!=='listening'){if(CK)stopAll(),CK=null;if(ctl)ctl.abort()}return _route()};
+const _learn=V.learn;V.learn=()=>{_learn();$('.tiles',M)?.insertAdjacentHTML('beforeend',`<button class="tile" style="--c:var(--ck)" data-ck="nav">${ic('ear',26)}<b>${t('JLPT Listening','JLPT শ্রবণ (聴解)')}</b><small>${t('Mondai 1–5 · audio plays once','প্রশ্ন ১–৫ · একবারই শোনা')}</small></button>`)};
 })();
 </script>
 
