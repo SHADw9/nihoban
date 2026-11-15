@@ -882,10 +882,14 @@ let CK=null,PB=null,ctl=null,busy=false,view='home',bu={lv:S.lvl||'N5'};
 async function callAI(p,signal){const c=cfg(),loc=c.provider==='local';
 if(loc&&!c.endpoint)throw Error(t('Add your endpoint URL first.','আগে এন্ডপয়েন্ট URL দিন।'));
 if(!loc&&!c.key)throw Error(t('Add your Gemini API key first.','আগে Gemini API key দিন।'));
-let r;
-try{r=loc?await fetch(c.endpoint,{method:'POST',signal,headers:{'Content-Type':'application/json',...(c.localKey?{Authorization:'Bearer '+c.localKey}:{})},body:JSON.stringify({model:c.localModel||'local-model',messages:[{role:'user',content:p}],temperature:.75})})
-:await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.model||'gemini-3.5-flash-lite')}:generateContent?key=${encodeURIComponent(c.key)}`,{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:p}]}],generationConfig:{temperature:.75,responseMimeType:'application/json'}})})}
-catch(e){if(e.name==='AbortError')throw e;throw Error(t('Can’t reach the AI. Check your connection.','AI-এ পৌঁছানো যাচ্ছে না। ইন্টারনেট দেখুন।'))}
+let r,timedOut=false;
+const ctrl=new AbortController(),to=setTimeout(()=>{timedOut=true;ctrl.abort()},90000); // a hung network must not freeze generation forever
+try{try{if(signal)signal.addEventListener('abort',()=>ctrl.abort(),{once:true})}catch(e){}
+r=loc?await fetch(c.endpoint,{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json',...(c.localKey?{Authorization:'Bearer '+c.localKey}:{})},body:JSON.stringify({model:c.localModel||'local-model',messages:[{role:'user',content:p}],temperature:.75})})
+:await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.model||'gemini-3.5-flash-lite')}:generateContent?key=${encodeURIComponent(c.key)}`,{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:p}]}],generationConfig:{temperature:.75,responseMimeType:'application/json'}})})}
+catch(e){if(!timedOut&&e.name==='AbortError')throw e;
+throw Error(timedOut?t('The AI took too long to answer. Try again.','AI-এর উত্তর আসত অনেক দেরি হলো। আবার চেষ্টা করুন।'):t('Can’t reach the AI. Check your connection.','AI-এ পৌঁছানো যাচ্ছে না। ইন্টারনেট দেখুন।'))}
+finally{clearTimeout(to)}
 const d=await r.json().catch(()=>({}));
 if(!r.ok){const m=d.error?.message||'';throw Error(r.status===429?t('AI rate limit reached. Wait a minute.','AI রেট লিমিট শেষ। এক মিনিট অপেক্ষা করুন।'):/api key/i.test(m)?t('That API key isn’t valid.','API key টি সঠিক নয়।'):m||`AI error (HTTP ${r.status})`)}
 return loc?(d.choices?.[0]?.message?.content||d.output||''):(d.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join('')||'')}
@@ -898,36 +902,79 @@ function prompt(lv,md,n){const spec={
 5:` Mondai 5 (統合理解, integrated comprehension). For each item: "memo" is short printed material in Japanese (a flyer, notice or schedule, under 100 characters); "script" is a 10-16 turn multi-speaker discussion with "A:"/"B:"/"C:" prefixes comparing details against the memo; "q" is one question asked after the discussion; "options" is 4 Japanese choices; "answer" is 0-3.`}[md];
 return `Create ${n} original JLPT ${lv} LISTENING practice questions for ${spec} Difficulty, speech style and vocabulary must match ${lv} exactly. Vary situations, speakers and topics (seed ${Math.random().toString(36).slice(2,8)}). Each item is one JSON object: {"md":${md},"sit":"...","q":"...","mono":"...","a":"...","memo":"...","script":["A: ..."],"options":["..."],"answer":0,"explJa":"short explanation in natural Japanese","explBn":"clear explanation in Bangla"} — include ONLY the fields Mondai ${md} uses, never all of them. "script" lines are natural spoken Japanese without romaji. Return ONLY a valid JSON array, no markdown.`}
 
-function parseCk(raw){let s=String(raw||'').trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
-const a0=s.indexOf('['),a1=s.lastIndexOf(']');if(a0>=0&&a1>a0)s=s.slice(a0,a1+1);
-let a;try{a=JSON.parse(s)}catch(e){throw Error(t('The AI sent an unreadable answer. Try again.','AI-এর উত্তর পড়া যায়নি। আবার চেষ্টা করুন।'))}
-if(!Array.isArray(a))a=a?.questions||[];
-return a.map(o=>{const md=+o.md;if(![1,2,3,4,5].includes(md))return null;
-const opts=(o.options||[]).map(x=>String(x).trim()),need=md==4?3:4;
-if(opts.length!==need||new Set(opts).size!==need||!(+o.answer>=0&&+o.answer<need))return null;
-const sc=(o.script||[]).map(x=>String(x).trim()).filter(Boolean);
-if(md==1&&(!String(o.sit||'').trim()||sc.length<2))return null;
-if(md==2&&(!String(o.q||'').trim()||sc.length<2))return null;
-if(md==3&&(!String(o.mono||'').trim()||!String(o.q||'').trim()))return null;
-if(md==4&&!String(o.a||'').trim())return null;
-if(md==5&&(!String(o.memo||'').trim()||sc.length<2||!String(o.q||'').trim()))return null;
-return{id:uid(),lv:'',md,sit:String(o.sit||'').trim(),q:String(o.q||'').trim(),mono:String(o.mono||'').trim(),a:String(o.a||'').trim(),memo:String(o.memo||'').trim(),script:sc,options:opts,answer:+o.answer,explJa:String(o.explJa||'').trim(),explBn:String(o.explBn||'').trim(),at:Date.now()}}).filter(Boolean)}
+function parseCk(raw,dmd){let s=String(raw||'').trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+let a;try{a=JSON.parse(s)}
+catch(e1){ /* prose/fences around the array: fall back to bracket slicing */
+const a0=s.indexOf('['),a1=s.lastIndexOf(']');
+if(a0<0||a1<=a0)throw Error(t('The AI sent an unreadable answer. Try again.','AI-এর উত্তর পড়া যায়নি। আবার চেষ্টা করুন।'));
+try{a=JSON.parse(s.slice(a0,a1+1))}catch(e2){throw Error(t('The AI sent an unreadable answer. Try again.','AI-এর উত্তর পড়া যায়নি। আবার চেষ্টা করুন।'))}}
+if(!Array.isArray(a)){const v=Object.values(a||{}).find(x=>Array.isArray(x)&&x.length&&typeof x[0]==='object');
+a=v||(a&&typeof a==='object'&&(a.options||a.choices||a.answers||a.sit||a.q||a.mono||a.a||a.memo||+a.md)?[a]:[])}
+if(a.some(Array.isArray))a=a.flat();
+/* models return messy shapes: no "md" field (the prompt already names the
+   Mondai), 3 options instead of 4, options under another key or as a string,
+   "A." labels, letter answers, and dialogue merged into the narration fields.
+   Normalize instead of rejecting — strictness here silently threw away every
+   generated question. */
+const LAB=/^(?:[\(（]?([1-9１-９一二三四]|[A-DＡ-Ｄ])[\)）]\s*|[\(（]?([1-9１-９一二三四]|[A-DＡ-Ｄ])[\.．、:：。]\s*)/;
+const norm=x=>{const v=String(x??'').replace(/\s+/g,' ').trim();const m=v.match(LAB);return(m?v.slice(m[0].length):v).trim()};
+const numOf=x=>{const v=String(x??'').trim();const L={A:0,'Ａ':0,B:1,'Ｂ':1,C:2,'Ｃ':2,D:3,'Ｄ':3}[v.toUpperCase()];if(L!=null)return L;
+const d=parseInt(v,10);return isNaN(d)?null:d};
+const DIAL=/^[A-DＡ-Ｄ][:：]/;
+const diaParts=f=>String(f||'').split(/(?=[A-DＡ-Ｄ][:：])/).map(p=>p.trim()).filter(Boolean);
+return a.map(o=>{if(typeof o==='string'){try{o=JSON.parse(o)}catch(e){return null}}
+if(!o||typeof o!=='object')return null;
+let md=+o.md;if(![1,2,3,4,5].includes(md))md=+dmd;if(![1,2,3,4,5].includes(md))return null;
+let sit=String(o.sit||'').trim(),q=String(o.q||'').trim(),mono=String(o.mono||'').trim(),aOne=String(o.a||'').trim(),memo=String(o.memo||'').trim();
+let rawSc=o.script??o.dialogue??[];
+if(typeof rawSc==='object'&&!Array.isArray(rawSc))rawSc=Object.values(rawSc); /* {A:..,B:..} */
+if(typeof rawSc==='string')rawSc=rawSc.split(/\n+/);
+let sc=rawSc.map(x=>String(x).trim()).filter(Boolean);
+/* dialogue hiding inside sit/q/mono: lift it out into script lines */
+if(sc.length<2){const lifted=[];const clean=f=>diaParts(f).filter(p=>{if(DIAL.test(p)){lifted.push(p.replace(/\s+/g,' '));return false}return true}).join(' ');
+const s2=clean(sit),q2=clean(q),m2=clean(mono);if(lifted.length>=2){sc=lifted;sit=s2;q=q2;mono=m2}}
+let raw=o.options??o.choices??o.answers??[];
+if(typeof raw==='string')raw=raw.split(/\n+/);
+let opts=[...new Set(raw.map(norm).filter(Boolean))];
+if(opts.length===1)opts=[...new Set(opts[0].split(/[;；、·]/).map(norm).filter(Boolean))]; /* one string, separators */
+if(opts.length<3)return null; /* can't make a real question with fewer */
+let ans=numOf(o.answer);
+/* letter answer ("B") or full-text answer: locate it among the options */
+if(ans==null||ans<0||ans>=opts.length){const i=opts.indexOf(String(o.answer??'').replace(/\s+/g,' ').trim());ans=i>=0?i:null}
+if(ans==null)return null;
+const ansTxt=opts[ans],cap=md==4?3:4;
+if(opts.length>cap){opts=opts.slice(0,cap);if(ans>=cap)opts[cap-1]=ansTxt} /* keep the answer's option when trimming */
+ans=opts.indexOf(ansTxt);if(ans<0)return null;
+/* randomize option order like the real test / the mock, keep answer in sync */
+opts=sh(opts);ans=opts.indexOf(ansTxt);
+/* narration fallbacks: models sometimes put the field's content elsewhere */
+if(md==2&&!q.trim()&&sit.trim())q=sit;
+if(md==3&&!mono.trim()&&sit.trim())mono=sit;
+if(md==4&&!aOne.trim()&&(q.trim()||sit.trim()))aOne=q.trim()||sit.trim();
+/* enough spoken material: a script, or the dialogue living in the narration */
+const spoken=(sit+' '+q+' '+mono+' '+aOne).split(/[。？！?!\n]/).filter(x=>x.trim()).length;
+if((md==1||md==2||md==5)&&sc.length<2&&spoken<2)return null;
+if(md==1&&!(sit.trim()||q.trim()))return null;
+if(md==2&&!q.trim())return null;
+if(md==3&&(!mono.trim()||!q.trim()))return null;
+if(md==4&&!aOne.trim())return null;
+if(md==5&&(!memo.trim()||!q.trim()))return null;
+return{id:uid(),lv:'',md,sit,q,mono,a:aOne,memo,script:sc,options:opts,answer:ans,explJa:String(o.explJa||'').trim(),explBn:String(o.explBn||'').trim(),at:Date.now()}}).filter(Boolean)}
 
-async function gen(lv,md,need){busy=true;ctl=new AbortController();const sig=ctl.signal;
-const ov=document.createElement('div');ov.className='ai-gen-overlay show';
-ov.innerHTML=`<div class="ai-gen-card" role="status"><div class="ai-orb-wrap"><div class="ai-orb"></div><div class="ai-orb-ring"></div></div><div class="ai-gen-title">${t('Creating listening questions','শ্রবণ প্রশ্ন তৈরি হচ্ছে')}</div><div class="ai-gen-sub" id="ckSub"></div><div class="ai-progress"><i id="ckBar"></i></div><button class="btn o" data-ck="cancel" style="min-height:40px;padding:6px 18px">${t('Cancel','বাতিল')}</button></div>`;
-document.body.append(ov);const sub=ov.querySelector('#ckSub'),bar=ov.querySelector('#ckBar');
+/* fetch one section's missing questions; the caller owns overlay/busy/ctl */
+async function gen(lv,md,need,sig,prog){
 let got=[],done=0,err=null;
-const prog=()=>{sub.textContent=`${done} / ${need}`;bar.style.width=Math.max(8,done/need*100)+'%'};prog();
 try{await Promise.all(Array.from({length:Math.ceil(need/CH)},async()=>{
-for(let a=0;a<2;a++){try{const p=parseCk(await callAI(prompt(lv,md,CH),sig));p.forEach(q=>q.lv=lv);got.push(...p);done+=CH;prog();return}
-catch(e){if(sig.aborted)throw e;err=e;await new Promise(r=>setTimeout(r,900))}}}));
+for(let a=0;a<3;a++){try{const rawTxt=await callAI(prompt(lv,md,CH),sig);
+const p=parseCk(rawTxt,md);
+if(!p.length)throw Error(t('The AI answer had no usable questions. Try again.','AI-এর উত্তরে ব্যবহারযোগ্য প্রশ্ন নেই। আবার চেষ্টা করুন।')+' ['+String(rawTxt).replace(/\s+/g,' ').slice(0,150)+']');
+p.forEach(q=>q.lv=lv);got.push(...p);done+=CH;prog(CH);return}
+catch(e){if(sig.aborted)throw e;err=e;await new Promise(r=>setTimeout(r,/429|rate limit/i.test(String(e&&e.message))?6000:1200))}}}));
 if(sig.aborted)return null;
 if(!got.length)throw err||Error(t('No valid questions came back. Try again.','কোনো বৈধ প্রশ্ন আসেনি। আবার চেষ্টা করুন।'));
 const seen=new Set(bank().map(qkey));got=got.filter(q=>{const k=qkey(q);if(seen.has(k))return false;seen.add(k);return true});
 S.ck.bank.unshift(...got);S.ck.bank=S.ck.bank.slice(0,400);save();return got}
-catch(e){if(sig.aborted)return null;throw e}
-finally{ov.remove();busy=false;ctl=null}}
+catch(e){if(sig.aborted)return null;throw e}}
 
 /* ---------- TTS playback: exam-style, audio plays ONCE ---------- */
 let VO=[];
@@ -988,29 +1035,72 @@ s.items.forEach(q=>queue.push({...q,ex:0,secStart:0}))});
 return queue}
 async function start(lv,md){if(busy)return;const err=$('#ckErr');if(err)err.textContent='';
 if(!('speechSynthesis'in window)){if(err)err.textContent=t('This browser has no speech synthesis.','এই ব্রাউজারে speech synthesis নেই।');return}
-const secs=(md?[md]:SEC[lv]).map(m=>({md:m,n:CN[lv][m],items:pool(lv,m).slice(0,CN[lv][m])}));
+const secs=(md?[md]:SEC[lv]).map(m=>({md:m,n:CN[lv][m],items:sh(pool(lv,m)).slice(0,CN[lv][m])}));
 const miss=secs.reduce((a,s)=>a+s.n-s.items.length,0);
+let note='',canceled=false;
 if(miss&&!ready()){const c=$('#ckConn');if(c){c.open=true;c.scrollIntoView({behavior:'smooth',block:'center'})}
-if(err)err.textContent=t(`${miss} questions missing — add an AI key to create them. Missing ones are skipped.`,`${miss}টি প্রশ্ন অনুপস্থিত — তৈরি করতে AI কী দিন। অনুপস্থিতগুলো বাদ যাবে।`)}
-else if(miss){for(const s of secs){const m=s.n-s.items.length;if(!m)continue;
-const got=await gen(lv,s.md,m);if(!got)return;s.items=pool(lv,s.md).slice(0,s.n)}}
+note=t(`${miss} questions missing — add an AI key to create them.`,`${miss}টি প্রশ্ন অনুপস্থিত — তৈরি করতে AI কী দিন।`)}
+else if(miss){ /* like the AI mock: saved questions start instantly, AI only tops the gaps,
+   all sections in parallel; on AI failure open with what the bank has */
+busy=true;ctl=new AbortController();const sig=ctl.signal;
+const jobs=secs.filter(s=>s.n>s.items.length),need=jobs.reduce((a,s)=>a+s.n-s.items.length,0);
+const ov=document.createElement('div');ov.className='ai-gen-overlay show';
+ov.innerHTML=`<div class="ai-gen-card" role="status"><div class="ai-orb-wrap"><div class="ai-orb"></div><div class="ai-orb-ring"></div></div><div class="ai-gen-title">${t('Creating listening questions','শ্রবণ প্রশ্ন তৈরি হচ্ছে')}</div><div class="ai-gen-sub" id="ckSub"></div><div class="ai-progress"><i id="ckBar"></i></div><button class="btn o" data-ck="cancel" style="min-height:40px;padding:6px 18px">${t('Cancel','বাতিল')}</button></div>`;
+document.body.append(ov);const sub=ov.querySelector('#ckSub'),bar=ov.querySelector('#ckBar');
+let done=0;const prog=()=>{sub.textContent=`${done} / ${need}`;bar.style.width=Math.max(8,done/need*100)+'%'};prog();
+try{for(let i=0;i<jobs.length;i+=2){ // max 2 sections at once: parallel bursts trip Gemini rate limits
+await Promise.all(jobs.slice(i,i+2).map(async s=>{
+const m=s.n-s.items.length;
+const got=await gen(lv,s.md,m,sig,d=>{done+=d;prog()});
+if(got)s.items=sh(pool(lv,s.md)).slice(0,s.n)}))}}
+catch(e){if(sig.aborted)canceled=true;else note=t('AI unavailable — using saved questions.','AI পাওয়া যাচ্ছে না — সংরক্ষিত প্রশ্ন ব্যবহার হচ্ছে।')+' '+e.message}
+finally{ov.remove();busy=false;ctl=null}
+if(canceled)return}
 secs.forEach(s=>s.items=s.items.slice(0,s.n));
 const queue=buildQueue(secs);
-if(!queue.some(q=>!q.ex)){if(err)err.textContent=t('No listening questions available yet.','এখনও কোনো শ্রবণ প্রশ্ন নেই।');return}
-CK={lv,md:md||0,queue,i:-1,s:0,n:queue.filter(q=>!q.ex).length,recs:[],ch:null,ph:'play'};
+if(!queue.some(q=>!q.ex)){if(err)err.textContent=t('No listening questions available yet.','এখনও কোনো শ্রবণ প্রশ্ন নেই।')+(note?' · '+note:'');return}
+CK={lv,md:md||0,queue,i:-1,s:0,n:queue.filter(q=>!q.ex).length,recs:[],ch:null,ph:'play',note};
 view='test';next()}
+
+/* manual "Generate new questions": fills the current level's missing questions,
+   or (when everything is full) adds one fresh batch per section for variety */
+async function topup(){if(busy)return;const err=$('#ckErr');if(err)err.textContent='';
+if(!ready()){if(err)err.textContent=t('Add an AI key first.','আগে AI কী দিন।');return}
+const jobs=SEC[bu.lv].map(m=>({md:m,m:Math.max(0,CN[bu.lv][m]-pool(bu.lv,m).length)}));
+let total=jobs.reduce((a,s)=>a+s.m,0);
+if(!total){jobs.forEach(s=>s.m=CH);total=jobs.length*CH}
+busy=true;ctl=new AbortController();const sig=ctl.signal;
+const before=bank().length;
+const ov=document.createElement('div');ov.className='ai-gen-overlay show';
+ov.innerHTML=`<div class="ai-gen-card" role="status"><div class="ai-orb-wrap"><div class="ai-orb"></div><div class="ai-orb-ring"></div></div><div class="ai-gen-title">${t('Creating listening questions','শ্রবণ প্রশ্ন তৈরি হচ্ছে')}</div><div class="ai-gen-sub" id="ckSub"></div><div class="ai-progress"><i id="ckBar"></i></div><button class="btn o" data-ck="cancel" style="min-height:40px;padding:6px 18px">${t('Cancel','বাতিল')}</button></div>`;
+document.body.append(ov);const sub=ov.querySelector('#ckSub'),bar=ov.querySelector('#ckBar');
+let done=0;const prog=()=>{sub.textContent=`${done} / ${total}`;bar.style.width=Math.max(8,Math.min(100,done/total*100))+'%'};prog();
+let canceled=false,fail='';
+try{for(let i=0;i<jobs.length;i+=2){ /* max 2 sections at once */
+await Promise.all(jobs.slice(i,i+2).map(async s=>{
+if(!s.m)return;
+await gen(bu.lv,s.md,s.m,sig,d=>{done+=d;prog()})}))}}
+catch(e){if(sig.aborted)canceled=true;else fail=e.message}
+finally{ov.remove();busy=false;ctl=null}
+rHome();
+if(canceled)return;
+const added=bank().length-before;
+const e2=$('#ckErr'); /* rHome() replaced the old element */
+if(!added&&fail&&e2)e2.textContent=t('No new questions — AI unavailable.','নতুন প্রশ্ন হয়নি — AI পাওয়া যাচ্ছে না।')+' '+fail}
+const audioDone=q=>()=>{if(!CK||CK.queue[CK.i]!==q)return;
+CK.ph=CK.ch!=null?'fb':'pick';renderCK();if(q.ex)sayEx(q)};
 function next(){if(!CK)return;CK.i++;if(CK.i>=CK.queue.length)return res();
-const q=CK.queue[CK.i];CK.ch=null;CK.ph='play';chime(q.secStart);
-play(stepsFor(q),()=>{if(!CK||CK.queue[CK.i]!==q)return;
-CK.ph=CK.ch!=null?'fb':'pick';renderCK();if(q.ex)sayEx(q)})}
+const q=CK.queue[CK.i];CK.ch=null;CK.ph='play';chime(q.secStart);renderCK();play(stepsFor(q),audioDone(q))}
 function sayEx(q){try{const u=new SpeechSynthesisUtterance(`例の正解は${NUMJP[q.answer]}番です`);u.lang='ja-JP';u.rate=RATE[CK.lv]||.9;
-u.onend=u.onerror=()=>setTimeout(()=>{if(CK&&CK.queue[CK.i]==q)next()},700);speechSynthesis.speak(u)}
+let g=false;const go=()=>{if(g||!CK||CK.queue[CK.i]!==q)return;g=true;setTimeout(()=>{if(CK&&CK.queue[CK.i]==q)next()},700)};
+u.onend=u.onerror=go;
+/* same stall protection as question audio: never wait forever for onend */
+setTimeout(go,10000);speechSynthesis.speak(u)}
 catch(e){setTimeout(()=>{if(CK&&CK.queue[CK.i]==q)next()},800)}}
 function ckAns(i){if(!CK||view!='test')return;const q=CK.queue[CK.i];if(!q||q.ex||CK.ch!=null)return;
-const printed=q.md==1||q.md==2;
-if(!(printed?(CK.ph=='play'||CK.ph=='pick'):CK.ph=='pick'))return;
+if(!(CK.ph=='play'||CK.ph=='pick'))return;
 CK.ch=i;const ok=i==q.answer;CK.recs.push({q,ok});if(ok)CK.s++;
-if(printed&&CK.ph=='play')return renderCK();
+if(CK.ph=='play')return renderCK();
 CK.ph='fb';renderCK()}
 function res(){view='res';stopAll();const n=CK.n,s=CK.s,sc={};
 CK.recs.forEach(r=>{const k='問題'+r.q.md;(sc[k]??=[0,0])[1]++;if(r.ok)sc[k][0]++});
@@ -1036,25 +1126,27 @@ function rHome(){const full=SEC[bu.lv].reduce((a,m)=>a+CN[bu.lv][m],0);
 let have=0;SEC[bu.lv].forEach(m=>have+=Math.min(CN[bu.lv][m],pool(bu.lv,m).length));
 const hint=()=>have>=full?`<span class="jx-dot ok">${t('Ready','প্রস্তুত')}</span> ${t(`${have} questions saved — works offline.`,`${have}টি প্রশ্ন সংরক্ষিত — অফলাইনে চলবে।`)}`:ready()?t(`${have}/${full} saved · missing ${full-have} will be created with AI first.`,`${have}/${full}টি সংরক্ষিত · বাকি ${full-have}টি AI আগে তৈরি করবে।`):t(`Only ${have}/${full} saved — add an AI key below for the rest.`,`মাত্র ${have}/${full}টি সংরক্ষিত — বাকিগুলোর জন্য নিচে AI কী দিন।`);
 M.innerHTML=`<a class="back" href="#learn">${ic('back',18)} ${t('Study','স্টাডি')}</a><h2>${t('JLPT Listening (Chōkai)','JLPT শ্রবণ (聴解)')}</h2>
-<p class="mute" style="margin:-4px 0 12px"><small>${t('Exam style: audio plays ONCE — no repeats. Answer while it plays or right after. Uses your device Japanese TTS voice (Android native TTS).','পরীক্ষার ধরন: অডিও একবারই বাজবে — আর নয়। বাজার সময়েই বা সঙ্গে সঙ্গে উত্তর দিন। ডিভাইসের জাপানি TTS ভয়েস (অ্যান্ড্রয়েড নেটিভ TTS) ব্যবহৃত হয়।')}</small></p>
+<p class="mute" style="margin:-4px 0 12px"><small>${t('Exam style: audio plays once, like the real test. Tap the speaker to hear a question again. Uses your device Japanese TTS voice (Android native TTS).','পরীক্ষার ধরন: অডিও একবারই বাজবে। আবার শুনতে স্পিকারে চাপ দিন। ডিভাইসের জাপানি TTS ভয়েস (অ্যান্ড্রয়েড নেটিভ TTS) ব্যবহৃত হয়।')}</small></p>
 <div class="card"><h3>${t('Level','স্তর')}</h3>${chips(CLV.map(l=>[l,l]),bu.lv,'data-ck="lv" data-v')}
 <h3>${t('Sections','সেকশন')}</h3><div class="tiles"><button class="tile" style="--c:var(--cq)" data-ck="go" data-md="0">${ic('ear',26)}<b>${t('Full test','সম্পূর্ণ টেস্ট')}</b><small>問題1–${Math.max(...SEC[bu.lv])} · ${full} ${t('questions','প্রশ্ন')}</small></button>${SEC[bu.lv].map(m=>`<button class="tile" style="--c:var(${MDC[m]})" data-ck="go" data-md="${m}">${ic(MDI[m],26)}<b>問題${m} · ${t(MDL[m][0],MDL[m][1])}</b><small>${KJ[m]} · ${CN[bu.lv][m]} ${t('questions','প্রশ্ন')}</small></button>`).join('')}</div>
-<p class="jx-hint" aria-live="polite">${hint()}</p><p id="ckErr" class="jx-hint warn" role="alert" style="min-height:0"></p></div>
+<p class="jx-hint" aria-live="polite">${hint()}</p><p id="ckErr" class="jx-hint warn" role="alert" style="min-height:0"></p>
+<button class="btn o" data-ck="gen" style="width:100%;min-height:44px;margin-top:12px">${ic('ear',18)} ${t('Generate new questions','নতুন প্রশ্ন তৈরি করুন')}</button></div>
 ${S.ck.runs.length?`<div class="card"><h3>${t('Recent results','সাম্প্রতিক ফলাফল')}</h3>${S.ck.runs.slice(0,5).map(r=>`<div class="stat"><span>${r.d} · ${r.lv}${r.md?' · 問題'+r.md:''}</span><b>${r.s}/${r.n} (${Math.round(r.s/r.n*100)}%)</b></div>`).join('')}</div>`:''}
 <details id="ckConn" class="card jx-conn"${ready()?'':' open'}>${conn()}</details>
 <p class="mute" style="margin-top:10px"><small>${bank().length} ${t('saved listening questions','সংরক্ষিত শ্রবণ প্রশ্ন')} · ${CLV.map(l=>`${l}:${pool(l).length}`).join(' · ')}</small></p>`}
-const fbBody=q=>`<div class="jx-body">${q.memo?`<p class="jp mute">${esc(q.memo)}</p>`:''}${q.q?`<p class="jp" style="font-weight:600">${esc(q.q)}</p>`:''}${q.mono?`<p class="jp">${esc(q.mono)}</p>`:''}${q.a?`<p class="jp">${esc(q.a)}</p>`:''}${q.script?.length?`<p class="jp">${q.script.map(esc).join('<br>')}</p>`:''}<ol>${q.options.map((o,j)=>`<li class="jp ${j==q.answer?'ok':''}">${esc(o)}</li>`).join('')}</ol>${q.explJa?`<p class="jp">${esc(q.explJa)}</p>`:''}${q.explBn?`<p>${esc(q.explBn)}</p>`:''}</div>`;
+const fbBody=(q,ch)=>`<div class="jx-body">${q.memo?`<p class="jp mute">${esc(q.memo)}</p>`:''}${q.q?`<p class="jp" style="font-weight:600">${esc(q.q)}</p>`:''}${q.mono?`<p class="jp">${esc(q.mono)}</p>`:''}${q.a?`<p class="jp">${esc(q.a)}</p>`:''}${q.script?.length?`<p class="jp">${q.script.map(esc).join('<br>')}</p>`:''}<ol>${q.options.map((o,j)=>`<li class="jp ${j==q.answer?'ok':j==ch?'no':''}">${esc(o)}</li>`).join('')}</ol>${q.explJa?`<p class="jp">${esc(q.explJa)}</p>`:''}${q.explBn?`<p>${esc(q.explBn)}</p>`:''}</div>`;
 function fb(q){const r=CK.recs[CK.recs.length-1],last=CK.i+1>=CK.queue.length;
-return `<div aria-live="polite"><div class="card fb ${r&&r.ok?'g':''}"><b>${r&&r.ok?t('Correct!','সঠিক!'):t('Not quite','হয়নি')} — ${t('Answer','উত্তর')}: ${esc(q.options[q.answer])}</b>${fbBody(q)}</div><div class="dock"><button class="btn" style="width:100%" data-ck="next">${last?t('Results','ফলাফল'):t('Next question','পরের প্রশ্ন')}</button></div></div>`}
+return `<div aria-live="polite"><div class="card fb ${r&&r.ok?'g':''}"><b>${r&&r.ok?t('Correct!','সঠিক!'):t('Not quite','হয়নি')} — ${t('Answer','উত্তর')}: ${esc(q.options[q.answer])}</b>${fbBody(q,CK.ch)}</div><div class="dock"><button class="btn" style="width:100%" data-ck="next">${last?t('Results','ফলাফল'):t('Next question','পরের প্রশ্ন')}</button></div></div>`}
 function renderCK(){if(view!='test'||!CK)return;const q=CK.queue[CK.i];if(!q)return;
-const printed=q.md==1||q.md==2;
-const opts=printed?`<div class="opts">${q.options.map((o,i)=>`<button class="opt" data-ck="ans" data-i="${i}" ${q.ex||CK.ph=='fb'||CK.ch!=null?'disabled':''} ${CK.ch==i?'style="box-shadow:inset 0 0 0 3px var(--acc)"':''}><kbd>${i+1}</kbd><span class="jp">${esc(o)}</span></button>`).join('')}</div>`
-:CK.ph=='pick'&&!q.ex?`<div class="opts">${q.options.map((o,i)=>`<button class="opt" data-ck="ans" data-i="${i}"><kbd>${i+1}</kbd><span class="mute">${t('Heard on audio','অডিওতে শোনা')}</span></button>`).join('')}</div>`:'';
+const narr=q.q||q.sit||q.mono||q.a||'';
+const opts=`<div class="opts">${q.options.map((o,i)=>`<button class="opt ${CK.ph=='fb'&&CK.ch!=null?(i==q.answer?'ok':i==CK.ch?'no':''):''}" data-ck="ans" data-i="${i}" ${q.ex||CK.ph=='fb'||CK.ch!=null?'disabled':''} ${CK.ch==i?'style="box-shadow:inset 0 0 0 3px var(--acc)"':''}><kbd>${i+1}</kbd><span class="jp">${esc(o)}</span></button>`).join('')}</div>`;
 M.innerHTML=`<div class="stat"><button class="lk" data-ck="exit">${ic('back',16)} ${t('Exit','বের হন')}</button><span>${t('Question','প্রশ্ন')} ${CK.i+1}/${CK.queue.length}</span><span class="mute">${ic('ok',14)} ${CK.s}</span></div>
 <div class="bar"><b style="width:${(CK.i+(CK.ph=='fb'?1:0))/CK.queue.length*100}%"></b></div>
 <p class="mute" style="margin-top:8px"><small>問題${q.md} · ${KJ[q.md]} · ${t(MDL[q.md][0],MDL[q.md][1])}${q.ex?` · ${t('Example','উদাহরণ')}`:''}</small></p>
+${CK.note&&CK.i==0?`<p class="jx-hint warn" style="margin:8px 0 0">${esc(CK.note)}</p>`:''}
 ${q.md==5?`<div class="card jp" style="margin-top:12px;line-height:1.9">${esc(q.memo)}</div>`:''}
-<div class="card fc" style="margin-top:12px;min-height:140px">${CK.ph=='play'?`<span class="ai-loading">${t('Listening…','শুনছি…')}</span><span class="mute"><small>${t('Audio plays once','অডিও একবারই বাজবে')}</small></span>`:CK.ph=='pick'?(printed?`<span class="mute"><small>${t('Choose an answer','উত্তর বাছাই করুন')}</small></span>`:''):''}</div>
+<div class="card fc" style="margin-top:12px;min-height:140px"><button class="spk" data-ck="sayq" aria-label="${t('Listen again','আবার শোনো')}">${ic('spk',22)}</button><div class="mid" style="padding:0 36px">${esc(narr)}</div></div>
+<p class="mute" style="margin:8px 0 0;text-align:center"><small>${CK.ph=='play'?t('Audio plays once — answer while it plays','অডিও একবারই বাজবে — বাজার সময়েই উত্তর দিন'):t('Choose an answer','উত্তর বাছাই করুন')}</small></p>
 ${opts}${CK.ph=='fb'?fb(q):''}`}
 async function testConn(){const o=$('#ckTest');if(!o)return;o.style.color='var(--mute)';o.textContent='Testing…';
 try{await callAI('Return exactly this JSON and nothing else: {"ok":true}');o.style.color='var(--ok)';o.textContent='✓ Connected'}
@@ -1067,7 +1159,9 @@ switch(a){
 case'nav':location.hash='listening';return;
 case'lv':bu.lv=b.dataset.v;return rHome();
 case'go':return start(bu.lv,b.dataset.md=='0'?null:+b.dataset.md);
+case'gen':return topup();
 case'ans':return ckAns(+b.dataset.i);
+case'sayq':{const q=CK&&CK.queue[CK.i];if(!q)return;play(stepsFor(q),audioDone(q));return}
 case'next':return CK&&(CK.i+1>=CK.queue.length?res():next());
 case'exit':stopAll();CK=null;view='home';return rHome();
 case'again':{const w=CK.recs.filter(r=>!r.ok).map(r=>r.q);if(!w.length)return;
@@ -1083,7 +1177,7 @@ if(d){d.textContent=ready()?'Connected':'Not set up';d.className='jx-dot'+(ready
 document.addEventListener('keydown',e=>{if(cur()!=='listening'||!CK||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
 if(CK.ph=='fb'&&(e.key=='Enter'||e.key==' ')){e.preventDefault();return CK.i+1>=CK.queue.length?res():next()}
 const q=CK.queue[CK.i];if(!q||q.ex||CK.ch!=null)return;
-if(!((q.md==1||q.md==2)?CK.ph=='play'||CK.ph=='pick':CK.ph=='pick'))return;
+if(!(CK.ph=='play'||CK.ph=='pick'))return;
 if(/^[1-4]$/.test(e.key)){const i=+e.key-1;if(i<q.options.length)ckAns(i)}});
 V.listening=()=>{stopAll();CK=null;view='home';rHome()};
 TAB.listening='learn';
