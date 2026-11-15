@@ -934,23 +934,34 @@ let VO=[];
 const jaVoices=()=>{try{VO=VO.length?VO:speechSynthesis.getVoices().filter(v=>/^ja([-_]|$)/i.test(v.lang))}catch(e){VO=[]}return VO};
 try{speechSynthesis.onvoiceschanged=()=>VO=[]}catch(e){}
 const voice=i=>{const a=jaVoices();return a.length?a[i%a.length]:null};
-function stopAll(){if(PB){clearTimeout(PB.timer);PB=null}try{speechSynthesis.cancel()}catch(e){}}
-let ACX=null;
+function stopAll(){if(PB){clearTimeout(PB.timer);PB=null}if(KA){clearInterval(KA);KA=null}try{speechSynthesis.cancel()}catch(e){}}
+let ACX=null,KA=null;
 const chime=sec=>{try{ACX??=new(window.AudioContext||window.webkitAudioContext)();if(ACX.state=='suspended')ACX.resume();
 const t0=ACX.currentTime+.08,tone=(f,dt,d)=>{const o=ACX.createOscillator(),g=ACX.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,t0+dt);g.gain.linearRampToValueAtTime(.22,t0+dt+.03);g.gain.exponentialRampToValueAtTime(.0001,t0+dt+d);o.connect(g);g.connect(ACX.destination);o.start(t0+dt);o.stop(t0+dt+d+.05)};
 if(sec){tone(1046,0,.3);tone(784,.42,.65)}else tone(880,0,.16)}catch(e){}};
-function play(steps,done){PB={steps,i:0,done};step8()}
+/* split long spoken text into sentence-bounded chunks: many TTS engines
+   (Android/Chrome) truncate or silently drop long utterances */
+const split8=t=>{const out=[],parts=String(t).match(/[^。！？!?.\n]*[。！？!?]+\s*|[^。！？!?.\n]+/g)||[];let cur='';
+for(let p of parts){p=p.trim();if(!p)continue;
+while(p.length>80){if(cur){out.push(cur);cur=''}out.push(p.slice(0,80));p=p.slice(80)}
+if(!p.length)continue;
+if((cur+p).length>80){if(cur)out.push(cur);cur=p}else cur+=p}
+if(cur)out.push(cur);return out};
+function play(steps,done){stopAll();PB={steps,i:0,done};KA=setInterval(()=>{try{speechSynthesis.paused&&speechSynthesis.resume()}catch(e){}},7000);step8()}
 function step8(){if(!PB||!CK)return;const st=PB.steps[PB.i];
 if(!st){const d=PB.done;PB=null;d&&d();return}
 if(st.p){PB.timer=setTimeout(()=>{if(!PB)return;PB.i++;step8()},st.p);return}
 try{const u=new SpeechSynthesisUtterance(st.t);u.lang='ja-JP';u.rate=RATE[CK.lv]||.9;const v=voice(st.v||0);if(v)u.voice=v;
-u.onend=u.onerror=()=>{if(!PB)return;PB.i++;PB.timer=setTimeout(step8,260)};speechSynthesis.speak(u)}
+u.onend=()=>{if(!PB)return;PB.i++;PB.timer=setTimeout(step8,260)};
+u.onerror=()=>{if(!PB)return;if(!st.r){st.r=1;PB.timer=setTimeout(step8,150)}else{PB.i++;PB.timer=setTimeout(step8,260)}};
+speechSynthesis.speak(u)}
 catch(e){if(PB){PB.i++;PB.timer=setTimeout(step8,60)}}}
-function stepsFor(q){const st=[];if(q.secStart)st.push({t:`問題${q.md}。${INTRO[q.md]}`},{p:600});
-if(q.md==1)st.push({t:q.sit});else if(q.md==2)st.push({t:q.q});else if(q.md==3)st.push({t:q.mono});else if(q.md==4)st.push({t:q.a});
-(q.script||[]).forEach((l,i)=>st.push({t:String(l).replace(/^[ABC][:：]\s*/,''),v:i%2}));
-if(q.md==3||q.md==5)st.push({t:q.q});
-if(q.md!=1&&q.md!=2)q.options.forEach((o,i)=>st.push({t:`${NUMJP[i]}、${o}`,v:1}));
+function stepsFor(q){const st=[],sp=(t,v)=>split8(t).forEach(c=>st.push({t:c,v:v||0}));
+if(q.secStart)split8(`問題${q.md}。${INTRO[q.md]}`).forEach(c=>st.push({t:c})),st.push({p:600});
+if(q.md==1)sp(q.sit);else if(q.md==2)sp(q.q);else if(q.md==3)sp(q.mono);else if(q.md==4)sp(q.a);
+(q.script||[]).forEach((l,i)=>sp(String(l).replace(/^[ABC][:：]\s*/,''),i%2));
+if(q.md==3||q.md==5)sp(q.q);
+if(q.md!=1&&q.md!=2)q.options.forEach((o,i)=>sp(`${NUMJP[i]}、${o}`,1));
 return st}
 /* ---------- session ---------- */
 function buildQueue(secs){const queue=[];
