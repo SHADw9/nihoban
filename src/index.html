@@ -425,8 +425,6 @@ new MutationObserver(ms=>ms.forEach(m=>{m.addedNodes.forEach(trn);if(m.type!='ch
   const dig=()=>document.getElementById('DL');
   const stack=[];
   const push=()=>{try{history.pushState({nb:1,h:location.hash},'',location.href)}catch(e){}};
-  // Keep a history entry so the first back doesn't leave the app abruptly while a dialog is open
-  push();
   window.addEventListener('popstate',e=>{
     const DL=dig();
     if(DL && (DL.open || DL.hasAttribute('open'))){
