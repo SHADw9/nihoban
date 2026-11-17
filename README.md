@@ -1,9 +1,10 @@
 # Nihoban — Japanese learning app
 
-Nihoban is an offline-first Japanese learning app for Android and Linux. One giant
-`src/index.html` holds the entire app — SRS flashcards, kana, kanji with stroke order,
-grammar, custom decks, textbook audio with synced transcripts, and AI-generated JLPT
-practice — wrapped by Capacitor (Android) and Electron (Linux).
+Nihoban is an offline-first Japanese learning app for Android and Linux. The app is
+a small `src/index.html` shell over split assets (styles, fonts, data, and code in
+separate files — see *Project layout* below) — SRS flashcards, kana, kanji with
+stroke order, grammar, custom decks, textbook audio with synced transcripts, and
+AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linux).
 
 **English + বাংলা UI · dark & light themes · no account, no network required**
 
@@ -129,8 +130,22 @@ The native TTS bridge is injected at build time and routes the page's `speechSyn
 - Falls back to the browser Web Speech API if the native engine fails.
 
 ## Fonts
-CI downloads the Google Fonts (Noto Sans JP, Noto Sans Bengali, Hind Siliguri) and bundles them, so the
-apps look the same offline. If the download fails the build continues with online/system fonts.
+The fonts are committed as woff2 files in `src/fonts/` (Klee One for Japanese,
+Hind Siliguri + Noto Sans Bengali for UI/Bangla) and loaded through
+`src/css/fonts.css` — no network needed at build or run time.
+
+## Project layout
+`src/index.html` is a thin shell (~2 KB) referencing the real assets:
+- `src/css/fonts.css` + `src/css/style.css` — styles
+- `src/fonts/*.woff2` — offline fonts
+- `src/data/*.js` — gzipped+base64 datasets (`d` app data, `so` stroke order,
+  `fq` frequency corpus, `mn` Minna vocab, `dg` dialogue transcripts, `pd` podcast
+  transcripts), decoded at runtime by `dec()` in `js/core.js`
+- `src/js/*.js` — app code (`core`, `ui`, `ai`, plus one `feature-*` per module)
+- `src/audio/` — dialogue and podcast audio
+
+`npm run prepare-www` copies everything into `www/` and injects the native-TTS
+bridge into `www/index.html`.
 
 ## Local dev
 ```bash

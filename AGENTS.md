@@ -1,13 +1,20 @@
 # AGENTS.md
 
-Nihoban: a Japanese-learning app that is one giant HTML file, packaged for Android (Capacitor 8) and Linux (Electron). No bundler, no tests, no lint/typecheck.
+Nihoban: a Japanese-learning app, packaged for Android (Capacitor 8) and Linux (Electron). No bundler, no tests, no lint/typecheck.
 
-## The app is `src/index.html`
+## Source layout (`src/`)
 
-- ~7.8 MB single file with all JS/CSS inline (~1080 lines, but single lines up to ~2.9M chars — e.g. line 212 is minified CSS/JS). Feature work happens here; there is nothing else to build. **Never read it whole** — locate code with `grep` and edit with narrow, exact-context replacements.
+- `src/index.html` is a **~2 KB shell**: metas, `<link>` to the two stylesheets, tiny body markup (`<header>`, `<main id="M">`, `<dialog id="DL">`), then `<script src>` tags — data first (`data/*.js`), then code (`js/*.js`). Never re-inline assets.
+- `src/css/style.css` (all styles) and `src/css/fonts.css` (6 `@font-face` loading `src/fonts/*.woff2` — committed binary files: Klee One, Hind Siliguri, Noto Sans Bengali).
+- `src/data/*.js` — gzipped+base64 datasets exposed as `window.NBD.<id>` globals: `d` (app core data), `so` (KanjiVG stroke order), `fq` (frequency corpus), `mn` (Minna vocab), `dg` (dialogue transcripts), `pd` (podcast transcripts). They are decoded at runtime by `dec(id)` in `js/core.js` (gzip via `DecompressionStream`).
+- `src/js/` — in load order: `core.js` (app plumbing: `$`, state, SRS, routing), `ui.js` (2.0 redesign layer + base routes), `ai.js` (JLPT AI), then `feature-fq.js`, `feature-mn.js`, `feature-dg.js`, `feature-pd.js` (each registers its route/tile; e.g. pd → `#pd`, dg → `#dg`, freq → `#freq`, mn → `#mn`).
+- `src/audio/` — dialogue (`d###.mp3`) and podcast (`podcast-<lv>-<nn>.ogg`) files.
+- **Never read any file whole blindly** — `index.html` and the JS files are fine to read; locate things with `grep` and edit with narrow, exact-context replacements. `data/*.js` are single huge lines — never open them.
 - `www/` is **generated** (gitignored). Never edit it. After changing `src/`, run `npm run prepare-www` (or `npm start`, which does it first).
-- `scripts/prepare-www.mjs` copies `src/index.html` → `www/` and injects `src/tts-bridge.js` as `<script src="tts-bridge.js">` right after the `<meta charset>` tag (falls back to after `<head>`, then to prepending). The injection is skipped if the string `tts-bridge.js` appears *anywhere* in the HTML — never mention that filename in `src/index.html`, not even in a comment, and don't rename the file.
+- `scripts/prepare-www.mjs` wipes and rebuilds `www/`: copies `css/ js/ data/ fonts/ audio/` and writes `index.html` with `src/tts-bridge.js` injected as `<script src="tts-bridge.js">` right after the `<meta charset>` tag (falls back to after `<head>`, then to prepending). The injection is skipped if the string `tts-bridge.js` appears *anywhere* in the HTML — never mention that filename in `src/`, not even in a comment, and don't rename the file.
+- `scripts/split-app.mjs` is a one-time migration that split the old 8 MB monolith into the layout above; it must not run again (it throws on the current shell — keep it only as history).
 - No lockfile; CI uses plain `npm install`.
+- To add a podcast episode: rebuild `src/data/pd.js` (gzipped+base64 `NBD.pd='…'`) from the transcript JSON — episodes carry their own `[ep#, level, durSec, title, [channel, url], utts]` credit tuple; compress audio as 64 k mono Opus `.ogg` into `src/audio/`.
 
 ## Android native code lives in `android-overlay/`, not `android/`
 
@@ -23,7 +30,7 @@ npm start             # desktop app (runs prepare-www first)
 npm run dist:linux    # AppImage → dist-electron/
 ```
 
-- `FETCH_FONTS=1 npm run prepare-www` bundles Google Fonts into the HTML (via `scripts/fetch-fonts.mjs`, with graceful fallback). CI always sets it; local builds don't, so locally fonts differ from release builds.
+- Fonts are committed woff2 files loaded via `css/fonts.css` — nothing to fetch at build time (the old `FETCH_FONTS` mechanism is gone).
 - electron-builder config lives in the `build` key of `package.json`; it packages `electron/**` + `www/**` and excludes `@capacitor/*`.
 
 ## Desktop (Electron) quirks — `electron/main.js`

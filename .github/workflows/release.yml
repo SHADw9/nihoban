@@ -14,9 +14,6 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  FETCH_FONTS: '1'
-
 jobs:
   version:
     runs-on: ubuntu-latest

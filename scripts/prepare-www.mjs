@@ -1,8 +1,7 @@
-// Copies src/index.html -> www/index.html, injects the native-TTS bridge and
-// (when FETCH_FONTS=1) bundles the Google Fonts for offline use.
-// To update the app later, just replace src/index.html with the new page.
-import { cpSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
-import { localizeFonts } from './fetch-fonts.mjs';
+// Builds www/: copies all src/ assets and writes index.html with the
+// native-TTS bridge injected. src/ layout: index.html + css/ js/ data/
+// fonts/ audio/ + tts-bridge.js.
+import { cpSync, mkdirSync, readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 
 rmSync('www', { recursive: true, force: true });
 mkdirSync('www', { recursive: true });
@@ -14,9 +13,11 @@ if (!html.includes('tts-bridge.js')) {
   else if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, (m) => m + '\n' + tag);
   else html = tag + '\n' + html;
 }
-if (process.env.FETCH_FONTS === '1') html = await localizeFonts(html);
-
 writeFileSync('www/index.html', html);
+
+for (const dir of ['css', 'js', 'data', 'fonts', 'audio']) {
+  if (existsSync('src/' + dir)) cpSync('src/' + dir, 'www/' + dir, { recursive: true });
+}
 cpSync('src/tts-bridge.js', 'www/tts-bridge.js');
-cpSync('src/audio', 'www/audio', { recursive: true });
-console.log('www/ ready (' + (html.length / 1048576).toFixed(2) + ' MB page)');
+
+console.log('www/ ready (page: ' + (html.length / 1024 | 0) + ' KB, assets: css/js/data/fonts/audio)');
