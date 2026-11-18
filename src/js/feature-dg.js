@@ -69,7 +69,7 @@ ${(S.dgRead??0)&&x[5]?`<small class="jp mute">${esc(x[5])}</small>`:''}</div></d
 return `<a class="back" href="#dg" data-dg="backL">${ic('back',18)} ${t('Lesson','পাঠ')} ${DV.l}</a>
 <h2 class="jp" style="font-size:20px">${esc(titleOf(T))}</h2>
 <p class="mute" style="margin:-4px 0 10px;display:flex;gap:8px;align-items:center;min-height:18px">${DI.pl?`<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>`:''}<small>${t('Lesson','পাঠ')} ${T[1]} · ${T[2]?t('Exercise','অনুশীলন')+' '+T[3]:t('Dialogue','কথোপকথন')} · ${fmt(T[4])}${stOf(T[0])?' · '+t('listened','শোনা'):''}</small></p>
-<div class="card" style="position:sticky;top:8px;z-index:2">
+<div class="card" style="position:sticky;top:62px;z-index:2">
 <div style="display:flex;gap:12px;align-items:center">
 <button class="btn" data-dg="pp" style="width:46px;height:46px;min-height:0;border-radius:50%;padding:0;display:grid;place-items:center;flex:none" aria-label="${t('Play / pause','চালাও / থামাও')}">${svgIc(DI.pl?PPAUSE:PPLAY,20)}</button>
 <div style="flex:1;min-width:0"><input id="dgSeek" type="range" min="0" max="${T[4]}" step="0.1" value="${DI.t||0}" style="width:100%" aria-label="${t('Seek','সিক')}">

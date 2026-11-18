@@ -15,7 +15,7 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 ## Features
 
 ### Spaced-repetition study
-- Mixed daily queue of **words, kanji and grammar** per JLPT level (N5–N1) with a daily goal ring.
+- Mixed daily queue of **words, kanji and grammar** per JLPT level (N5–N1) with a daily goal genkō grid.
 - SM-2-style scheduling with Again / Hard / Good / Easy grading and 1-day–3-day+ intervals.
 - Reverse review cards (meaning → Japanese), example sentences, and native text-to-speech
   on every word (system Japanese TTS, see below).
@@ -93,11 +93,23 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 
 ### Progress & settings
 - XP and levels, **day streak**, weekly report, review/mastered counters.
-- Dark & light themes plus color themes (Study Atelier, Japanese Zen, Sakura Dream,
-  Midnight Japan); app language English or বাংলা.
+- Dark & light themes plus **10 color themes**: Sumi Ink (washi, sumi, vermilion),
+  Ai Indigo, Japanese Zen, Sakura Dream, Matcha Study, Modern Indigo, Maroon &
+  Beige, Bengal Clay, Yoru Lantern (always dark) and Midnight Japan (always dark);
+  app language English or বাংলা.
 - Daily goal, JLPT level, furigana defaults; backup & restore via a copyable code.
 
 ![Progress](assets/screens/progress.png)
+
+## Design
+The interface uses a Japanese print language — washi-paper ground, sumi-ink panels,
+a vermilion hanko seal, hairline rules, genkō (manuscript) cells and kanji glyphs
+for navigation — with **10 switchable color schemes**. The mobile navigation is a
+floating ink dock with a vermilion seal for the active tab, and dark mode always
+uses a charcoal-black ground (only the accent colors change per scheme). All of it lives in
+`src/css/style.css` and uses the existing CSS tokens, so no app feature depends on
+the skin. The full token contract, palette keys and rules for extending the design
+are documented in [AGENTS.md](AGENTS.md#visual-system).
 
 ## Packaging
 
