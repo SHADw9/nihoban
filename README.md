@@ -177,6 +177,8 @@ npm run dist:linux      # AppImage into dist-electron/
 ```
 
 ## Credits
+- Nihoban is made by **MD Fahad Alam** ([GitHub](https://github.com/SHADw9),
+  [Instagram](https://instagram.com/mdfahadalam9)) — Dhaka, Bangladesh.
 - Stroke data: [KanjiVG](https://kanjivg.tagaini.net), CC BY-SA 3.0.
 - Minna no Nihongo audio & transcripts: educational use, from the
   [truncripbe](https://github.com/) transcript dataset.
