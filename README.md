@@ -93,23 +93,33 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 
 ### Progress & settings
 - XP and levels, **day streak**, weekly report, review/mastered counters.
-- Dark & light themes plus **10 color themes**: Sumi Ink (washi, sumi, vermilion),
-  Ai Indigo, Japanese Zen, Sakura Dream, Matcha Study, Modern Indigo, Maroon &
-  Beige, Bengal Clay, Yoru Lantern (always dark) and Midnight Japan (always dark);
-  app language English or বাংলা.
+- Dark & light themes plus **11 color themes**, defaulting to **Washi Paper**
+  (handmade-paper ground with visible fibre), then Sumi Ink (washi, sumi,
+  vermilion), Ai Indigo, Japanese Zen, Sakura Dream, Matcha Study, Modern Indigo,
+  Maroon & Beige, Bengal Clay, Yoru Lantern (always dark) and Midnight Japan
+  (always dark).
+- **Washi texture slider (0–100)** — adds the paper-fibre grain to any theme, so
+  the same palette can look clean or handmade; 0 turns it off.
+- **Red ink kanji** switch — draws only kanji in traditional vermilion ink, while
+  kana, furigana and romaji keep their normal colours.
+- App language English or বাংলা.
 - Daily goal, JLPT level, furigana defaults; backup & restore via a copyable code.
 
 ![Progress](assets/screens/progress.png)
 
 ## Design
 The interface uses a Japanese print language — washi-paper ground, sumi-ink panels,
-a vermilion hanko seal, hairline rules, genkō (manuscript) cells and kanji glyphs
-for navigation — with **10 switchable color schemes**. The mobile navigation is a
-floating ink dock with a vermilion seal for the active tab, and dark mode always
-uses a charcoal-black ground (only the accent colors change per scheme). All of it lives in
-`src/css/style.css` and uses the existing CSS tokens, so no app feature depends on
-the skin. The full token contract, palette keys and rules for extending the design
-are documented in [AGENTS.md](AGENTS.md#visual-system).
+a vermilion hanko seal, hairline rules, genkō (manuscript) cells and a related
+line icon on every feature tile — with **11 switchable color schemes** and
+**Washi Paper as the default**. The washi fibre is a real grain, not a flat
+colour, and the settings slider controls how visible it is on any palette. An
+optional red-ink mode draws kanji in vermilion while kana stay in normal ink. The
+mobile navigation is a translucent floating ink dock with a vermilion seal for the
+active tab, and dark mode always uses a charcoal-black ground (only the accent
+colors change per scheme). All of it lives in `src/css/style.css` and uses the
+existing CSS tokens, so no app feature depends on the skin. The full token
+contract, palette keys and rules for extending the design are documented in
+[AGENTS.md](AGENTS.md#visual-system).
 
 ## Packaging
 
@@ -123,7 +133,7 @@ are documented in [AGENTS.md](AGENTS.md#visual-system).
 ## Releasing
 Push to `main`/`master` → GitHub Actions builds both and publishes release `v1.0.<run number>`.
 To pick the version: `git tag v1.2.0 && git push --tags`.
-To update the app, replace `src/index.html` and push.
+To update the app, change `src/` and push (CI rebuilds `www/`).
 
 ## Signing (so updates install over old versions)
 `android-signing/nihoban.jks` + `signing.env` sign every APK, so every release has the same signature.
