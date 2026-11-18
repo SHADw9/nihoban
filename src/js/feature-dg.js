@@ -92,7 +92,7 @@ if(DI.ed&&DV.tr){const el=$('#dgName');el&&(el.focus(),el.select())}};
 TAB.dg='learn';
 
 const baseLearn=V.learn;
-V.learn=()=>{baseLearn();$('.tiles',M)?.insertAdjacentHTML('beforeend',tile('#dg','ear',t('Minna Dialogues','মিননা ডায়ালগ'),t('Textbook audio · 87 tracks','বইয়ের অডিও · ৮৭ ট্র্যাক'),'--ck'))};
+V.learn=()=>{baseLearn();$('.tiles',M)?.insertAdjacentHTML('beforeend',tile('#dg','chat',t('Minna Dialogues','মিননা ডায়ালগ'),t('Textbook audio · 87 tracks','বইয়ের অডিও · ৮৭ ট্র্যাক'),'--ck'))};
 
 const activeIdx=(T,cur)=>{let lo=0,hi=T[5].length-1,r=-1;
 while(lo<=hi){const m=(lo+hi)>>1;if(T[5][m][1]<=cur){r=m;lo=m+1}else hi=m-1}return r<0?0:r};

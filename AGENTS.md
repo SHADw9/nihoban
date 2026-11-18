@@ -34,22 +34,27 @@ entirely in `src/css/style.css`; no runtime CSS is injected.
   then the feature CSS, then the design layer at the *end*. The design layer
   overrides ordinary selectors; the earlier rules remain as fallbacks. Add new
   visual rules to the end so they win by source order.
-- **Palettes (11).** `atelier` (Sumi Ink, the default; no `data-pal` attribute),
-  `washi` (Washi Paper), `ai`, `zen`, `sakura`, `matcha`, `indigo`, `maroon`,
-  `bengal`, `yoru`, `midnight`. `yoru` and `midnight` are intentionally dark in
-  every appearance mode (`color-scheme: dark`); the rest have light + dark (+
-  system) variants. `PAL()` in `ui.js` holds the settings swatch metadata and
-  `applyPal()` removes `data-pal` for `atelier`. Adding a scheme needs: a token
-  block for light/dark/system in `style.css`, a `PAL()` row, and a contrast check.
-- **Paper texture and red ink.** `S.tex` (`data-tex` on `<html>`) turns the washi
-  fibre grain on for *any* palette via `--washi-img`; choosing `washi` enables it
-  automatically, and the settings toggle can turn it off again. `S.red`
+- **Palettes (11).** `washi` (Washi Paper, **the default**; `data-pal=washi`),
+  `atelier` (Sumi Ink; no `data-pal` attribute), `ai`, `zen`, `sakura`, `matcha`,
+  `indigo`, `maroon`, `bengal`, `yoru`, `midnight`. `yoru` and `midnight` are
+  intentionally dark in every appearance mode (`color-scheme: dark`); the rest
+  have light + dark (+ system) variants. `PAL()` in `ui.js` holds the settings
+  swatch metadata and `applyPal()` removes `data-pal` for `atelier`. Adding a
+  scheme needs: a token block for light/dark/system in `style.css`, a `PAL()`
+  row, and a contrast check.
+- **Paper texture and red ink.** `S.tex` is a 0–100 visibility level for the
+  washi fibre grain: `applyPal()` writes `--washi-img` from `washi(S.tex)` (the
+  two turbulence layers' `opacity`) and sets `data-tex` while it is above 0, so
+  the grain works on *any* palette. Picking `washi` raises it to at least 60.
+  `index.html` ships `data-pal="washi" data-tex="1"` for a flash-free default,
+  and a one-time `S.wm` migration moves the old default (`atelier`) to `washi`
+  with the grain on. `S.red`
   (`data-red`) inks **only kanji**: `core.js` wraps every kanji run in a
   `<span class="kj">` (a `MutationObserver` keeps up with re-renders) and the rule
   colors `.kj` in `--shu` — kana and furigana keep the normal `--mute`/`--ink`
   colors, the `header .brand i` seal and the settings swatch previews (`.pvs`)
-  keep their own colors, and dark panels use `--shu-on`. Both toggles live in
-  settings and go through `applyPal()`.
+  keep their own colors, and dark panels use `--shu-on`. The red-ink switch and
+  the texture slider both live in settings and go through `applyPal()`.
 - **Charcoal dark mode.** Every scheme renders dark mode on the same
   charcoal-black ground — `--bg:#1A1A1A`, `--card:#232323`, `--line:#3A3A3A`,
   ink `#EDEAE3`, mute `#A6A29A` — defined by the final charcoal block at the
@@ -62,10 +67,13 @@ entirely in `src/css/style.css`; no runtime CSS is injected.
   and Japanese text; `--ui` (Hind Siliguri) for interface copy. Headings use
   Klee One; `h3` is a small uppercase section label — inside `<dialog>` the
   detail gloss `h3` is overridden back to body type.
-- **Tiles & glyphs.** `tile()` / `tileb()` in `ui.js` render a Japanese glyph
-  (`.tg`) instead of an icon: `TGH` maps route hashes, `TGK` maps quiz kinds.
-  Nav icons are hidden on mobile and replaced with the kanji 家 学 本 歩 試 via
-  `nav a:nth-child(n)::before`; the JLPT AI link is the 5th item.
+- **Tiles & icons.** `tile()` / `tileb()` in `ui.js` render a related line icon
+  inside `.tg` (`ic(name)`) in the feature's accent colour; the icon name is the
+  second argument of each call, with `TGH` (route) and `TGK` (quiz kind) as
+  fallbacks. `IC` in `ui.js` holds the shared 24×24 stroke paths (`text`, `grid`,
+  `link`, `layers`, `chat`, `mic`, `spark`, `refresh`, …). The mobile dock uses
+  the same `<svg class="ic">` icons — no `nav a::before` glyphs; the JLPT AI link
+  is the 5th item.
 - **Home goal.** The old SVG ring is a 30-cell genkō grid (`.ggrid`, 3×10),
   filled `Math.round(min(1, done/goal)*30)`. Keep the numeric due/new/goal text.
 - **Sticky layers.** `.card` sticky players (Minna dialogues / podcast) sit at

@@ -245,9 +245,9 @@ document.addEventListener('keydown',e=>{
 /* ---------- nav link + Study-hub tile ---------- */
 const aiNav=()=>{
  const nav=$('header nav');if(!nav||nav.querySelector('[href="#jlptai"]'))return;
- const a=document.createElement('a');a.href='#jlptai';a.innerHTML=`${ic('star',22)}<span>JLPT AI</span>`;a.classList.toggle('on',cur()==='jlptai');nav.append(a);
+ const a=document.createElement('a');a.href='#jlptai';a.innerHTML=`${ic('spark',22)}<span>JLPT AI</span>`;a.classList.toggle('on',cur()==='jlptai');nav.append(a);
 };
 aiNav();new MutationObserver(aiNav).observe($('header'),{childList:true,subtree:true});
 const baseLearn=V.learn;
-V.learn=()=>{baseLearn();$('.tiles',M)?.insertAdjacentHTML('beforeend',tile('#jlptai','star','JLPT AI Mock',`${bank().length} saved · works offline`,'--cq'))};
+V.learn=()=>{baseLearn();$('.tiles',M)?.insertAdjacentHTML('beforeend',tile('#jlptai','spark','JLPT AI Mock',`${bank().length} saved · works offline`,'--cq'))};
 })();

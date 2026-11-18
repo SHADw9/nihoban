@@ -509,13 +509,7 @@ h3{margin:22px 0 8px}
    vermilion seal for the active tab instead of a full-width bar */
 nav{position:fixed;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom,0px));justify-content:space-around;gap:2px;padding:7px;border:1px solid color-mix(in srgb,var(--onpanel) 14%,transparent);border-radius:20px;background:color-mix(in srgb,var(--panel) 90%,transparent);box-shadow:0 16px 38px #0000004d,0 1px 0 color-mix(in srgb,var(--onpanel) 10%,transparent) inset;animation:dockIn .4s ease both;backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);z-index:11}
 nav a{flex:1;flex-direction:column;gap:3px;font-size:9.5px;letter-spacing:.02em;padding:6px 2px 5px;border:0;border-radius:13px;min-height:48px;justify-content:center;color:color-mix(in srgb,var(--onpanel) 64%,transparent);position:relative}
-nav a .ic{display:none}
-nav a::before{font:400 18px/1 var(--jp);display:block}
-nav a:nth-child(1)::before{content:"家"}
-nav a:nth-child(2)::before{content:"学"}
-nav a:nth-child(3)::before{content:"本"}
-nav a:nth-child(4)::before{content:"歩"}
-nav a:nth-child(5)::before{content:"試"}
+nav a .ic{display:block;width:21px;height:21px}
 nav a.on{background:var(--acc);color:var(--onacc);border:0;box-shadow:0 4px 14px color-mix(in srgb,var(--acc) 32%,transparent)}
 nav a.on::after{display:none}
 body.focus nav{display:none}
@@ -562,3 +556,24 @@ dialog .wrow+p+h3{font:600 15.5px/1.55 var(--ui);letter-spacing:0;text-transform
 :root[data-red] .kj{color:var(--shu)}
 :root[data-red] .card.fc .kj,
 :root[data-red] .card.goal .kj{color:var(--shu-on)}
+
+/* feature tiles — related line icons instead of Japanese glyphs -------------- */
+.tile .tg{display:block;color:var(--c,var(--acc));margin-bottom:12px}
+.tile .tg .ic{display:block;width:30px;height:30px;stroke-width:1.7}
+@media(max-width:760px){.tile .tg .ic{width:26px;height:26px}}
+
+/* washi texture visibility slider ------------------------------------------ */
+.texr{display:flex;align-items:center;gap:10px;margin:8px 0 4px}
+.texr input[type=range]{flex:1;min-width:0;height:24px;margin:0;background:transparent;accent-color:var(--acc)}
+.texr output{font:500 12.5px/1 var(--ui);color:var(--mute);min-width:40px;text-align:right;font-variant-numeric:tabular-nums}
+
+/* dock active tab: the pill is --acc, so its icon must use --onacc (the old
+   header rule tinted the icon red on a transparent link, which vanished here) */
+@media(max-width:760px){nav a.on .ic{color:var(--onacc)}}
+
+/* dock glass — a touch more see-through than the solid ink panel, with the
+   labels lifted so they stay readable over light cards behind it */
+@media(max-width:760px){
+nav{background:color-mix(in srgb,var(--panel) 74%,transparent)}
+nav a{color:color-mix(in srgb,var(--onpanel) 80%,transparent)}
+}

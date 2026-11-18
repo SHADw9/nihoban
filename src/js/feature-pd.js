@@ -74,7 +74,7 @@ if(PI.ed&&PV.e){const el=$('#pdName');el&&(el.focus(),el.select())}};
 TAB.pd='learn';
 
 const baseLearn3=V.learn;
-V.learn=()=>{baseLearn3();$('.tiles',M)?.insertAdjacentHTML('beforeend',tile('#pd','spk',t('Japanese Podcast','জাপানিজ পডকাস্ট'),t('Listening practice · N5','শোনার অনুশীলন · N5'),'--cq'))};
+V.learn=()=>{baseLearn3();$('.tiles',M)?.insertAdjacentHTML('beforeend',tile('#pd','mic',t('Japanese Podcast','জাপানিজ পডকাস্ট'),t('Listening practice · N5','শোনার অনুশীলন · N5'),'--cq'))};
 
 const activeIdx=(T,cur)=>{let lo=0,hi=T[6].length-1,r=-1;
 while(lo<=hi){const m=(lo+hi)>>1;if(T[6][m][1]<=cur){r=m;lo=m+1}else hi=m-1}return r<0?0:r};
