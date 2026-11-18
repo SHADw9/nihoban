@@ -237,6 +237,13 @@ textarea{height:90px;font:12px monospace}
 @media(prefers-color-scheme:dark){:root[data-pal=bengal]:not([data-theme=light]){--h1:#4A1E16;--h2:#1C0F0B;--bg:#17100C;--card:#211711;--ink:#F4E7D6;--mute:#B6A18A;--line:#3A2B20;--pri:#F4E7D6;--acc:#E08A6A;--mat:#D5A45E;--gold:#E0C05E;--ok:#93B77E;--no:#EE8674;--cv:#E08A6A;--ck:#D2A47C;--cg:#BDB878;--cq:#D5A45E;--panel:#251912;--onpanel:#F4E7D6;--onacc:#17120E;color-scheme:dark}
 }
 
+:root[data-pal=washi]{--h1:#3A2C1C;--h2:#1E150D;--bg:#F2E9D7;--card:#FBF5E7;--ink:#241D14;--mute:#6A5D49;--line:#DCCDB4;--pri:#241D14;--acc:#B23A2E;--mat:#66744C;--gold:#A9803A;--ok:#4A6B45;--no:#A8382B;--cv:#3C5568;--ck:#35506B;--cg:#5C7249;--cq:#9C7030;--panel:#241D14;--onpanel:#F4EFE4;--onacc:#FFF8EE;color-scheme:light}
+
+:root[data-pal=washi][data-theme=dark]{--acc:#E4795F;--mat:#9AAE80;--gold:#D3B36A;--ok:#8CB78C;--no:#E58275;--cv:#8FB2C9;--ck:#7FA6C9;--cg:#9CB48A;--cq:#D3B36A;--onacc:#17120E;color-scheme:dark}
+
+@media(prefers-color-scheme:dark){:root[data-pal=washi]:not([data-theme=light]){--acc:#E4795F;--mat:#9AAE80;--gold:#D3B36A;--ok:#8CB78C;--no:#E58275;--cv:#8FB2C9;--ck:#7FA6C9;--cg:#9CB48A;--cq:#D3B36A;--onacc:#17120E;color-scheme:dark}
+}
+
 :root[data-pal=yoru]{--h1:#2A2118;--h2:#100D0B;--bg:#131110;--card:#1C1917;--ink:#F0E7DA;--mute:#A89C8B;--line:#322C26;--pri:#F0E7DA;--acc:#E0A24A;--mat:#B98A5C;--gold:#D8B36A;--ok:#87B48C;--no:#E5826F;--cv:#D9A45E;--ck:#C9A27A;--cg:#A8AE8A;--cq:#D8B36A;--panel:#1C1917;--onpanel:#F0E7DA;--onacc:#17120C;--sh:0 1px 2px #0005;color-scheme:dark}
 
 :root[data-pal=midnight]{--h1:#1D3557;--h2:#0B1220;--bg:#0D1420;--card:#141E2E;--ink:#E7EDF6;--mute:#94A3B8;--line:#24344B;--pri:#E7EDF6;--acc:#E8715C;--mat:#7DC4F0;--gold:#C9D1DC;--ok:#5CC79A;--no:#F0796B;--cv:#E8715C;--ck:#7DC4F0;--cg:#94A3B8;--cq:#C9D1DC;--panel:#16223A;--onpanel:#E7EDF6;--onacc:#10131A;--sh:0 1px 2px #0006;color-scheme:dark}
@@ -528,3 +535,30 @@ body.focus main{padding-bottom:28px}
 :root:not([data-theme=light]),:root[data-pal]:not([data-theme=light]){--h1:#262626;--h2:#101010;--bg:#1A1A1A;--card:#232323;--ink:#EDEAE3;--mute:#A6A29A;--line:#3A3A3A;--pri:#EDEAE3;--panel:#232323;--onpanel:#F3EFE7;--sh:0 1px 2px #00000055;color-scheme:dark}
 }
 :root[data-theme=dark],:root[data-theme=dark][data-pal],:root[data-pal=yoru],:root[data-pal=midnight]{--h1:#262626;--h2:#101010;--bg:#1A1A1A;--card:#232323;--ink:#EDEAE3;--mute:#A6A29A;--line:#3A3A3A;--pri:#EDEAE3;--panel:#232323;--onpanel:#F3EFE7;--sh:0 1px 2px #00000055;color-scheme:dark}
+
+/* readings — kanji, hiragana and furigana sit beside the word ------------- */
+.vc .wr{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.vc .wr .rd{font:400 16.5px/1.35 var(--jp);color:var(--mute);letter-spacing:.02em}
+.vc .wr .ro{font:400 12px/1.3 var(--ui);color:var(--mute);opacity:.75}
+.kc .krd{font:400 15.5px/1.4 var(--jp);color:var(--mute);letter-spacing:.04em;margin:-2px 0 2px}
+dialog .wrow{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 4px}
+dialog .wrow .big{line-height:1.15}
+dialog .wrow .wrd{font:400 clamp(19px,5vw,26px)/1.3 var(--jp);color:var(--mute);letter-spacing:.02em}
+dialog .wrow .wro{font:400 13px/1.3 var(--ui);color:var(--mute)}
+dialog .wrow+p+h3{font:600 15.5px/1.55 var(--ui);letter-spacing:0;text-transform:none;color:var(--ink);margin:2px 0 4px}
+
+/* washi paper texture — optional fibre grain for any theme ----------------- */
+:root[data-tex] body{background-color:var(--bg);background-image:var(--washi-img)}
+:root[data-tex] .card,:root[data-tex] .tile,:root[data-tex] header,:root[data-tex] dialog{background-image:var(--washi-img)}
+:root[data-tex] nav{background-image:var(--washi-img)}
+.pal .pv[data-v=washi] .pvs{background-image:var(--washi-img)!important}
+
+/* red ink — kanji and Japanese text drawn in vermilion ink ---------------- */
+:root{--shu:#BC002D;--shu-on:#E8705F;--washi-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)' opacity='.1'/%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='turbulence' baseFrequency='.012%20.9' numOctaves='2' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)' opacity='.07'/%3E%3C/svg%3E")}
+@media(prefers-color-scheme:dark){
+:root:not([data-theme=light]),:root[data-pal]:not([data-theme=light]){--shu:#E4756B;--shu-on:#E4756B}
+}
+:root[data-theme=dark],:root[data-theme=dark][data-pal],:root[data-pal=yoru],:root[data-pal=midnight]{--shu:#E4756B;--shu-on:#E4756B}
+:root[data-red] .kj{color:var(--shu)}
+:root[data-red] .card.fc .kj,
+:root[data-red] .card.goal .kj{color:var(--shu-on)}

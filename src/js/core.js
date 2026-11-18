@@ -60,7 +60,7 @@ M.innerHTML=`<div class="stat"><span>${Q.length} বাকি</span><span class=
 ${F.sh?`<div class="gs">${[0,1,2,3].map(g=>`<button data-g="${g}">${GL[g]}<small>${calc(c,g).ivl?calc(c,g).ivl+' দিন':'১০ মিনিট'}</small></button>`).join('')}</div>`:(S.typed&&x.ty!='g'?tin(x):`<button class="btn" style="width:100%" data-a="show">উত্তর দেখুন</button>`)}`};
 
 function det(k){const x=D.m[k];if(!x)return;let h=`<button class="lk" style="float:right" data-a="close">বন্ধ</button>`;
-if(x.ty=='v')h+=`<div class="big">${esc(x.w)}</div><p>${esc(x.r)}${S.roma?` (${esc(x.o)})`:''} <button class="lk" data-say="${esc(x.r)}">শুনুন</button></p><h3>${esc(gloss(x))}</h3><p class="mute">${(bn()?esc(x.en.join('; ')):'')}</p><p>${x.p.slice(0,3).map(p=>`<span class="tag" title="${esc(D.pos[p]?.[0])}">${esc((bn()?mk(D.pos[p]?.[1]):D.pos[p]?.[0])||p)}</span>`).join('')}</p>${x.f.length?`<p class="mute">অন্য রূপ: ${esc(x.f.join('、'))}</p>`:''}${x.x.map(ex).join('')}`;
+if(x.ty=='v')h+=`<div class="wrow"><span class="big">${esc(x.w)}</span><span class="wrd jp">${esc(x.r)}</span>${S.roma?`<span class="wro">${esc(x.o)}</span>`:''}</div><p><button class="lk" data-say="${esc(x.r)}">শুনুন</button></p><h3>${esc(gloss(x))}</h3><p class="mute">${(bn()?esc(x.en.join('; ')):'')}</p><p>${x.p.slice(0,3).map(p=>`<span class="tag" title="${esc(D.pos[p]?.[0])}">${esc((bn()?mk(D.pos[p]?.[1]):D.pos[p]?.[0])||p)}</span>`).join('')}</p>${x.f.length?`<p class="mute">অন্য রূপ: ${esc(x.f.join('、'))}</p>`:''}${x.x.map(ex).join('')}`;
 if(x.ty=='k')h+=`<div class="sq" style="margin:0 auto"><span class="big">${x.c}</span></div><h3>${esc(gloss(x))}</h3><p class="mute">${(bn()?esc(x.en.join(', ')):'')}</p><p>${bn()?esc(x.bd||''):esc(x.ds||'')}</p><p>অন: <span class="jp">${esc(x.on.join('、'))}</span><br>কুন: <span class="jp">${esc(x.kun.join('、'))}</span><br>হিরাগানা: <span class="jp">${esc(hira(x.on.join('、')))}</span> / <span class="jp">${esc(hira(x.kun.join('、')))}</span></p><p class="mute">${x.s} স্ট্রোক, রেডিকাল ${esc(x.rad)}${x.g?`, গ্রেড ${x.g}`:''}${(x.bg||x.uw)?`<br>${x.bg?`${x.bg} টি শব্দ এটি দিয়ে শুরু হয়`:''}${x.bg&&x.uw?' · ':''}${x.uw?`${x.uw} টি শব্দে ব্যবহৃত`:''}`:''}</p><h3>এই কাঞ্জির শব্দ</h3><div class="chips">${x.w.filter(w=>D.vm[w]).map(w=>`<button class="jp" data-k="v${D.vm[w].id}">${esc(w)} <small>${esc(g1(D.vm[w]))}</small></button>`).join('')}</div>`;
 if(x.ty=='g')h+=`<div class="mid">${esc(x.p)}</div><h3>${esc(gm(x))}</h3><p class="mute">${bn()?esc(x.m):''}</p><p>গঠন: <b>${esc(x.fm)}</b></p><p>${(x.tg||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</p>${x.nb&&bn()?`<p>${esc(mk(x.nb))}</p>`:''}${x.x.map(ex).join('')}`;
 h+=`<br>${S.srs[k]?'<p class="mute">রিভিউ তালিকায় আছে।</p>':`<button class="btn" data-a="add" data-id="${esc(k)}">রিভিউতে যোগ করুন</button>`}`;
@@ -201,4 +201,31 @@ new MutationObserver(ms=>ms.forEach(m=>{m.addedNodes.forEach(trn);if(m.type!='ch
   watchOpen();
   // Also handle hardware back via visualViewport / nothing else needed for pure web
 })();
+})();
+
+/* red ink — wrap kanji runs so the CSS toggle can ink them without touching kana */
+(()=>{
+const KJ=/[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF々]/;
+const SKIP='svg,script,style,textarea,title,select,option,.brand,.pvs,.kj';
+const wrap=root=>{
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null),hits=[];let n;
+  while(n=w.nextNode()){const p=n.parentElement;if(p&&!p.closest(SKIP)&&KJ.test(n.nodeValue))hits.push(n)}
+  for(const t of hits){
+    const f=document.createDocumentFragment();
+    for(const part of t.nodeValue.split(/([\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF々])/)){
+      if(!part)continue;
+      if(KJ.test(part)){const s=document.createElement('span');s.className='kj';s.textContent=part;f.appendChild(s)}
+      else f.appendChild(document.createTextNode(part))
+    }
+    t.parentNode&&t.parentNode.replaceChild(f,t)
+  }
+};
+new MutationObserver(ms=>{for(const m of ms){
+  if(m.type=='characterData'){const p=m.target.parentElement;if(p&&!p.closest(SKIP)&&KJ.test(m.target.nodeValue))wrap(p);continue}
+  for(const n of m.addedNodes){
+    if(n.nodeType==3){const p=n.parentElement;if(p&&!p.closest(SKIP)&&KJ.test(n.nodeValue))wrap(p)}
+    else if(n.nodeType==1)wrap(n)
+  }
+}}).observe(document.body,{childList:true,subtree:true,characterData:true});
+wrap(document.body);
 })();

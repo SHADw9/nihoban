@@ -25,20 +25,31 @@ entirely in `src/css/style.css`; no runtime CSS is injected.
 - **Token contract.** Keep every existing token name: `--bg --card --ink --mute
   --line --pri --acc --mat --gold --ok --no --cv --ck --cg --cq --h1 --h2 --sh
   --jp --ui`. The redesign adds only `--panel` (ink surface), `--onpanel` (text
-  on it) and `--onacc` (text on `--acc`). JS inline styles use these names, so do
-  not rename or drop them.
+  on it) and `--onacc` (text on `--acc`); the reading/ink layer then adds `--shu`
+  (red-ink text), `--shu-on` (the same on dark panels) and `--washi-img` (the
+  paper-fibre background). JS inline styles use these names, so do not rename or
+  drop them.
 - **Structure of `style.css`.** Base `:root` (Sumi Ink light), the
   `prefers-color-scheme` + `[data-theme=dark]` blocks, then one block per palette,
   then the feature CSS, then the design layer at the *end*. The design layer
   overrides ordinary selectors; the earlier rules remain as fallbacks. Add new
   visual rules to the end so they win by source order.
-- **Palettes (10).** `atelier` (Sumi Ink, the default; no `data-pal` attribute),
-  `ai`, `zen`, `sakura`, `matcha`, `indigo`, `maroon`, `bengal`, `yoru`,
-  `midnight`. `yoru` and `midnight` are intentionally dark in every appearance
-  mode (`color-scheme: dark`); the rest have light + dark (+ system) variants.
-  `PAL()` in `ui.js` holds the settings swatch metadata and `applyPal()` removes
-  `data-pal` for `atelier`. Adding a scheme needs: a token block for
-  light/dark/system in `style.css`, a `PAL()` row, and a contrast check.
+- **Palettes (11).** `atelier` (Sumi Ink, the default; no `data-pal` attribute),
+  `washi` (Washi Paper), `ai`, `zen`, `sakura`, `matcha`, `indigo`, `maroon`,
+  `bengal`, `yoru`, `midnight`. `yoru` and `midnight` are intentionally dark in
+  every appearance mode (`color-scheme: dark`); the rest have light + dark (+
+  system) variants. `PAL()` in `ui.js` holds the settings swatch metadata and
+  `applyPal()` removes `data-pal` for `atelier`. Adding a scheme needs: a token
+  block for light/dark/system in `style.css`, a `PAL()` row, and a contrast check.
+- **Paper texture and red ink.** `S.tex` (`data-tex` on `<html>`) turns the washi
+  fibre grain on for *any* palette via `--washi-img`; choosing `washi` enables it
+  automatically, and the settings toggle can turn it off again. `S.red`
+  (`data-red`) inks **only kanji**: `core.js` wraps every kanji run in a
+  `<span class="kj">` (a `MutationObserver` keeps up with re-renders) and the rule
+  colors `.kj` in `--shu` — kana and furigana keep the normal `--mute`/`--ink`
+  colors, the `header .brand i` seal and the settings swatch previews (`.pvs`)
+  keep their own colors, and dark panels use `--shu-on`. Both toggles live in
+  settings and go through `applyPal()`.
 - **Charcoal dark mode.** Every scheme renders dark mode on the same
   charcoal-black ground — `--bg:#1A1A1A`, `--card:#232323`, `--line:#3A3A3A`,
   ink `#EDEAE3`, mute `#A6A29A` — defined by the final charcoal block at the
