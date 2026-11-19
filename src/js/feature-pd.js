@@ -69,12 +69,9 @@ ${[0,1,2].map(v=>`<button data-pd="ts" data-v="${v}" class="${(S.pdTs??1)==v?'on
 <div class="dock">${!stOf(T[0])?`<button class="btn o" style="width:100%" data-pd="done">${ic('ok',18)} ${t('Mark as listened','শোনা হয়েছে হিসেবে দাগান')}</button>`:''}</div>`};
 
 V.pd=()=>{if(cur()!='pd')return;
-M.innerHTML=PV.e?player():`<a class="back" href="#learn">${ic('back',18)} ${t('Study','স্টাডি')}</a><h2>${t('Japanese Podcast','জাপানিজ পডকাস্ট')}</h2>${browser()}`;
+M.innerHTML=PV.e?player():`<a class="back" href="#library">${ic('back',18)} ${t('Library','লাইব্রেরি')}</a><h2>${t('Japanese Podcast','জাপানিজ পডকাস্ট')}</h2>${browser()}`;
 if(PI.ed&&PV.e){const el=$('#pdName');el&&(el.focus(),el.select())}};
-TAB.pd='learn';
-
-const baseLearn3=V.learn;
-V.learn=()=>{baseLearn3();$('.tiles',M)?.insertAdjacentHTML('beforeend',tile('#pd','mic',t('Japanese Podcast','জাপানিজ পডকাস্ট'),t('Listening practice · N5','শোনার অনুশীলন · N5'),'--cq'))};
+TAB.pd='library';
 
 const activeIdx=(T,cur)=>{let lo=0,hi=T[6].length-1,r=-1;
 while(lo<=hi){const m=(lo+hi)>>1;if(T[6][m][1]<=cur){r=m;lo=m+1}else hi=m-1}return r<0?0:r};

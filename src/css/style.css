@@ -584,3 +584,6 @@ nav a{color:color-mix(in srgb,var(--onpanel) 80%,transparent)}
 .ab small{font-size:12px}
 .abl{display:flex;gap:8px;flex-wrap:wrap}
 .abl .btn{min-height:38px;padding:8px 16px;font-size:13px}
+
+/* kanji grid readings — on'yomi / kun'yomi lists --------------------------------- */
+.kc .krd{font-size:15px;line-height:1.45;letter-spacing:.03em;margin:-2px 0 3px;overflow-wrap:anywhere}

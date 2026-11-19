@@ -74,6 +74,11 @@ entirely in `src/css/style.css`; no runtime CSS is injected.
   `link`, `layers`, `chat`, `mic`, `spark`, `refresh`, …). The mobile dock uses
   the same `<svg class="ic">` icons — no `nav a::before` glyphs; the JLPT AI link
   is the 5th item.
+- **Kanji grid readings.** `krd()` in `ui.js` prints the **first** on'yomi then
+  the **first** kun'yomi, in hiragana, separated by ` / ` (`一 → いち / ひと-`;
+  `日 → にち / ひ`). Okurigana dots are dropped (`ひと.つ → ひとつ`) while the
+  leading/trailing `-` markers are kept; `.kc .krd` styles the line under the
+  glyph.
 - **Home goal.** The old SVG ring is a 30-cell genkō grid (`.ggrid`, 3×10),
   filled `Math.round(min(1, done/goal)*30)`. Keep the numeric due/new/goal text.
 - **Sticky layers.** `.card` sticky players (Minna dialogues / podcast) sit at

@@ -6,7 +6,7 @@
 (()=>{
 const GRADES=[['Again','আবার'],['Hard','কঠিন'],['Good','ভালো'],['Easy','সহজ']];
 const key=(ls,sq)=>'m'+ls+'-'+sq;
-let MD=null,MV={ls:0,v:'words',i:0,fl:0,qi:0,a:null,lock:0,done:0,res:0,qs:null},MS='';
+let MD=null,MV={ls:0,v:'words',i:0,fl:0,qi:0,a:null,lock:0,done:0,res:0,qs:null},MS='',MVDECK=null,GODECK=0;
 
 (async()=>{MD=await dec('mn');
 for(let t=0;t<400;t++){if(S&&S.srs!==undefined)break;await new Promise(r=>setTimeout(r,100))}
@@ -43,25 +43,29 @@ return `<div class="card">${out.map(([ls,sq,w])=>`<div class="wrow">
 <span style="text-align:left"><small class="jp mute" style="display:block;font-size:12px">${esc(w[2])}</small><span style="display:block;font-size:14px;font-weight:600">${esc(meaning(w))}</span></span>
 ${sayBtn(w)}</div>`).join('')}${out.length>=60?`<p class="mute" style="margin:8px 0 0"><small>${t('Showing the first 60 matches','প্রথম ৬০টি দেখানো হচ্ছে')}</small></p>`:''}</div>`};
 
+const deckRow=k=>{const has=S.decks.filter(d=>d.items.includes(k));
+return `<div style="display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px">${S.decks.length?`<select id="mnDk" aria-label="${t('Deck','ডেক')}" style="flex:1;min-width:120px"><option value="">${t('Choose a deck','ডেক বাছুন')}</option>${S.decks.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('')}</select><button class="btn o" data-mn="dkadd">${ic('layers',16)} ${t('Add lesson to deck','পাঠ ডেকে যোগ করুন')}</button>`:`<a class="btn o" href="#decks">${ic('layers',16)} ${t('Create a deck','ডেক তৈরি করুন')}</a>`}${has.map(d=>`<button class="lk" data-mn="dkrm" data-d="${d.id}">${t('Remove from','সরান:')} ${esc(d.name)}</button>`).join('')}</div>`};
+
 const lessonView=()=>{if(!MD)return `<div class="card"><span class="ai-loading">${t('Loading…','লোড হচ্ছে…')}</span></div>`;
 const st=lstat(MV.ls);
 const head=`<a class="back" href="#mn" data-mn="back">${ic('back',18)} ${t('Lessons','পাঠ')}</a><h2>${t('Lesson','পাঠ')} ${MV.ls}</h2>
 <p class="mute" style="margin:-4px 0 8px"><small>${st.st}/${st.n} ${t('started','শুরু')} · ${st.ma} ${t('mastered','আয়ত্ত')}</small></p>
 <div class="bar" style="height:4px"><b style="width:${st.n?(st.ma/st.n*100):0}%;background:var(--ok)"></b></div>
-${chips([['words',t('Words','শব্দ')],['cards',t('Flashcards','ফ্ল্যাশকার্ড')],['quiz',t('Quiz','কুইজ')]],MV.v,'data-mn="mode" data-v')}`;
+${chips([['words',t('Words','শব্দ')],['cards',t('Flashcards','ফ্ল্যাশকার্ড')],['quiz',t('Quiz','কুইজ')]],MV.v,'data-mn="mode" data-v')}${MV.v=='words'?deckRow('m'+MV.ls):''}`;
 if(MV.v=='quiz')return head+quiz();
 if(MV.v=='words')return head+words();
 return head+cards()};
 
-const cards=()=>{const a=lsn(MV.ls);
+const cpool=()=>MVDECK?MVDECK.flatMap(ls=>lsn(ls).map((w,s)=>[ls,s,w])):lsn(MV.ls).map((w,s)=>[MV.ls,s,w]);
+const cards=()=>{const a=cpool();
 if(!a.length)return `<p class="mute">${t('No words in this lesson.','এই পাঠে শব্দ নেই।')}</p>`;
-if(MV.i>=a.length){const st=lstat(MV.ls);
-return `<div class="card fc"><b class="jp" style="font-size:30px">${t('Lesson done!','পাঠ শেষ!')}</b>
+if(MV.i>=a.length){const st={n:a.length,ma:a.filter(([ls,sq])=>S.srs[key(ls,sq)]?.ivl>=21).length};
+return `<div class="card fc"><b class="jp" style="font-size:30px">${MVDECK?t('Deck done!','ডেক শেষ!'):t('Lesson done!','পাঠ শেষ!')}</b>
 <p class="mute">${t('Cards graded this pass.','এইবার কার্ডগুলো মূল্যায়ন হয়েছে।')}</p>
 <div class="stat" style="width:100%"><span>${t('Mastered so far','এখন পর্যন্ত আয়ত্ত')}</span><b>${st.ma}/${st.n}</b></div>${barw(st.n?st.ma/st.n:0)}
 <div class="dock" style="width:100%"><button class="btn" style="width:100%" data-mn="restart">${t('Go again','আবার করুন')}</button>
-<button class="btn o" style="width:100%;margin-top:8px" data-mn="mode" data-v="quiz">${t('Quiz this lesson','পাঠের কুইজ')}</button></div></div>`}
-const w=a[MV.i],k=key(MV.ls,MV.i),c=S.srs[k];
+${MVDECK?'':`<button class="btn o" style="width:100%;margin-top:8px" data-mn="mode" data-v="quiz">${t('Quiz this lesson','পাঠের কুইজ')}</button>`}</div></div>`}
+const [ls,sq,w]=a[MV.i],k=key(ls,sq),c=S.srs[k];
 return `<p class="mute" style="margin:10px 0 4px;text-align:center"><small>${MV.i+1}/${a.length}${c?` · ${t('due','নির্ধারিত')}`:''}</small></p>
 <div class="bar" style="height:4px"><b style="width:${MV.i/a.length*100}%"></b></div>
 <div class="card fc" data-mn="flip" role="button" tabindex="0" aria-label="${t('Tap to flip','উল্টাতে চাপ দিন')}">
@@ -105,22 +109,30 @@ return `<p class="mute" style="margin:10px 0 4px"><small>${t('Question','প্�
 <div class="opts">${opts}</div>
 ${MV.a!=null?`<div class="card ${MV.a==q.oki?'fb g':'fb'}" style="margin-top:12px"><b>${MV.a==q.oki?t('Correct!','সঠিক!'):t('Not quite','হয়নি')}</b><p class="jp mute" style="margin:4px 0 0">${esc(q.x[2])} · ${esc(meaning(q.x))}</p><div class="dock"><button class="btn" style="width:100%" data-mn="qnext">${MV.qi+1>=MV.qs.length?t('Results','ফলাফল'):t('Next','পরের')}</button></div></div>`:''}`};
 
+const deckView=()=>{if(!MD)return `<div class="card"><span class="ai-loading">${t('Loading…','লোড হচ্ছে…')}</span></div>`;
+if(!MVDECK||!MVDECK.length)return browser();
+const n=MVDECK.reduce((s,ls)=>s+lsn(ls).length,0);
+return `<a class="back" href="#decks" data-mn="dkback">${ic('back',18)} ${t('Decks','ডেক')}</a><h2>${t('Deck practice','ডেক অনুশীলন')}</h2>
+<p class="mute" style="margin:-4px 0 10px"><small>${MVDECK.length} ${t('lessons','পাঠ')} · ${n} ${t('words','শব্দ')} — ${t('grade each card to save it to that lesson’s reviews','প্রতিটি কার্ড মূল্যায়ন করলে ওই পাঠের রিভিউতে জমা হবে')}</small></p>${cards()}`};
+
 V.mn=()=>{if(cur()!='mn')return;
-M.innerHTML=MV.ls?lessonView():`<a class="back" href="#learn">${ic('back',18)} ${t('Study','স্টাডি')}</a><h2>${t('Minna no Nihongo','মিননা নো নিহনগো')}</h2>${browser()}`};
-TAB.mn='learn';
+if(GODECK)GODECK=0;
+M.innerHTML=MVDECK?deckView():MV.ls?lessonView():`<a class="back" href="#library">${ic('back',18)} ${t('Library','লাইব্রেরি')}</a><h2>${t('Minna no Nihongo','মিননা নো নিহনগো')}</h2>${browser()}`};
+TAB.mn='library';
+V.mnDeck=a=>{MVDECK=a;GODECK=1;MV.i=0;MV.fl=0;MV.v='deck';MV.qs=null;MV.done=0;MV.res=0;if(cur()=='mn')V.mn();else location.hash='mn'};
+window.addEventListener('hashchange',()=>{if(cur()!='mn'){MVDECK=null;if(MV.v=='deck')MV.v='words'}});
 
-/* Study tile — chained after the other extra tiles */
-const baseLearn=V.learn;
-V.learn=()=>{baseLearn();$('.tiles',M)?.insertAdjacentHTML('beforeend',tile('#mn','book',t('Minna no Nihongo','মিননা নো নিহনগো'),t('50 lessons · 2,692 words','৫০ পাঠ · ২,৬৯২ শব্দ'),'--cg'))};
-
-const grade=g=>{const a=lsn(MV.ls),w=a[MV.i],k=key(MV.ls,MV.i);
+const grade=g=>{const [ls,sq]=cpool()[MV.i]||[];if(ls==null)return;const k=key(ls,sq);
 S.srs[k]??={ease:2.5,ivl:0,reps:0,lapse:0,due:Date.now()};
 S.srs[k]=calc(S.srs[k],g);save();
 MV.i++;MV.fl=0;V.mn()};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-mn]');if(!b||cur()!='mn')return;
 e.stopPropagation();const a=b.dataset.mn;
-if(a=='open'){MV.ls=+b.dataset.ls;MV.v='words';MV.i=0;MV.fl=0;MV.qs=null;S.mnLast=MV.ls;save()}
-else if(a=='back'){MV.ls=0}
+if(a=='open'){MVDECK=null;GODECK=0;MV.ls=+b.dataset.ls;MV.v='words';MV.i=0;MV.fl=0;MV.qs=null;S.mnLast=MV.ls;save()}
+else if(a=='back'){MVDECK=null;MV.ls=0}
+else if(a=='dkback'){MVDECK=null;MV.i=0}
+else if(a=='dkadd'){const id=$('#mnDk')?.value,q=id&&S.decks.find(d=>d.id==id),k='m'+MV.ls;if(q&&!q.items.includes(k)){q.items.push(k);save()}V.mn();return}
+else if(a=='dkrm'){const q=S.decks.find(d=>d.id==b.dataset.d);if(q){q.items=q.items.filter(x=>x!='m'+MV.ls);save()}V.mn();return}
 else if(a=='mode'){const v=b.dataset.v;if(v=='quiz'&&MV.v!='quiz')buildQuiz();if(v!='quiz')MV.qs=null;
 if(v=='cards'&&MV.i>=lsn(MV.ls).length)MV.i=0;MV.v=v}
 else if(a=='jump'){if(+b.dataset.ls&&+b.dataset.ls!=MV.ls){MV.ls=+b.dataset.ls;MV.v='words';MV.i=0;MV.fl=0;MV.qs=null}
@@ -139,8 +151,8 @@ return `<button data-mn="open" data-ls="${k}" style="background:var(--card);bord
 <b style="font-size:17px">${k}</b><small class="mute" style="display:block;font-size:10px">${st.ma}/${st.n}</small>
 <div class="bar" style="height:3px;margin-top:4px"><b style="width:${p*100}%;background:var(${done?'--ok':'--acc'})"></b></div></button>`}).join('')}</div>`});
 document.addEventListener('keydown',e=>{if(cur()!='mn'||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
-if(!MV.ls){if((e.key=='Enter'||e.key==' ')&&document.activeElement&&document.activeElement.id=='mnQ')return;return}
-if(MV.v=='cards'){if((e.key==' '||e.key=='Enter')&&!MV.fl){e.preventDefault();MV.fl=1;V.mn()}
+if(!MV.ls&&!MVDECK){if((e.key=='Enter'||e.key==' ')&&document.activeElement&&document.activeElement.id=='mnQ')return;return}
+if(MV.v=='cards'||MV.v=='deck'){if((e.key==' '||e.key=='Enter')&&!MV.fl){e.preventDefault();MV.fl=1;V.mn()}
 else if(MV.fl&&'1234'.includes(e.key))grade(+e.key-1)}
 else if(MV.v=='quiz'&&!MV.done){
 if('1234'.includes(e.key)&&!MV.lock){const i=+e.key-1;if(i<4){MV.lock=1;MV.a=i;const q=MV.qs[MV.qi];if(MV.a==q.oki)MV.res++;V.mn()}}

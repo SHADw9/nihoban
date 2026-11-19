@@ -24,13 +24,13 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 ![Grading a card](assets/screens/study-answer.png)
 
 ### Library
-- **Kana** — hiragana & katakana chart, choice quiz, and typing quiz, with a romaji toggle.
+- **Kana** — hiragana & katakana chart, choice quiz, and typing quiz, with a romaji toggle; save a script as a deck and practise it later.
 - **Vocabulary** — 7,811 JLPT words with level filters, furigana and romaji toggles, search.
 - **Kanji** — 2,383 kanji (JLPT-tagged) with animated **stroke order** (KanjiVG data),
   learning-state filters (New / Learning / Mastered / Saved), and search by Japanese,
   romaji, English or Bangla.
 - **Grammar** — 526 grammar points.
-- **Custom decks** — build your own deck out of any words and study it like the main queue.
+- **Custom decks** — build your own deck out of words, kanji, grammar, whole Minna lessons and kana sets, then study it like the main queue.
 - **Mistake notebook** — every wrong answer is kept for focused re-study.
 
 | Kana | Kanji | Library |
@@ -40,6 +40,7 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 ### Minna no Nihongo vocabulary
 - All **2,692 words from the 50-lesson Minna no Nihongo series**, organized lesson by lesson.
 - Per lesson: **Words → Flashcards → Quiz** flow with started/mastered tracking.
+- Add a whole lesson to any custom deck from the lesson page; deck practice mixes the lessons you picked.
 - Search across all 2,692 words; side-by-side word rows (Japanese left, romaji + meaning right).
 
 | Lesson grid | Lesson 1 words |
