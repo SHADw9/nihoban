@@ -24,7 +24,7 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 ![Grading a card](assets/screens/study-answer.png)
 
 ### Library
-- **Kana** — hiragana & katakana chart, choice quiz, and typing quiz, with a romaji toggle; save a script as a deck and practise it later.
+- **Kana** — hiragana & katakana chart, flashcards, choice quiz, and typing quiz, with a romaji toggle; save a script as a deck and practise it later.
 - **Vocabulary** — 7,811 JLPT words with level filters, furigana and romaji toggles, search.
 - **Kanji** — 2,383 kanji (JLPT-tagged) with animated **stroke order** (KanjiVG data),
   learning-state filters (New / Learning / Mastered / Saved), and search by Japanese,
@@ -32,6 +32,8 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 - **Grammar** — 526 grammar points.
 - **Custom decks** — build your own deck out of words, kanji, grammar, whole Minna lessons and kana sets, then study it like the main queue.
 - **Mistake notebook** — every wrong answer is kept for focused re-study.
+- **Swap the suffix** — 3,511 verbs and adjectives split into stem + ending, with casual/polite/more-forms walkthroughs, a six-second suffix quiz, and library example sentences where available.
+- **Prefixes** — 64 Japanese prefixes in 15 groups with Bangla and English meanings, 247 example words, expandable entries with speech, and a ten-question quiz.
 
 | Kana | Kanji | Library |
 |---|---|---|
@@ -94,11 +96,12 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 
 ### Progress & settings
 - XP and levels, **day streak**, weekly report, review/mastered counters.
-- Dark & light themes plus **11 color themes**, defaulting to **Washi Paper**
+- Dark & light themes plus **16 color themes**, defaulting to **Washi Paper**
   (handmade-paper ground with visible fibre), then Sumi Ink (washi, sumi,
   vermilion), Ai Indigo, Japanese Zen, Sakura Dream, Matcha Study, Modern Indigo,
-  Maroon & Beige, Bengal Clay, Yoru Lantern (always dark) and Midnight Japan
-  (always dark).
+  Maroon & Beige, Bengal Clay, Yoru Lantern (always dark), Midnight Japan
+  (always dark), and the five flat poster themes: Suffix Red, Oxblood & Sand,
+  Pine & Rice, Plum & Rice, Saffron Press.
 - **Washi texture slider (0–100)** — adds the paper-fibre grain to any theme, so
   the same palette can look clean or handmade; 0 turns it off.
 - **Red ink kanji** switch — draws only kanji in traditional vermilion ink, while
@@ -163,7 +166,7 @@ Hind Siliguri + Noto Sans Bengali for UI/Bangla) and loaded through
 - `src/fonts/*.woff2` — offline fonts
 - `src/data/*.js` — gzipped+base64 datasets (`d` app data, `so` stroke order,
   `fq` frequency corpus, `mn` Minna vocab, `dg` dialogue transcripts, `pd` podcast
-  transcripts), decoded at runtime by `dec()` in `js/core.js`
+  transcripts, `sfx` suffix-swap forms, `px` prefix lists), decoded at runtime by `dec()` in `js/core.js`
 - `src/js/*.js` — app code (`core`, `ui`, `ai`, plus one `feature-*` per module)
 - `src/audio/` — dialogue and podcast audio
 

@@ -116,7 +116,7 @@ if((e.key==' '||e.key=='Enter')&&!F.sh){e.preventDefault();F.sh=1;V.study()}else
 
 const t=(e,b)=>S.lang=='bn'?b:e;
 const dec=async id=>{const el=document.getElementById(id);const raw=((window.NBD||{})[id]!=null?(window.NBD||{})[id]:(el?el.textContent:'')).trim();const b=atob(raw);return await new Response(new Blob([Uint8Array.from(b,c=>c.charCodeAt(0))]).stream().pipeThrough(new DecompressionStream('gzip'))).json()};
-let SO,DK=null,KS={sc:'h',mode:'chart'},KQ=null;
+let SO,DK=null,KS={sc:'h',mode:'chart'},KQ=null,KF=null;
 const EN=`হোম=Home|অনুশীলন শুরু করুন=Start practice|অনুশীলন=Practice|কানা=Kana|ডেক=Decks|শব্দ কুইজ=Word quiz|কাঞ্জি কুইজ=Kanji quiz|কুইজ দিন=Take a quiz|কুইজ=Quiz|শব্দ=Words|কাঞ্জি=Kanji|ব্যাকরণ=Grammar|সেটিংস=Settings|আজকের পড়া=Today’s study|আজকের পর্ব শেষ=Session complete|আজকের কাজ শেষ=All done for today|টি কার্ড করেছেন। রোজ অল্প করে করলেই মনে থাকে।= cards done. A little every day makes it stick.|টি কার্ড করেছেন। টানা = cards done. Streak: |আজ =Today: | দিন।= days.|রিভিউ তালিকায় আছে।=Already in your reviews.|রিভিউতে যোগ করুন=Add to reviews|আগামী ৭ দিনের রিভিউ=Reviews in the next 7 days|রিভিউ=due|প্রতিদিন নতুন কার্ড=New cards per day|নতুন=new|স্তর, ১০টি প্রশ্ন। ভুল উত্তরগুলো আপনার রিভিউতে যোগ হবে।=level, 10 questions. Wrong answers are added to your reviews.|স্তর=Level|আয়ত্ত=mastered|শুরু=started|মোট=total|রবি=Sun|সোম=Mon|মঙ্গল=Tue|বুধ=Wed|বৃহ=Thu|শুক্র=Fri|শনি=Sat|উত্তর দেখুন=Show answer| বাকি= left|ভুল=Again|কঠিন=Hard|ঠিক=Good|সহজ=Easy| দিন= days|১০ মিনিট=10 min|অন:=On:|কুন:=Kun:|হিরাগানা:=Hiragana:|টি শব্দ এটি দিয়ে শুরু হয়=words start with it|টি শব্দে ব্যবহৃত=words use it| স্ট্রোক, রেডিকাল = strokes, radical |শুনুন=Listen|এই কাঞ্জির শব্দ=Words with this kanji|অন্য রূপ:=Other forms:|গঠন:=Formation:|বন্ধ=Close|, গ্রেড =, grade |জাপানি, romaji, ইংরেজি বা বাংলায় খুঁজুন=Search Japanese, romaji, English or Bangla|সব মুছুন=Reset all|সবগুলো সঠিক!=All correct!|সব=All|টি পাওয়া গেছে= found|আরও দেখান=Show more|যেগুলো ভুল হয়েছে:=Missed:|আবার খেলুন=Play again|প্রশ্ন =Question |কোডটি সঠিক নয়=Invalid code|সঠিক=Correct|পরের প্রশ্ন=Next question|ফলাফল=Results|ফুরিগানা=Furigana|দেখান=Show|লুকান=Hide|থিম=Theme|অটো=Auto|হালকা=Light|গাঢ়=Dark|ডেটা ব্যাকআপ=Data backup|এখানে ব্যাকআপ কোড পেস্ট করুন=Paste backup code here|ব্যাকআপ তৈরি করুন=Create backup|রিস্টোর করুন=Restore|অগ্রগতি শুধু এই ব্রাউজারে জমা থাকে।=Progress is saved only in this browser.|নিশ্চিত? আবার চাপুন=Sure? Press again|লোড হচ্ছে…=Loading…`.split('|').map(p=>p.split('=')).sort((a,b)=>b[0].length-a[0].length),BR=/[\u0980-\u09FF]/,tr1=s=>s.split(/(\u2063[^\u2063]*\u2063)/).map((p,i)=>i%2?p:EN.reduce((a,[b,e])=>a.split(b).join(e),p)).join('');
 function trn(n){if(S.lang!='en')return;if(n.nodeType==3){if(BR.test(n.data)){const s=tr1(n.data);if(s!=n.data)n.data=s}}else if(n.nodeType==1){for(const a of['placeholder','title']){const v=n.getAttribute(a);if(v&&BR.test(v)){const s=tr1(v);if(s!=v)n.setAttribute(a,s)}}n.childNodes.forEach(trn)}}
 const HD=$('header').innerHTML,hdr=()=>{document.documentElement.lang=S.lang;$('header').innerHTML=HD;$('[data-x=lg]').textContent=S.lang=='en'?'বাংলা':'English'};
@@ -143,8 +143,15 @@ const KR=[['あいうえお','a i u e o'],['かきくけこ','ka ki ku ke ko'],[
 const kk=s=>s.replace(/[ぁ-ゖ]/g,c=>String.fromCharCode(c.charCodeAt(0)+96)),kl=sc=>KR.flatMap(([g,r],gi)=>{const rs=r.split(' ');return[...g.matchAll(/.[ゃゅょ]?/g)].map((m,i)=>({c:sc=='k'?kk(m[0]):m[0],r:rs[i],s:gi<10?0:gi<15?1:2}))});
 const kdk=sc=>{const k='kana:'+sc,has=S.decks.filter(d=>d.items.includes(k));
 return `<div style="display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px">${S.decks.length?`<select id="kdkSel" aria-label="${t('Deck','ডেক')}" style="flex:1;min-width:120px"><option value="">${t('Choose a deck','ডেক বাছুন')}</option>${S.decks.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('')}</select><button class="btn o" data-x="kda">${ic('layers',16)} ${t('Add this kana set','এই কানা সেট যোগ করুন')}</button>`:`<a class="btn o" href="#decks">${ic('layers',16)} ${t('Create a deck','ডেক তৈরি করুন')}</a>`}${has.map(d=>`<button class="lk" data-x="kdk" data-d="${d.id}">${t('Remove from','সরান:')} ${esc(d.name)}</button>`).join('')}</div>`};
-V.kana=()=>{const sc=KS.sc,L=kl(sc),h=`<h2>${t('Kana','কানা')}</h2>${chips([['h','ひらがな Hiragana'],['k','カタカナ Katakana']],sc,'data-ks')}${chips([['chart',t('Chart','চার্ট')],['mc',t('Choice quiz','বাছাই কুইজ')],['ty',t('Typing quiz','টাইপ কুইজ')]],KS.mode,'data-km')}${chips([[1,t('Romaji on','রোমাজি চালু')],[0,t('Romaji off','রোমাজি বন্ধ')]],S.roma,'data-roma')}${kdk(sc)}`;
+V.kana=()=>{const sc=KS.sc,L=kl(sc),h=`<h2>${t('Kana','কানা')}</h2>${chips([['h','ひらがな Hiragana'],['k','カタカナ Katakana']],sc,'data-ks')}${chips([['chart',t('Chart','চার্ট')],['fc',t('Flashcards','ফ্ল্যাশকার্ড')],['mc',t('Choice quiz','বাছাই কুইজ')],['ty',t('Typing quiz','টাইপ কুইজ')]],KS.mode,'data-km')}${chips([[1,t('Romaji on','রোমাজি চালু')],[0,t('Romaji off','রোমাজি বন্ধ')]],S.roma,'data-roma')}${kdk(sc)}`;
 if(KS.mode=='chart'){M.innerHTML=h+[t('Basic','মূল বর্ণ'),t('Voiced','ঘোষ বর্ণ'),t('Combined sounds','যুক্ত ধ্বনি')].map((n,i)=>`<h3>${n}</h3><div class="kg">${L.filter(x=>x.s==i).map(x=>`<button class="kt" data-x="kt" data-c="${x.c}" data-r="${x.r}"><b>${x.c}</b>${S.roma?`<span>${x.r}</span>`:''}</button>`).join('')}</div>`).join('')+`<p class="mute"><br>${t('Tap a kana to hear it and see its stroke order.','কানায় ট্যাপ করে উচ্চারণ ও স্ট্রোক ক্রম দেখুন।')}</p>`;return}
+if(KS.mode=='fc'){if(!KF)KF={a:sh(L),i:0,fl:0};
+if(KF.i>=KF.a.length){M.innerHTML=h+`<div class="card fc"><b class="jp" style="font-size:30px">${t('Kana set done!','কানা সেট শেষ!')}</b><p class="mute">${KF.a.length} ${t('kana practised','কানা অনুশীলন হয়েছে')}</p><div class="dock" style="width:100%"><button class="btn" style="width:100%" data-x="kfr">${t('Go again','আবার করুন')}</button></div></div>`;return}
+const q=KF.a[KF.i];
+M.innerHTML=h+`<p class="mute" style="margin:10px 0 4px;text-align:center"><small>${KF.i+1}/${KF.a.length}</small></p><div class="bar" style="height:4px"><b style="width:${KF.i/KF.a.length*100}%"></b></div>
+<div class="card fc" data-x="kff" role="button" tabindex="0" aria-label="${t('Tap to reveal','উল্টাতে চাপ দিন')}"><div class="mid" style="width:100%;text-align:center"><b class="jp" style="font-size:56px">${q.c}</b>
+${KF.fl?`<p class="jp mute" style="font-size:22px;margin:8px 0 0">${q.r}</p>`:`<p class="mute" style="margin:8px 0 0"><small>${t('Tap to reveal','উল্টাতে চাপ দিন')}</small></p>`}</div></div>
+<div class="dock"><button class="btn" style="width:100%" data-x="${KF.fl?'kfn':'kff'}">${KF.fl?t('Next card','পরের কার্ড'):t('Show romaji','রোমাজি দেখুন')}</button></div>`;return}
 if(!KQ){const w=S.kana,x=L.map(y=>[y,Math.random()+((w[y.c]?.ok||0)-3*(w[y.c]?.no||0))*.15]).sort((a,b)=>a[1]-b[1])[0][0];KQ={x,o:sh([x,...sh(L.filter(y=>y!=x)).slice(0,3)]),res:0}}
 const q=KQ;M.innerHTML=h+`<p class="mute">${t('Score','স্কোর')} ${KS.ok||0}/${KS.n||0}</p><div class="card fc"><div class="sq"><span class="big">${q.x.c}</span></div>${q.res?`<p class="ans" style="color:var(--${q.res>0?'ok':'no'})">${q.res>0?t('Correct','সঠিক'):t('Answer','উত্তর')+': '+q.x.r}</p>`:''}</div>`+(q.res<0?`<button class="btn" data-x="kn">${t('Next','পরের')}</button>`:q.res>0?'':KS.mode=='mc'?`<div class="opts">${q.o.map(y=>`<button class="opt" data-x="ka" data-v="${y.r}">${y.r}</button>`).join('')}</div>`:`<input id="kin" autocomplete="off" autocapitalize="off" placeholder="${t('Type the romaji','রোমাজি লিখুন')}"><br><br><button class="btn" data-x="ka">${t('Check','দেখুন')}</button>`);
 if(!q.res&&KS.mode=='ty')$('#kin')?.focus({preventScroll:true})};
@@ -154,9 +161,12 @@ function kdet(c,r){DL.innerHTML=`<button class="lk" style="float:right" data-a="
 document.addEventListener('click',e=>{const el=e.target.closest('[data-x],[data-lang],[data-typed],[data-ks],[data-km],[data-ml],[data-roma]');if(!el)return;const d=el.dataset,x=d.x;if(d.roma!=null){S.roma=+d.roma;save();const rr=cur();return (V[rr]||V.kana)();}
 if(d.lang||x=='lg'){S.lang=d.lang||(S.lang=='en'?'bn':'en');save();hdr();return route()}
 if(d.ml){S.ml=d.ml;save();return V.settings()}if(d.typed!=null){S.typed=+d.typed;save();return V.settings()}
-if(d.ks){KS.sc=d.ks;KQ=null;return V.kana()}if(d.km){KS.mode=d.km;KQ=null;return V.kana()}
+if(d.ks){KS.sc=d.ks;KQ=null;KF=null;return V.kana()}if(d.km){KS.mode=d.km;KQ=null;KF=null;return V.kana()}
 else if(x=='kda'){const q=dk($('#kdkSel')?.value),k='kana:'+KS.sc;if(q&&!q.items.includes(k))q.items.push(k);save();V.kana()}
 else if(x=='kdk'){const q=dk(d.d);if(q){q.items=q.items.filter(k=>k!='kana:'+KS.sc);save()}V.kana()}
+else if(x=='kff'){if(!KF)return;KF.fl=KF.fl?0:1;V.kana()}
+else if(x=='kfn'){if(!KF)return;KF.i++;KF.fl=0;V.kana()}
+else if(x=='kfr'){KF=null;V.kana()}
 if(x=='kt')kdet(d.c,d.r);else if(x=='ka')kans(d.v??$('#kin').value);else if(x=='kn'){KQ=null;V.kana()}
 else if(x=='so'){const g=el.closest('div,dialog,main').querySelector('.ac');g.classList.add('off');g.getBoundingClientRect();g.classList.remove('off')}
 else if(x=='ta')chkT();
@@ -166,10 +176,10 @@ else if(x=='dp'){const q=d.id=='weak'?null:dk(d.id),its=d.id=='weak'?weak():(q?q
 const reg=its.filter(k=>D.m[k]),mn=its.filter(k=>/^m\d+$/.test(k)).map(k=>+k.slice(1)).filter(n=>n>=1&&n<=50),kn=its.filter(k=>/^kana:[hk]$/.test(k));
 if(reg.length||!mn.length&&!kn.length){DK=reg;Q=null;location.hash=='#study'?V.study():location.hash='study'}
 else if(mn.length&&V.mnDeck){V.mnDeck(mn);location.hash='mn'}
-else if(kn.length){KS.sc=kn[0].slice(5);KS.mode='mc';KQ=null;location.hash='kana'}}
+else if(kn.length){KS.sc=kn[0].slice(5);KS.mode='fc';KQ=null;KF=null;location.hash='kana'}}
 else if(x=='dps'){const k=d.k;
 if(/^m\d+$/.test(k)&&V.mnDeck){V.mnDeck([+k.slice(1)]);location.hash='mn'}
-else if(/^kana:[hk]$/.test(k)){KS.sc=k.slice(5);KS.mode='mc';KQ=null;location.hash='kana'}}
+else if(/^kana:[hk]$/.test(k)){KS.sc=k.slice(5);KS.mode='fc';KQ=null;KF=null;location.hash='kana'}}
 else if(x=='da'){const q=dk($('#ds').value);if(q&&!q.items.includes(d.id))q.items.push(d.id);save();det(d.id)}
 else if(x=='dr'){const q=dk(d.d);q.items=q.items.filter(k=>k!=d.id);save();det(d.id)}});
 document.addEventListener('keydown',e=>{if(e.key!='Enter')return;const i=e.target.id;if(i=='ta')chkT();else if(i=='kin')kans($('#kin').value);else if(i=='dn')$('[data-x=nd]').click()});

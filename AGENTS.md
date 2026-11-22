@@ -5,13 +5,13 @@ Nihoban: a Japanese-learning app, packaged for Android (Capacitor 8) and Linux (
 ## Source layout (`src/`)
 
 - `src/index.html` is a **~2 KB shell**: metas, `<link>` to the two stylesheets, tiny body markup (`<header>`, `<main id="M">`, `<dialog id="DL">`), then `<script src>` tags — data first (`data/*.js`), then code (`js/*.js`). Never re-inline assets.
-- `src/css/style.css` (all styles) and `src/css/fonts.css` (6 `@font-face` loading `src/fonts/*.woff2` — committed binary files: Klee One, Hind Siliguri, Noto Sans Bengali).
-- `src/data/*.js` — gzipped+base64 datasets exposed as `window.NBD.<id>` globals: `d` (app core data), `so` (KanjiVG stroke order), `fq` (frequency corpus), `mn` (Minna vocab), `dg` (dialogue transcripts), `pd` (podcast transcripts). They are decoded at runtime by `dec(id)` in `js/core.js` (gzip via `DecompressionStream`).
-- `src/js/` — in load order: `core.js` (app plumbing: `$`, state, SRS, routing), `ui.js` (2.0 redesign layer + base routes), `ai.js` (JLPT AI), then `feature-fq.js`, `feature-mn.js`, `feature-dg.js`, `feature-pd.js` (each registers its route/tile; e.g. pd → `#pd`, dg → `#dg`, freq → `#freq`, mn → `#mn`).
+- `src/css/style.css` (all styles) and `src/css/fonts.css` (7 `@font-face` loading `src/fonts/*.woff2` — committed binary files: Klee One, Hind Siliguri, Noto Sans Bengali, Anton).
+- `src/data/*.js` — gzipped+base64 datasets exposed as `window.NBD.<id>` globals: `d` (app core data), `so` (KanjiVG stroke order), `fq` (frequency corpus), `mn` (Minna vocab), `dg` (dialogue transcripts), `pd` (podcast transcripts), `sfx` (Swap-the-suffix verb/adjective forms), `px` (prefixes with examples). They are decoded at runtime by `dec(id)` in `js/core.js` (gzip via `DecompressionStream`).
+- `src/js/` — in load order: `core.js` (app plumbing: `$`, state, SRS, routing), `ui.js` (2.0 redesign layer + base routes), `ai.js` (JLPT AI), then `feature-fq.js`, `feature-mn.js`, `feature-dg.js`, `feature-pd.js`, `feature-sfx.js`, `feature-px.js` (each registers its route/tile; e.g. pd → `#pd`, dg → `#dg`, freq → `#freq`, mn → `#mn`, sfx → `#sfx`, px → `#px`).
 - `src/audio/` — dialogue (`d###.mp3`) and podcast (`podcast-<lv>-<nn>.ogg`) files.
 - **Never read any file whole blindly** — `index.html` and the JS files are fine to read; locate things with `grep` and edit with narrow, exact-context replacements. `data/*.js` are single huge lines — never open them.
 - `www/` is **generated** (gitignored). Never edit it. After changing `src/`, run `npm run prepare-www` (or `npm start`, which does it first).
-- `scripts/prepare-www.mjs` wipes and rebuilds `www/`: copies `css/ js/ data/ fonts/ audio/` and writes `index.html` with `src/tts-bridge.js` injected as `<script src="tts-bridge.js">` right after the `<meta charset>` tag (falls back to after `<head>`, then to prepending). The injection is skipped if the string `tts-bridge.js` appears *anywhere* in the HTML — never mention that filename in `src/`, not even in a comment, and don't rename the file.
+- `scripts/prepare-www.mjs` wipes and rebuilds `www/`: copies `css/ js/ data/ fonts/ audio/` plus `logo.svg` and writes `index.html` with `src/tts-bridge.js` injected as `<script src="tts-bridge.js">` right after the `<meta charset>` tag (falls back to after `<head>`, then to prepending). The injection is skipped if the string `tts-bridge.js` appears *anywhere* in the HTML — never mention that filename in `src/`, not even in a comment, and don't rename the file.
 - `scripts/split-app.mjs` is a one-time migration that split the old 8 MB monolith into the layout above; it must not run again (it throws on the current shell — keep it only as history).
 - No lockfile; CI uses plain `npm install`.
 - To add a podcast episode: rebuild `src/data/pd.js` (gzipped+base64 `NBD.pd='…'`) from the transcript JSON — episodes carry their own `[ep#, level, durSec, title, [channel, url], utts]` credit tuple; compress audio as 64 k mono Opus `.ogg` into `src/audio/`.
@@ -34,14 +34,19 @@ entirely in `src/css/style.css`; no runtime CSS is injected.
   then the feature CSS, then the design layer at the *end*. The design layer
   overrides ordinary selectors; the earlier rules remain as fallbacks. Add new
   visual rules to the end so they win by source order.
-- **Palettes (11).** `washi` (Washi Paper, **the default**; `data-pal=washi`),
+- **Palettes (16).** `washi` (Washi Paper, **the default**; `data-pal=washi`),
   `atelier` (Sumi Ink; no `data-pal` attribute), `ai`, `zen`, `sakura`, `matcha`,
-  `indigo`, `maroon`, `bengal`, `yoru`, `midnight`. `yoru` and `midnight` are
+  `indigo`, `maroon`, `bengal`, `yoru`, `midnight`, plus the five poster
+  schemes `suffix`, `oxblood`, `pine`, `plum`, `saffron`. `yoru` and `midnight` are
   intentionally dark in every appearance mode (`color-scheme: dark`); the rest
-  have light + dark (+ system) variants. `PAL()` in `ui.js` holds the settings
+  have light + dark (+ system) variants; the poster schemes are flat, Anton-labelled
+  and suppress the washi grain. `PAL()` in `ui.js` holds the settings
   swatch metadata and `applyPal()` removes `data-pal` for `atelier`. Adding a
   scheme needs: a token block for light/dark/system in `style.css`, a `PAL()`
   row, and a contrast check.
+- **Brand mark.** A cream torii with a rising sun sits in the vermilion hanko
+  square. The header uses an inline SVG (`index.html`); the same artwork is
+  `src/logo.svg` (favicon) and `assets/icon-*` / `build/icon.png` for packaging.
 - **Paper texture and red ink.** `S.tex` is a 0–100 visibility level for the
   washi fibre grain: `applyPal()` writes `--washi-img` from `washi(S.tex)` (the
   two turbulence layers' `opacity`) and sets `data-tex` while it is above 0, so

@@ -19,5 +19,6 @@ for (const dir of ['css', 'js', 'data', 'fonts', 'audio']) {
   if (existsSync('src/' + dir)) cpSync('src/' + dir, 'www/' + dir, { recursive: true });
 }
 cpSync('src/tts-bridge.js', 'www/tts-bridge.js');
+if (existsSync('src/logo.svg')) cpSync('src/logo.svg', 'www/logo.svg');
 
 console.log('www/ ready (page: ' + (html.length / 1024 | 0) + ' KB, assets: css/js/data/fonts/audio)');

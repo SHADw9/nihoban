@@ -1,7 +1,8 @@
-/* Offline fonts: Klee One (JP default), Hind Siliguri (UI), Noto Sans Bengali */
+/* Offline fonts: Klee One (JP default), Hind Siliguri (UI), Noto Sans Bengali, Anton (poster labels) */
 @font-face{font-family:'Klee One';font-style:normal;font-weight:400;font-display:swap;src:url('../fonts/klee-one-400.woff2') format('woff2')}
 @font-face{font-family:'Klee One';font-style:normal;font-weight:600;font-display:swap;src:url('../fonts/klee-one-600.woff2') format('woff2')}
 @font-face{font-family:'Hind Siliguri';font-style:normal;font-weight:400;font-display:swap;src:url('../fonts/hind-siliguri-400.woff2') format('woff2')}
 @font-face{font-family:'Hind Siliguri';font-style:normal;font-weight:600;font-display:swap;src:url('../fonts/hind-siliguri-600.woff2') format('woff2')}
 @font-face{font-family:'Noto Sans Bengali';font-style:normal;font-weight:400;font-display:swap;src:url('../fonts/noto-sans-bengali-400.woff2') format('woff2')}
 @font-face{font-family:'Noto Sans Bengali';font-style:normal;font-weight:600;font-display:swap;src:url('../fonts/noto-sans-bengali-600.woff2') format('woff2')}
+@font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;src:url('../fonts/anton-400.woff2') format('woff2')}
