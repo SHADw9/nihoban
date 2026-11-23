@@ -8,7 +8,7 @@ Nihoban: a Japanese-learning app, packaged for Android (Capacitor 8) and Linux (
 - `src/css/style.css` (all styles) and `src/css/fonts.css` (7 `@font-face` loading `src/fonts/*.woff2` — committed binary files: Klee One, Hind Siliguri, Noto Sans Bengali, Anton).
 - `src/data/*.js` — gzipped+base64 datasets exposed as `window.NBD.<id>` globals: `d` (app core data), `so` (KanjiVG stroke order), `fq` (frequency corpus), `mn` (Minna vocab), `dg` (dialogue transcripts), `pd` (podcast transcripts), `sfx` (Swap-the-suffix verb/adjective forms), `px` (prefixes with examples). They are decoded at runtime by `dec(id)` in `js/core.js` (gzip via `DecompressionStream`).
 - `src/js/` — in load order: `core.js` (app plumbing: `$`, state, SRS, routing), `ui.js` (2.0 redesign layer + base routes), `ai.js` (JLPT AI), then `feature-fq.js`, `feature-mn.js`, `feature-dg.js`, `feature-pd.js`, `feature-sfx.js`, `feature-px.js` (each registers its route/tile; e.g. pd → `#pd`, dg → `#dg`, freq → `#freq`, mn → `#mn`, sfx → `#sfx`, px → `#px`).
-- `src/audio/` — dialogue (`d###.mp3`) and podcast (`podcast-<lv>-<nn>.ogg`) files.
+- `src/audio/` — podcast (`podcast-<lv>-<nn>.ogg`) files only. The Minna dialogues (`#dg`) have no audio files: `feature-dg.js` speaks each transcript line through `speechSynthesis`, which `tts-bridge.js` routes to Android native TTS / Linux spd-say (Web Speech fallback in a browser).
 - **Never read any file whole blindly** — `index.html` and the JS files are fine to read; locate things with `grep` and edit with narrow, exact-context replacements. `data/*.js` are single huge lines — never open them.
 - `www/` is **generated** (gitignored). Never edit it. After changing `src/`, run `npm run prepare-www` (or `npm start`, which does it first).
 - `scripts/prepare-www.mjs` wipes and rebuilds `www/`: copies `css/ js/ data/ fonts/ audio/` plus `logo.svg` and writes `index.html` with `src/tts-bridge.js` injected as `<script src="tts-bridge.js">` right after the `<meta charset>` tag (falls back to after `<head>`, then to prepending). The injection is skipped if the string `tts-bridge.js` appears *anywhere* in the HTML — never mention that filename in `src/`, not even in a comment, and don't rename the file.
@@ -34,10 +34,11 @@ entirely in `src/css/style.css`; no runtime CSS is injected.
   then the feature CSS, then the design layer at the *end*. The design layer
   overrides ordinary selectors; the earlier rules remain as fallbacks. Add new
   visual rules to the end so they win by source order.
-- **Palettes (16).** `washi` (Washi Paper, **the default**; `data-pal=washi`),
-  `atelier` (Sumi Ink; no `data-pal` attribute), `ai`, `zen`, `sakura`, `matcha`,
-  `indigo`, `maroon`, `bengal`, `yoru`, `midnight`, plus the five poster
-  schemes `suffix`, `oxblood`, `pine`, `plum`, `saffron`. `yoru` and `midnight` are
+- **Palettes (16).** `oxblood` (Oxblood & Sand, **the default**; `data-pal=oxblood`,
+  a poster scheme), `washi` (Washi Paper), `atelier` (Sumi Ink; no `data-pal`
+  attribute), `ai`, `zen`, `sakura`, `matcha`, `indigo`, `maroon`, `bengal`,
+  `yoru`, `midnight`, plus the other four poster schemes `suffix`, `pine`,
+  `plum`, `saffron`. `yoru` and `midnight` are
   intentionally dark in every appearance mode (`color-scheme: dark`); the rest
   have light + dark (+ system) variants; the poster schemes are flat, Anton-labelled
   and suppress the washi grain. `PAL()` in `ui.js` holds the settings
@@ -51,9 +52,10 @@ entirely in `src/css/style.css`; no runtime CSS is injected.
   washi fibre grain: `applyPal()` writes `--washi-img` from `washi(S.tex)` (the
   two turbulence layers' `opacity`) and sets `data-tex` while it is above 0, so
   the grain works on *any* palette. Picking `washi` raises it to at least 60.
-  `index.html` ships `data-pal="washi" data-tex="1"` for a flash-free default,
-  and a one-time `S.wm` migration moves the old default (`atelier`) to `washi`
-  with the grain on. `S.red`
+  `index.html` ships `data-pal="oxblood"` for a flash-free default (poster
+  schemes suppress the grain), and the `S.wm` migrations walk old defaults
+  forward: `atelier` → `washi` with the grain on (wm 1), then `washi` →
+  `oxblood` (wm 2). Explicit picks of any other palette are left alone. `S.red`
   (`data-red`) inks **only kanji**: `core.js` wraps every kanji run in a
   `<span class="kj">` (a `MutationObserver` keeps up with re-renders) and the rule
   colors `.kj` in `--shu` — kana and furigana keep the normal `--mute`/`--ink`

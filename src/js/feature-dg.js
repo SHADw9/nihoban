@@ -1,13 +1,14 @@
-
-/* Nihoban Minna Dialogues — the textbook audio (87 tracks, lessons 1-25,
-   embedded mp3s in src/audio/) with synced Whisper transcripts embedded
-   gzipped in <script id="dg">: tap any line to seek, active-line follow,
-   furigana / reading toggles, playback speed for shadowing. */
+/* Nihoban Minna Dialogues — the textbook conversations (87 tracks, lessons
+   1-25) with synced transcripts embedded gzipped in data/dg.js. No audio
+   files: each line is spoken by the device's Japanese voice (Android native
+   TTS via the bridge, spd-say on Linux, Web Speech in a browser). Tap any
+   line to hear it, active-line follow, furigana / reading toggles, playback
+   speed for shadowing. */
 (()=>{
-let DD=null,DV={l:0,tr:0},DA=null,DI={};
+let DD=null,DV={l:0,tr:0},DI={},DTOK=0;
 const key=n=>'d'+n;
 const svgIc=(d,s=18)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${d}"/></svg>`;
-const PPLAY='M8 5v14l11-7z',PPAUSE='M6 5h4v14H6zM14 5h4v14h-4z';
+const PPLAY='M8 5v14l11-7z',PPAUSE='M6 5h4v14H6zM14 5h4v14h-4z',PPREV='M6 6h2v12H6zm3.5 6l8.5 6V6z',PNEXT='M16 6h2v12h-2zM6 18l8.5-6L6 6z';
 const pad=n=>String(n).padStart(2,'0');
 const TT=n=>DD&&DD.t.find(x=>x[0]==n);
 const lessonTracks=l=>DD?DD.t.filter(x=>x[1]==l):[];
@@ -16,17 +17,20 @@ const lessonTracks=l=>DD?DD.t.filter(x=>x[1]==l):[];
 for(let t=0;t<400;t++){if(S&&S.srs!==undefined)break;await new Promise(r=>setTimeout(r,100))}
 if(cur()=='dg')V.dg()})();
 
-const audio=()=>{if(!DA){DA=new Audio();DA.preload='metadata';
-/* finishing a track counts it as listened */
-DA.onended=()=>{DI.pl=0;if(DV.tr&&!stOf(DV.tr)&&DA.src.includes('MP3_'+pad(DV.tr))){S.dgDone??={};S.dgDone[key(DV.tr)]=1;save();V.dg()}}}
-const T=TT(DV.tr),src=`audio/MP3_${pad(T[0])}.mp3`;
-if(!DA.src.includes(`MP3_${pad(T[0])}`)){DA.src=src;DA.load()}
-/* a load that stalled while the view was hidden gets one retry */
-else if(DA.readyState==0&&DA.networkState==2&&!DA.error)DA.load();
-return DA};
-/* seeking before the mp3 metadata loads silently fails — queue it */
-const seekTo=s=>{const A=audio();if(A.readyState>=1)A.currentTime=s;
-else A.addEventListener('loadedmetadata',()=>{A.currentTime=s},{once:true})};
+/* native-voice playback: one utterance per line, chained on end. DTOK guards
+   against stale end/error callbacks after a pause, jump or track change. */
+const halt=()=>{DTOK++;DI.pl=0;try{speechSynthesis.cancel()}catch(e){}};
+const speakFrom=i=>{const T=TT(DV.tr);if(!T||!T[5].length)return;
+const tok=++DTOK;DI.pl=1;DI.fin=0;DI.i=Math.max(0,Math.min(i,T[5].length-1));
+const u=new SpeechSynthesisUtterance(T[5][DI.i][3]);
+u.lang='ja-JP';u.rate=DI.sp||1;
+u.onend=()=>{if(tok!=DTOK||cur()!='dg')return;
+if(DI.i+1<T[5].length)speakFrom(DI.i+1);
+else{/* finishing the track counts it as listened */
+DI.pl=0;DI.fin=1;if(!stOf(T[0])){S.dgDone??={};S.dgDone[key(T[0])]=1;save()}V.dg()}};
+u.onerror=()=>{if(tok!=DTOK)return;DI.pl=0;paint()};
+try{speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){DI.pl=0}
+paint()};
 const stOf=n=>S.dgDone&&S.dgDone[key(n)]?1:0;
 const fmt=s=>{s=Math.max(0,s|0);return (s/60|0)+':'+pad(s%60)};
 const barw=(v,h)=>`<div class="bar" style="height:${h||9}px"><b style="width:${Math.min(100,v*100)}%"></b></div>`;
@@ -45,7 +49,7 @@ return `<button class="lrow" data-dg="open" data-ls="${l}">
 <span class="lno${dn==ts.length?' done':''}" style="${dn==ts.length?'':`background:color-mix(in srgb,var(--${['cv','ck','cg','cq'][l%4]}) 15%,transparent);color:var(--${['cv','ck','cg','cq'][l%4]})`}">${l}</span>
 <span style="flex:1"><span class="jp">${esc(titleOf(k))}</span><br><small class="mute">${ts.length} ${t('tracks','ট্র্যাক')} · ${fmt(ts.reduce((a,x)=>a+x[4],0))}</small></span>
 <span class="jx-dot${dn==ts.length?' ok':''}" style="flex:none">${dn}/${ts.length}</span></button>`}).join('');
-return `<p class="mute" style="margin:2px 0 12px"><small>${t('The Minna no Nihongo textbook audio with synced transcripts — tap a line to hear it, shadow with slow playback.','মিননা নো নিহনগো বইয়ের অডিও সিঙ্কড ট্রান্সক্রিপ্টসহ — লাইনে চাপ দিয়ে শুনুন, ধীরে শুনে অনুসরণ করুন।')}</small></p>
+return `<p class="mute" style="margin:2px 0 12px"><small>${t('The Minna no Nihongo conversations, read aloud by your device’s Japanese voice — tap a line to hear it, shadow with slow playback.','মিননা নো নিহনগো কথোপকথন ডিভাইসের জাপানি কণ্ঠে পড়া হয় — লাইনে চাপ দিয়ে শুনুন, ধীরে শুনে অনুসরণ করুন।')}</small></p>
 <div class="card" style="text-align:center"><div class="stat" style="margin:0"><span>${t('Listened','শোনা হয়েছে')}</span><b>${s.dn}/${s.n}</b></div>${barw(s.dn/s.n)}</div>
 ${S.dgLast&&TT(S.dgLast)?`<button class="btn o" style="width:100%;margin:12px 0 0" data-dg="trk" data-tr="${S.dgLast}">${ic('ear',18)} ${t('Continue','চালিয়ে যান')}: ${t('Lesson','পাঠ')} ${TT(S.dgLast)[1]} — ${esc(titleOf(TT(S.dgLast)))}</button>`:''}
 <div class="card" style="margin-top:12px">${rows}</div>`};
@@ -60,20 +64,34 @@ return `<a class="back" href="#dg" data-dg="back">${ic('back',18)} ${t('Lessons'
 <p class="mute" style="margin:-4px 0 10px"><small>${ts.filter(x=>stOf(x[0])).length}/${ts.length} ${t('listened','শোনা')}</small></p>
 <div class="card">${rows}</div>`};
 
+/* in-place refresh while a track plays — keeps scroll position and focus */
+const paint=()=>{const T=TT(DV.tr);if(!T||cur()!='dg'||!DV.tr)return;
+const n=T[5].length,i=Math.max(0,Math.min(DI.i||0,n-1));
+$$('.dline',M).forEach(el=>{const on=+el.dataset.i==i;el.classList.toggle('on',on);el.classList.toggle('pl',on&&!!DI.pl)});
+const bar=$('#dgBar');if(bar)bar.style.width=Math.min(100,(DI.fin?n:i)/n*100)+'%';
+const c=$('#dgCur');if(c)c.textContent=`${t('Line','লাইন')} ${Math.min(i+1,n)}/${n}`;
+const pp=$('#dgPP');if(pp)pp.innerHTML=svgIc(DI.pl?PPAUSE:PPLAY,20);
+const eq=$('#dgEq');if(eq)eq.style.display=DI.pl?'':'none';
+if(DI.pl){const el=$$('.dline',M)[i];el&&el.scrollIntoView({block:'nearest',behavior:'smooth'})}};
+
 const player=()=>{const T=TT(DV.tr);if(!T)return browser();
 const nm=sp=>(S.dgName&&S.dgName[DV.tr+'-'+sp])||sp;
-const u=T[5],lines=u.map((x,i)=>`<div class="dline${DI.ai==i?' on':''}" data-dg="line" data-i="${i}" role="button" tabindex="0" aria-label="${t('Play this line','এই লাইনটি শুনুন')}">
+const u=T[5],n=u.length,i=Math.max(0,Math.min(DI.i||0,n-1));
+const lines=u.map((x,j)=>`<div class="dline${j==i?' on':''}${j==i&&DI.pl?' pl':''}" data-dg="line" data-i="${j}" role="button" tabindex="0" aria-label="${t('Play this line','এই লাইনটি শুনুন')}">
 <button class="dspk ${x[0]=='A'?'a':'b'}" data-dg="name" data-sp="${x[0]}" title="${t('Rename speaker','বক্তার নাম বদলান')}" aria-label="${t('Rename speaker','বক্তার নাম বদলান')}">${esc(nm(x[0]))}</button>
 <div class="dtxt">${(S.dgFur??1)&&x[4]?`<span class="jp dtext">${x[4]}</span>`:`<span class="jp dtext">${esc(x[3])}</span>`}
 ${(S.dgRead??0)&&x[5]?`<small class="jp mute">${esc(x[5])}</small>`:''}</div></div>`).join('');
+const ctl='width:40px;height:40px;min-height:0;border-radius:50%;padding:0;display:grid;place-items:center;flex:none';
 return `<a class="back" href="#dg" data-dg="backL">${ic('back',18)} ${t('Lesson','পাঠ')} ${DV.l}</a>
 <h2 class="jp" style="font-size:20px">${esc(titleOf(T))}</h2>
-<p class="mute" style="margin:-4px 0 10px;display:flex;gap:8px;align-items:center;min-height:18px">${DI.pl?`<span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>`:''}<small>${t('Lesson','পাঠ')} ${T[1]} · ${T[2]?t('Exercise','অনুশীলন')+' '+T[3]:t('Dialogue','কথোপকথন')} · ${fmt(T[4])}${stOf(T[0])?' · '+t('listened','শোনা'):''}</small></p>
+<p class="mute" style="margin:-4px 0 10px;display:flex;gap:8px;align-items:center;min-height:18px"><span class="eq" id="dgEq" aria-hidden="true" style="${DI.pl?'':'display:none'}"><i></i><i></i><i></i></span><small>${t('Lesson','পাঠ')} ${T[1]} · ${T[2]?t('Exercise','অনুশীলন')+' '+T[3]:t('Dialogue','কথোপকথন')} · ${n} ${t('lines','লাইন')}${stOf(T[0])?' · '+t('listened','শোনা'):''}</small></p>
 <div class="card" style="position:sticky;top:62px;z-index:2">
-<div style="display:flex;gap:12px;align-items:center">
-<button class="btn" data-dg="pp" style="width:46px;height:46px;min-height:0;border-radius:50%;padding:0;display:grid;place-items:center;flex:none" aria-label="${t('Play / pause','চালাও / থামাও')}">${svgIc(DI.pl?PPAUSE:PPLAY,20)}</button>
-<div style="flex:1;min-width:0"><input id="dgSeek" type="range" min="0" max="${T[4]}" step="0.1" value="${DI.t||0}" style="width:100%" aria-label="${t('Seek','সিক')}">
-<div style="display:flex;justify-content:space-between"><small class="mute" id="dgCur">${fmt(DI.t||0)}</small><small class="mute">${fmt(T[4])}</small></div></div>
+<div style="display:flex;gap:10px;align-items:center">
+<button class="btn o" data-dg="prev" style="${ctl}" aria-label="${t('Previous line','আগের লাইন')}">${svgIc(PPREV,18)}</button>
+<button class="btn" data-dg="pp" id="dgPP" style="width:46px;height:46px;min-height:0;border-radius:50%;padding:0;display:grid;place-items:center;flex:none" aria-label="${t('Play / pause','চালাও / থামাও')}">${svgIc(DI.pl?PPAUSE:PPLAY,20)}</button>
+<button class="btn o" data-dg="next" style="${ctl}" aria-label="${t('Next line','পরের লাইন')}">${svgIc(PNEXT,18)}</button>
+<div style="flex:1;min-width:0"><div class="bar" style="height:9px"><b id="dgBar" style="width:${Math.min(100,(DI.fin?n:i)/n*100)}%"></b></div>
+<div style="display:flex;justify-content:space-between"><small class="mute" id="dgCur">${t('Line','লাইন')} ${Math.min(i+1,n)}/${n}</small><small class="mute">${n} ${t('lines','লাইন')}</small></div></div>
 <select data-dg="speed" aria-label="${t('Speed','গতি')}" style="flex:none;width:auto;min-height:0;border:1px solid var(--line);border-radius:8px;background:var(--card);color:inherit;padding:6px 4px;font:inherit;font-size:12px">
 ${[0.6,0.7,0.8,0.9,1,1.2,1.5].map(v=>`<option value="${v}" ${v==(DI.sp||1)?'selected':''}>${v}×</option>`).join('')}</select></div>
 ${DI.ed?`<div style="display:flex;gap:8px;align-items:center;margin-top:8px"><small class="mute" style="flex:none">${t('Speaker','বক্তা')} ${DI.ed}</small><input id="dgName" value="${esc(nm(DI.ed))}" style="flex:1;min-width:0;min-height:38px;padding:7px 10px;border:1px solid var(--acc);border-radius:8px;background:var(--card);color:inherit;font:inherit;font-size:14px" aria-label="${t('Speaker name','বক্তার নাম')}"><small class="mute" style="flex:none">${t('Enter to save','Enter দিয়ে সেভ')}</small></div>`
@@ -92,49 +110,33 @@ if(DI.ed&&DV.tr){const el=$('#dgName');el&&(el.focus(),el.select())}};
 TAB.dg='learn';
 
 const baseLearn=V.learn;
-V.learn=()=>{baseLearn();$('.tiles',M)?.insertAdjacentHTML('beforeend',tile('#dg','chat',t('Minna Dialogues','মিননা ডায়ালগ'),t('Textbook audio · 87 tracks','বইয়ের অডিও · ৮৭ ট্র্যাক'),'--ck'))};
-
-const activeIdx=(T,cur)=>{let lo=0,hi=T[5].length-1,r=-1;
-while(lo<=hi){const m=(lo+hi)>>1;if(T[5][m][1]<=cur){r=m;lo=m+1}else hi=m-1}return r<0?0:r};
-
-const tick=()=>{const T=TT(DV.tr);if(!T||!DA||!DA.src)return;
-DI.t=DA.currentTime||0;
-const sl=$('#dgSeek');if(sl){if(document.activeElement!=sl)sl.value=DI.t;
-const T2=TT(DV.tr);if(T2)sl.style.background=`linear-gradient(90deg,var(--acc) ${T2[4]?Math.min(100,DI.t/T2[4]*100):0}%,var(--line) 0)`}
-const c=$('#dgCur');if(c)c.textContent=fmt(DI.t);
-const ix=activeIdx(T,DI.t);
-if(ix!=DI.ai){DI.ai=ix;$$('.dline',M).forEach(el=>el.classList.toggle('on',+el.dataset.i==ix));
-if(ix>=0&&!DA.paused){const el=$$('.dline',M)[ix];el&&el.scrollIntoView({block:'nearest',behavior:'smooth'})}}
-/* the active line floats only while audio is actually playing */
-const onEl=$('.dline.on',M);if(onEl)onEl.classList.toggle('pl',!DA.paused)};
-
-setInterval(tick,250);
+V.learn=()=>{baseLearn();$('.tiles',M)?.insertAdjacentHTML('beforeend',tile('#dg','chat',t('Minna Dialogues','মিননা ডায়ালগ'),t('Native voice · 87 tracks','ডিভাইসের কণ্ঠ · ৮৭ ট্র্যাক'),'--ck'))};
 
 document.addEventListener('click',e=>{const b=e.target.closest('[data-dg]');if(!b||cur()!='dg')return;
 e.stopPropagation();const a=b.dataset.dg;
-if(a=='open'){DV.l=+b.dataset.ls;DV.tr=0;DI={}}
-else if(a=='back'){DV.l=0;DI={};DA&&DA.pause()}
-else if(a=='backL'){DV.tr=0;DI={};DA&&DA.pause()}
-else if(a=='trk'){DV.tr=+b.dataset.tr;DV.l=TT(DV.tr)[1];DI={sp:DI.sp};S.dgLast=DV.tr;save();const A=audio();if(DI.sp)A.playbackRate=DI.sp;A.play().catch(()=>{});DI.pl=1}
-else if(a=='pp'){const A=audio();if(DI.pl){A.pause();DI.pl=0}else{A.play().catch(()=>{});DI.pl=1}}
-else if(a=='line'){const T=TT(DV.tr),x=T[5][+b.dataset.i];seekTo(x[1]);if(!DI.pl){DA.play().catch(()=>{});DI.pl=1}tick()}
+if(a=='open'){halt();DV.l=+b.dataset.ls;DV.tr=0;DI={}}
+else if(a=='back'){halt();DV.l=0;DI={}}
+else if(a=='backL'){halt();DV.tr=0;DI={}}
+else if(a=='trk'){DV.tr=+b.dataset.tr;DV.l=TT(DV.tr)[1];DI={sp:DI.sp};S.dgLast=DV.tr;save();speakFrom(0)}
+else if(a=='pp'){if(DI.pl){halt();paint()}else speakFrom(DI.fin?0:(DI.i||0))}
+else if(a=='prev')speakFrom(Math.max(0,(DI.i||0)-1));
+else if(a=='next'){const T=TT(DV.tr);speakFrom(Math.min(T[5].length-1,(DI.i||0)+1))}
+else if(a=='line')speakFrom(+b.dataset.i);
 else if(a=='tog'){const k=b.dataset.k;if(k=='fur')S.dgFur=(S.dgFur??1)?0:1;else S.dgRead=(S.dgRead??0)?1:0;save()}
 else if(a=='name'){DI.ed=b.dataset.sp}
-else if(a=='done'){S.dgDone??={};S.dgDone[key(DV.tr)]=1;save();DA&&DA.pause();DI.pl=0}
+else if(a=='done'){S.dgDone??={};S.dgDone[key(DV.tr)]=1;save();halt();DI.fin=1}
 V.dg()});
 document.addEventListener('change',e=>{const s=e.target.closest('[data-dg=speed]');if(!s||cur()!='dg')return;
-DI.sp=+s.value;if(DA)DA.playbackRate=DI.sp});
-document.addEventListener('input',e=>{if(e.target.id=='dgName'&&cur()=='dg'&&DI.ed){S.dgName??={};S.dgName[DV.tr+'-'+DI.ed]=e.target.value;save();return}
-if(e.target.id!='dgSeek'||cur()!='dg')return;
-const A=audio();A.currentTime=+e.target.value;DI.t=A.currentTime;tick()});
+DI.sp=+s.value;if(DI.pl)speakFrom(DI.i||0)});
+document.addEventListener('input',e=>{if(e.target.id=='dgName'&&cur()=='dg'&&DI.ed){S.dgName??={};S.dgName[DV.tr+'-'+DI.ed]=e.target.value;save()}});
 /* leaving the rename box closes it */
 document.addEventListener('focusout',e=>{if(e.target&&e.target.id=='dgName'&&DI.ed){DI.ed=null;V.dg()}});
 document.addEventListener('keydown',e=>{if(e.target&&e.target.id=='dgName'){if(e.key=='Enter'||e.key=='Escape'){e.preventDefault();DI.ed=null;V.dg()}return}
 if(cur()!='dg'||!DV.tr||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
 const T=TT(DV.tr);
-if(e.key==' '){e.preventDefault();const A=audio();if(DI.pl){A.pause();DI.pl=0}else{A.play().catch(()=>{});DI.pl=1}V.dg()}
+if(e.key==' '){e.preventDefault();if(DI.pl){halt();paint()}else speakFrom(DI.fin?0:(DI.i||0))}
 else if(e.key=='ArrowDown'||e.key=='ArrowUp'){e.preventDefault();
-const ix=activeIdx(T,DA?DA.currentTime:0)+(e.key=='ArrowDown'?1:-1);
-if(ix>=0&&ix<T[5].length){seekTo(T[5][ix][1]);if(!DI.pl){DA.play().catch(()=>{});DI.pl=1}tick()}}});
-window.addEventListener('hashchange',()=>{if(location.hash!='#dg'&&DA)DA.pause()});
+const ix=Math.max(0,Math.min(T[5].length-1,(DI.i||0)+(e.key=='ArrowDown'?1:-1)));
+speakFrom(ix)}});
+window.addEventListener('hashchange',()=>{if(location.hash!='#dg')halt()});
 })();

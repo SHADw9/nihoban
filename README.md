@@ -3,7 +3,7 @@
 Nihoban is an offline-first Japanese learning app for Android and Linux. The app is
 a small `src/index.html` shell over split assets (styles, fonts, data, and code in
 separate files — see *Project layout* below) — SRS flashcards, kana, kanji with
-stroke order, grammar, custom decks, textbook audio with synced transcripts, and
+stroke order, grammar, custom decks, native-voice dialogues with synced transcripts, and
 AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linux).
 
 **English + বাংলা UI · dark & light themes · no account, no network required**
@@ -49,11 +49,12 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 |---|---|
 | ![Minna](assets/screens/minna.png) | ![Minna words](assets/screens/minna-words.png) |
 
-### Minna Dialogues — textbook audio with synced transcripts
-- **87 audio tracks (lessons 1–25)**: the dialogue plus every exercise from the textbook,
-  shipped inside the app and fully offline.
+### Minna Dialogues — native voice with synced transcripts
+- **87 tracks (lessons 1–25)**: the dialogue plus every exercise from the textbook,
+  read aloud by the device's Japanese voice (Android native TTS) — no audio files,
+  fully offline once the system voice data is installed.
 - **Synced transcript** that follows playback — the line being spoken is highlighted,
-  and tapping any line seeks there.
+  and tapping any line plays from there.
 - Furigana and reading toggles, playback speed **0.6×–1.5×** for shadowing.
 - **Renamable speaker pills** (tap A/B to name the actual characters), per-track memory.
 - Tracks are auto-marked as *listened* when they finish; per-lesson progress pills are
@@ -96,12 +97,12 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 
 ### Progress & settings
 - XP and levels, **day streak**, weekly report, review/mastered counters.
-- Dark & light themes plus **16 color themes**, defaulting to **Washi Paper**
-  (handmade-paper ground with visible fibre), then Sumi Ink (washi, sumi,
-  vermilion), Ai Indigo, Japanese Zen, Sakura Dream, Matcha Study, Modern Indigo,
-  Maroon & Beige, Bengal Clay, Yoru Lantern (always dark), Midnight Japan
-  (always dark), and the five flat poster themes: Suffix Red, Oxblood & Sand,
-  Pine & Rice, Plum & Rice, Saffron Press.
+- Dark & light themes plus **16 color themes**, defaulting to **Oxblood & Sand**
+  (warm sand paper, oxblood ink, brass), then Washi Paper (handmade-paper ground
+  with visible fibre), Sumi Ink (washi, sumi, vermilion), Ai Indigo, Japanese Zen,
+  Sakura Dream, Matcha Study, Modern Indigo, Maroon & Beige, Bengal Clay, Yoru
+  Lantern (always dark), Midnight Japan (always dark), and the flat poster
+  themes: Suffix Red, Pine & Rice, Plum & Rice, Saffron Press.
 - **Washi texture slider (0–100)** — adds the paper-fibre grain to any theme, so
   the same palette can look clean or handmade; 0 turns it off.
 - **Red ink kanji** switch — draws only kanji in traditional vermilion ink, while
@@ -114,8 +115,8 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 ## Design
 The interface uses a Japanese print language — washi-paper ground, sumi-ink panels,
 a vermilion hanko seal, hairline rules, genkō (manuscript) cells and a related
-line icon on every feature tile — with **11 switchable color schemes** and
-**Washi Paper as the default**. The washi fibre is a real grain, not a flat
+line icon on every feature tile — with **16 switchable color schemes** and
+**Oxblood & Sand as the default**. The washi fibre is a real grain, not a flat
 colour, and the settings slider controls how visible it is on any palette. An
 optional red-ink mode draws kanji in vermilion while kana stay in normal ink. The
 mobile navigation is a translucent floating ink dock with a vermilion seal for the
@@ -168,7 +169,7 @@ Hind Siliguri + Noto Sans Bengali for UI/Bangla) and loaded through
   `fq` frequency corpus, `mn` Minna vocab, `dg` dialogue transcripts, `pd` podcast
   transcripts, `sfx` suffix-swap forms, `px` prefix lists), decoded at runtime by `dec()` in `js/core.js`
 - `src/js/*.js` — app code (`core`, `ui`, `ai`, plus one `feature-*` per module)
-- `src/audio/` — dialogue and podcast audio
+- `src/audio/` — podcast audio (Minna dialogues use the device's native TTS, no files)
 
 `npm run prepare-www` copies everything into `www/` and injects the native-TTS
 bridge into `www/index.html`.
@@ -184,7 +185,7 @@ npm run dist:linux      # AppImage into dist-electron/
 - Nihoban is made by **MD Fahad Alam** ([GitHub](https://github.com/SHADw9),
   [Instagram](https://instagram.com/mdfahadalam9)) — Dhaka, Bangladesh.
 - Stroke data: [KanjiVG](https://kanjivg.tagaini.net), CC BY-SA 3.0.
-- Minna no Nihongo audio & transcripts: educational use, from the
+- Minna no Nihongo transcripts: educational use, from the
   [truncripbe](https://github.com/) transcript dataset.
 - Japanese Podcast episodes: from the [JSI55](https://www.youtube.com/@JSI55),
   [Aki-SenseiJPN](https://www.youtube.com/@Aki-SenseiJPN) and
