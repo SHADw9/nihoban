@@ -108,6 +108,9 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 - **Red ink kanji** switch — draws only kanji in traditional vermilion ink, while
   kana, furigana and romaji keep their normal colours.
 - App language English or বাংলা.
+- **Check for updates** in Settings: compares the installed version with the latest
+  GitHub release and links the APK / AppImage; a dot on the settings gear appears
+  when a newer version exists.
 - Daily goal, JLPT level, furigana defaults; backup & restore via a copyable code.
 
 ![Progress](assets/screens/progress.png)

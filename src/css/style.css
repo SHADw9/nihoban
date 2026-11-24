@@ -520,15 +520,6 @@ body.focus main{padding-bottom:28px}
 .gs button,.card,.tile,.vc,.kc,.kt,.opt,.card.goal,.card.fc{transition:none!important;animation:none!important}
 }
 
-/* charcoal dark mode -----------------------------------------------------
-   Every scheme shares one charcoal-black ground in dark mode; only the
-   accent tokens (--acc, --ok, --no, --mat, --gold, …) stay palette-specific,
-   so themes keep their identity without tinting the surfaces. These rules
-   come last so they win over the per-palette dark blocks. */
-@media(prefers-color-scheme:dark){
-:root:not([data-theme=light]),:root[data-pal]:not([data-theme=light]){--h1:#262626;--h2:#101010;--bg:#1A1A1A;--card:#232323;--ink:#EDEAE3;--mute:#A6A29A;--line:#3A3A3A;--pri:#EDEAE3;--panel:#232323;--onpanel:#F3EFE7;--sh:0 1px 2px #00000055;color-scheme:dark}
-}
-:root[data-theme=dark],:root[data-theme=dark][data-pal],:root[data-pal=yoru],:root[data-pal=midnight]{--h1:#262626;--h2:#101010;--bg:#1A1A1A;--card:#232323;--ink:#EDEAE3;--mute:#A6A29A;--line:#3A3A3A;--pri:#EDEAE3;--panel:#232323;--onpanel:#F3EFE7;--sh:0 1px 2px #00000055;color-scheme:dark}
 
 /* readings — kanji, hiragana and furigana sit beside the word ------------- */
 .vc .wr{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
@@ -951,3 +942,24 @@ nav a{color:color-mix(in srgb,var(--onpanel) 80%,transparent)}
   .pxOpts{grid-template-columns:1fr}
   .pxOpts.k{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
+
+/* kana chart — fixed gojūon columns, one consonant row per line ----------- */
+.kg.kg5{grid-template-columns:repeat(5,minmax(0,1fr));max-width:460px}
+.kg.kg3{grid-template-columns:repeat(3,minmax(0,1fr));max-width:300px}
+
+/* charcoal dark mode -----------------------------------------------------
+   Every scheme — including the poster palettes defined above — shares one
+   charcoal-black ground in dark mode; only accent tokens (--acc, --ok, --no,
+   --mat, --gold, …) stay palette-specific, so themes keep their identity
+   without tinting the surfaces. Kept at the very end so it wins by source
+   order over every per-palette dark block. */
+@media(prefers-color-scheme:dark){
+:root:not([data-theme=light]),:root[data-pal]:not([data-theme=light]){--h1:#262626;--h2:#101010;--bg:#1A1A1A;--card:#232323;--ink:#EDEAE3;--mute:#A6A29A;--line:#3A3A3A;--pri:#EDEAE3;--panel:#232323;--onpanel:#F3EFE7;--sh:0 1px 2px #00000055;color-scheme:dark}
+}
+:root[data-theme=dark],:root[data-theme=dark][data-pal],:root[data-pal=yoru],:root[data-pal=midnight]{--h1:#262626;--h2:#101010;--bg:#1A1A1A;--card:#232323;--ink:#EDEAE3;--mute:#A6A29A;--line:#3A3A3A;--pri:#EDEAE3;--panel:#232323;--onpanel:#F3EFE7;--sh:0 1px 2px #00000055;color-scheme:dark}
+
+/* update badge on the settings gear */
+header .set{position:relative}
+header .set.upd::after{content:"";position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 2px var(--bg)}
+
+

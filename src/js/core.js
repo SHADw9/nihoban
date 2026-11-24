@@ -144,7 +144,20 @@ const kk=s=>s.replace(/[ぁ-ゖ]/g,c=>String.fromCharCode(c.charCodeAt(0)+96)),k
 const kdk=sc=>{const k='kana:'+sc,has=S.decks.filter(d=>d.items.includes(k));
 return `<div style="display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px">${S.decks.length?`<select id="kdkSel" aria-label="${t('Deck','ডেক')}" style="flex:1;min-width:120px"><option value="">${t('Choose a deck','ডেক বাছুন')}</option>${S.decks.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('')}</select><button class="btn o" data-x="kda">${ic('layers',16)} ${t('Add this kana set','এই কানা সেট যোগ করুন')}</button>`:`<a class="btn o" href="#decks">${ic('layers',16)} ${t('Create a deck','ডেক তৈরি করুন')}</a>`}${has.map(d=>`<button class="lk" data-x="kdk" data-d="${d.id}">${t('Remove from','সরান:')} ${esc(d.name)}</button>`).join('')}</div>`};
 V.kana=()=>{const sc=KS.sc,L=kl(sc),h=`<h2>${t('Kana','কানা')}</h2>${chips([['h','ひらがな Hiragana'],['k','カタカナ Katakana']],sc,'data-ks')}${chips([['chart',t('Chart','চার্ট')],['fc',t('Flashcards','ফ্ল্যাশকার্ড')],['mc',t('Choice quiz','বাছাই কুইজ')],['ty',t('Typing quiz','টাইপ কুইজ')]],KS.mode,'data-km')}${chips([[1,t('Romaji on','রোমাজি চালু')],[0,t('Romaji off','রোমাজি বন্ধ')]],S.roma,'data-roma')}${kdk(sc)}`;
-if(KS.mode=='chart'){M.innerHTML=h+[t('Basic','মূল বর্ণ'),t('Voiced','ঘোষ বর্ণ'),t('Combined sounds','যুক্ত ধ্বনি')].map((n,i)=>`<h3>${n}</h3><div class="kg">${L.filter(x=>x.s==i).map(x=>`<button class="kt" data-x="kt" data-c="${x.c}" data-r="${x.r}"><b>${x.c}</b>${S.roma?`<span>${x.r}</span>`:''}</button>`).join('')}</div>`).join('')+`<p class="mute"><br>${t('Tap a kana to hear it and see its stroke order.','কানায় ট্যাপ করে উচ্চারণ ও স্ট্রোক ক্রম দেখুন।')}</p>`;return}
+if(KS.mode=='chart'){/* gojūon layout: 5 columns (a i u e o) per row */
+const gg=[];let off=0;
+for(const[g]of KR){const n=[...g.matchAll(/.[ゃゅょ]?/g)].length;gg.push(L.slice(off,off+n));off+=n}
+const kb=x=>x?`<button class="kt" data-x="kt" data-c="${x.c}" data-r="${x.r}"><b>${x.c}</b>${S.roma?`<span>${x.r}</span>`:''}</button>`:'<span></span>';
+const kg=(a,cls)=>a.map(r=>`<div class="kg ${cls}">${r.map(kb).join('')}</div>`).join('');
+const basic=[gg[0],gg[1],gg[2],gg[3],gg[4],gg[5],gg[6],
+[gg[7][0],null,gg[7][1],null,gg[7][2]],
+gg[8],
+[gg[9][0],null,null,null,gg[9][1]],
+[gg[9][2]]];
+M.innerHTML=h+`<h3>${t('Basic','মূল বর্ণ')}</h3>${kg(basic,'kg5')}
+<h3>${t('Voiced','ঘোষ বর্ণ')}</h3>${kg(gg.slice(10,15),'kg5')}
+<h3>${t('Combined sounds','যুক্ত ধ্বনি')}</h3>${kg(gg.slice(15),'kg3')}
+<p class="mute"><br>${t('Tap a kana to hear it and see its stroke order.','কানায় ট্যাপ করে উচ্চারণ ও স্ট্রোক ক্রম দেখুন।')}</p>`;return}
 if(KS.mode=='fc'){if(!KF)KF={a:sh(L),i:0,fl:0};
 if(KF.i>=KF.a.length){M.innerHTML=h+`<div class="card fc"><b class="jp" style="font-size:30px">${t('Kana set done!','কানা সেট শেষ!')}</b><p class="mute">${KF.a.length} ${t('kana practised','কানা অনুশীলন হয়েছে')}</p><div class="dock" style="width:100%"><button class="btn" style="width:100%" data-x="kfr">${t('Go again','আবার করুন')}</button></div></div>`;return}
 const q=KF.a[KF.i];

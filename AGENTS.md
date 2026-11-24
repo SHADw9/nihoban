@@ -11,7 +11,8 @@ Nihoban: a Japanese-learning app, packaged for Android (Capacitor 8) and Linux (
 - `src/audio/` — podcast (`podcast-<lv>-<nn>.ogg`) files only. The Minna dialogues (`#dg`) have no audio files: `feature-dg.js` speaks each transcript line through `speechSynthesis`, which `tts-bridge.js` routes to Android native TTS / Linux spd-say (Web Speech fallback in a browser).
 - **Never read any file whole blindly** — `index.html` and the JS files are fine to read; locate things with `grep` and edit with narrow, exact-context replacements. `data/*.js` are single huge lines — never open them.
 - `www/` is **generated** (gitignored). Never edit it. After changing `src/`, run `npm run prepare-www` (or `npm start`, which does it first).
-- `scripts/prepare-www.mjs` wipes and rebuilds `www/`: copies `css/ js/ data/ fonts/ audio/` plus `logo.svg` and writes `index.html` with `src/tts-bridge.js` injected as `<script src="tts-bridge.js">` right after the `<meta charset>` tag (falls back to after `<head>`, then to prepending). The injection is skipped if the string `tts-bridge.js` appears *anywhere* in the HTML — never mention that filename in `src/`, not even in a comment, and don't rename the file.
+- `scripts/prepare-www.mjs` wipes and rebuilds `www/`: copies `css/ js/ data/ fonts/ audio/` plus `logo.svg` and writes `index.html` with `src/tts-bridge.js` injected as `<script src="tts-bridge.js">` right after the `<meta charset>` tag (falls back to after `<head>`, then to prepending). The injection is skipped if the string `tts-bridge.js` appears *anywhere* in the HTML — never mention that filename in `src/`, not even in a comment, and don't rename the file. It also bakes the build version into `<meta name="app-version">` and `www/version.json` from `$VERSION` (set by the Android CI job) or `package.json`; `ui.js` reads that meta for the in-app update check.
+- **Update check.** Settings → Updates calls the public GitHub releases API (`SHADw9/nihoban`), compares `tag_name` with the baked version, and links the APK/AppImage assets. It auto-checks at most once a day and puts a dot on the settings gear when a newer release exists. This needs the repo/releases to stay publicly readable; failures are silent in the UI.
 - `scripts/split-app.mjs` is a one-time migration that split the old 8 MB monolith into the layout above; it must not run again (it throws on the current shell — keep it only as history).
 - No lockfile; CI uses plain `npm install`.
 - To add a podcast episode: rebuild `src/data/pd.js` (gzipped+base64 `NBD.pd='…'`) from the transcript JSON — episodes carry their own `[ep#, level, durSec, title, [channel, url], utts]` credit tuple; compress audio as 64 k mono Opus `.ogg` into `src/audio/`.
@@ -62,14 +63,15 @@ entirely in `src/css/style.css`; no runtime CSS is injected.
   colors, the `header .brand i` seal and the settings swatch previews (`.pvs`)
   keep their own colors, and dark panels use `--shu-on`. The red-ink switch and
   the texture slider both live in settings and go through `applyPal()`.
-- **Charcoal dark mode.** Every scheme renders dark mode on the same
-  charcoal-black ground — `--bg:#1A1A1A`, `--card:#232323`, `--line:#3A3A3A`,
-  ink `#EDEAE3`, mute `#A6A29A` — defined by the final charcoal block at the
-  end of `style.css`. Only the accent tokens (`--acc --onacc --mat --gold --ok
-  --no --cv --ck --cg --cq`) stay palette-specific, so themes keep their
-  identity without tinting the surfaces. That block must stay last: it uses the
-  same specificity as the per-palette dark rules and wins by source order.
-  `yoru`/`midnight` get the same charcoal in their always-dark mode.
+- **Charcoal dark mode.** Every scheme — poster palettes included — renders dark
+  mode on the same charcoal-black ground — `--bg:#1A1A1A`, `--card:#232323`,
+  `--line:#3A3A3A`, ink `#EDEAE3`, mute `#A6A29A` — defined by the final
+  charcoal block at the end of `style.css`. Only the accent tokens (`--acc
+  --onacc --mat --gold --ok --no --cv --ck --cg --cq`) stay palette-specific, so
+  themes keep their identity without tinting the surfaces. That block must stay
+  last: the poster-scheme blocks are defined after the older charcoal block was,
+  and only source order makes this win. `yoru`/`midnight` get the same charcoal
+  in their always-dark mode.
 - **Type.** `--jp` (Klee One) is used for display headings, brand, tiles, kanji
   and Japanese text; `--ui` (Hind Siliguri) for interface copy. Headings use
   Klee One; `h3` is a small uppercase section label — inside `<dialog>` the
