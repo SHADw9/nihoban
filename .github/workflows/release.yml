@@ -43,6 +43,15 @@ jobs:
       - run: npm install
       - run: npm run prepare-www
 
+      # Caching ~/.gradle also means fewer (and cheaper) trips to Maven Central.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('package.json') }}
+          restore-keys: gradle-${{ runner.os }}-
+
       - name: Generate Android project
         run: |
           [ -d android ] || npx cap add android
@@ -69,9 +78,21 @@ jobs:
           S_KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           S_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           S_KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          # Maven Central occasionally answers 429 to cloud runners; retry with
+          # backoff instead of failing the whole release.
+          GRADLE_OPTS: -Dorg.gradle.internal.repository.max.retries=8 -Dorg.gradle.internal.repository.initial.backoff=1500
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease --no-daemon
+          ok=0
+          for attempt in 1 2 3; do
+            echo "::group::Gradle attempt $attempt"
+            if ./gradlew assembleRelease --no-daemon; then ok=1; echo "::endgroup::"; break; fi
+            echo "::endgroup::"
+            if [ "$attempt" = 3 ]; then break; fi
+            echo "Gradle failed (attempt $attempt) — retrying in 30s"
+            sleep 30
+          done
+          [ "$ok" = 1 ] || (echo "::error::Gradle build failed after 3 attempts"; exit 1)
 
           # signing: GitHub secrets win, otherwise the keystore committed in android-signing/
           if [ -n "$S_KEYSTORE_B64" ]; then
