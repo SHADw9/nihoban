@@ -6,8 +6,9 @@ Nihoban: a Japanese-learning app, packaged for Android (Capacitor 8) and Linux (
 
 - `src/index.html` is a **~2 KB shell**: metas, `<link>` to the two stylesheets, tiny body markup (`<header>`, `<main id="M">`, `<dialog id="DL">`), then `<script src>` tags — data first (`data/*.js`), then code (`js/*.js`). Never re-inline assets.
 - `src/css/style.css` (all styles) and `src/css/fonts.css` (7 `@font-face` loading `src/fonts/*.woff2` — committed binary files: Klee One, Hind Siliguri, Noto Sans Bengali, Anton).
-- `src/data/*.js` — gzipped+base64 datasets exposed as `window.NBD.<id>` globals: `d` (app core data), `so` (KanjiVG stroke order), `fq` (frequency corpus), `mn` (Minna vocab), `dg` (dialogue transcripts), `pd` (podcast transcripts), `sfx` (Swap-the-suffix verb/adjective forms), `px` (prefixes with examples). They are decoded at runtime by `dec(id)` in `js/core.js` (gzip via `DecompressionStream`).
-- `src/js/` — in load order: `core.js` (app plumbing: `$`, state, SRS, routing), `ui.js` (2.0 redesign layer + base routes), `ai.js` (JLPT AI), then `feature-fq.js`, `feature-mn.js`, `feature-dg.js`, `feature-pd.js`, `feature-sfx.js`, `feature-px.js` (each registers its route/tile; e.g. pd → `#pd`, dg → `#dg`, freq → `#freq`, mn → `#mn`, sfx → `#sfx`, px → `#px`).
+- `src/data/*.js` — gzipped+base64 datasets exposed as `window.NBD.<id>` globals: `d` (app core data), `so` (KanjiVG stroke order), `fq` (frequency corpus), `mn` (Minna vocab), `dg` (dialogue transcripts), `pd` (podcast transcripts), `sfx` (Swap-the-suffix verb/adjective forms), `px` (prefixes with examples), `gc` (the 10-chapter grammar course: `{v,ch:[{id,n,kicker,title,toc,body}]}`). They are decoded at runtime by `dec(id)` in `js/core.js` (gzip via `DecompressionStream`).
+- `src/js/` — in load order: `core.js` (app plumbing: `$`, state, SRS, routing), `ui.js` (2.0 redesign layer + base routes), `ai.js` (JLPT AI), then `feature-fq.js`, `feature-mn.js`, `feature-dg.js`, `feature-pd.js`, `feature-sfx.js`, `feature-px.js`, `feature-gc.js` (each registers its route/tile; e.g. pd → `#pd`, dg → `#dg`, freq → `#freq`, mn → `#mn`, sfx → `#sfx`, px → `#px`, gc → `#gc` + `#gc-1`…`#gc-10`).
+- **Grammar course (`#gc`).** `feature-gc.js` renders `NBD.gc` as a library course: `#gc` lists the 10 chapters, `#gc-<n>` renders one. Content keeps the standalone grammar app's semantic classes under `.gcc`/`.gcwrap`, styled with the token contract (so every palette and dark mode apply); its HTML is stored as-is, not regenerated. Reading progress is `S.gcr` (chapter ids) and the homework-hint preference is `S.gch`. Chapter TOCs use `#ch1-1`-style ids — the feature intercepts those anchors and scrolls instead of routing (the router would otherwise fall back to home), and the footer prev/next links are excluded from that interceptor. The global English translator (`trn` in `core.js`) skips `.gcwrap,.gcc` so course prose is never machine-translated by the UI dictionary. `rt` is hidden via `.gcc.nofu` when `S.fur` is off.
 - `src/audio/` — podcast (`podcast-<lv>-<nn>.ogg`) files only. The Minna dialogues (`#dg`) have no audio files: `feature-dg.js` speaks each transcript line through `speechSynthesis`, which `tts-bridge.js` routes to Android native TTS / Linux spd-say (Web Speech fallback in a browser).
 - **Never read any file whole blindly** — `index.html` and the JS files are fine to read; locate things with `grep` and edit with narrow, exact-context replacements. `data/*.js` are single huge lines — never open them.
 - `www/` is **generated** (gitignored). Never edit it. After changing `src/`, run `npm run prepare-www` (or `npm start`, which does it first).
@@ -35,17 +36,37 @@ entirely in `src/css/style.css`; no runtime CSS is injected.
   then the feature CSS, then the design layer at the *end*. The design layer
   overrides ordinary selectors; the earlier rules remain as fallbacks. Add new
   visual rules to the end so they win by source order.
-- **Palettes (16).** `oxblood` (Oxblood & Sand, **the default**; `data-pal=oxblood`,
+- **Palettes (17).** `oxblood` (Oxblood & Sand, **the default**; `data-pal=oxblood`,
   a poster scheme), `washi` (Washi Paper), `atelier` (Sumi Ink; no `data-pal`
   attribute), `ai`, `zen`, `sakura`, `matcha`, `indigo`, `maroon`, `bengal`,
-  `yoru`, `midnight`, plus the other four poster schemes `suffix`, `pine`,
-  `plum`, `saffron`. `yoru` and `midnight` are
+  `yoru`, `midnight`, `material` (Material You — see below), plus the other four
+  poster schemes `suffix`, `pine`, `plum`, `saffron`. `yoru` and `midnight` are
   intentionally dark in every appearance mode (`color-scheme: dark`); the rest
   have light + dark (+ system) variants; the poster schemes are flat, Anton-labelled
   and suppress the washi grain. `PAL()` in `ui.js` holds the settings
   swatch metadata and `applyPal()` removes `data-pal` for `atelier`. Adding a
   scheme needs: a token block for light/dark/system in `style.css`, a `PAL()`
   row, and a contrast check.
+- **Material 3 layer (`data-pal=material`).** Material You is a first-class theme
+  scoped to `:root[data-pal=material]`, not a replacement for the print layer.
+  Tokens map to M3 roles (`--bg` surface, `--card` surfaceContainer, `--ink`
+  onSurface, `--mute` onSurfaceVariant, `--line` outlineVariant, `--acc` primary,
+  `--mat` secondary, `--gold` tertiary, `--panel/--onpanel`
+  primaryContainer/onPrimaryContainer) and its dark mode still uses the shared
+  charcoal ground. The block adds `--m3-s1…s4` tonal steps, `--m3-pc/--m3-onpc`
+  (derived with `color-mix` from the current tokens, so they follow light/dark),
+  and `--m3-ease` for the standard easing curve. Components become M3: filled
+  16px cards with no outline, filled/outlined pill buttons, outlined choice chips
+  whose selected state also gets a `✓`, 56px outlined fields, a 28px dialog that
+  is a bottom sheet with a drag handle on phones, a full-width 72px navigation
+  bar whose active destination is a 64×32 indicator, and tonal study-grade
+  buttons. `ui.js` adds a delegated `pointerdown` ripple (`m3Ripple`) that only
+  runs in this theme and never under `prefers-reduced-motion`. Klee One is kept
+  for display headings (brand expression) while UI copy uses `--ui`; no Roboto
+  is bundled. The washi grain is suppressed here (not in the `applyPal()`
+  texture list) and the texture slider is hidden, because M3 surfaces are flat
+  tonal steps. Static field labels above inputs are a deliberate departure (the
+  markup has no floating-label slot) and stay accessible via real `<label>`s.
 - **Brand mark.** A cream torii with a rising sun sits in the vermilion hanko
   square. The header uses an inline SVG (`index.html`); the same artwork is
   `src/logo.svg` (favicon) and `assets/icon-*` / `build/icon.png` for packaging.

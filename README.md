@@ -30,6 +30,9 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
   learning-state filters (New / Learning / Mastered / Saved), and search by Japanese,
   romaji, English or Bangla.
 - **Grammar** — 526 grammar points.
+- **Grammar course** — a complete 10-chapter Japanese grammar guide in Bengali: sentence
+  order, particles, politeness, verb groups and keigo, with tables, dialogues, self-check
+  drills, 25 translation exercises per chapter, read-aloud lines and saved reading progress.
 - **Custom decks** — build your own deck out of words, kanji, grammar, whole Minna lessons and kana sets, then study it like the main queue.
 - **Mistake notebook** — every wrong answer is kept for focused re-study.
 - **Swap the suffix** — 3,511 verbs and adjectives split into stem + ending, with casual/polite/more-forms walkthroughs, a six-second suffix quiz, and library example sentences where available.
@@ -97,14 +100,16 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 
 ### Progress & settings
 - XP and levels, **day streak**, weekly report, review/mastered counters.
-- Dark & light themes plus **16 color themes**, defaulting to **Oxblood & Sand**
+- Dark & light themes plus **17 color themes**, defaulting to **Oxblood & Sand**
   (warm sand paper, oxblood ink, brass), then Washi Paper (handmade-paper ground
   with visible fibre), Sumi Ink (washi, sumi, vermilion), Ai Indigo, Japanese Zen,
   Sakura Dream, Matcha Study, Modern Indigo, Maroon & Beige, Bengal Clay, Yoru
-  Lantern (always dark), Midnight Japan (always dark), and the flat poster
-  themes: Suffix Red, Pine & Rice, Plum & Rice, Saffron Press.
+  Lantern (always dark), Midnight Japan (always dark), **Material You** (Material
+  Design 3: tonal surfaces, violet primary, ripples and bottom sheets), and the
+  flat poster themes: Suffix Red, Pine & Rice, Plum & Rice, Saffron Press.
 - **Washi texture slider (0–100)** — adds the paper-fibre grain to any theme, so
-  the same palette can look clean or handmade; 0 turns it off.
+  the same palette can look clean or handmade; 0 turns it off (hidden on the
+  Material theme, whose surfaces are flat tonal steps).
 - **Red ink kanji** switch — draws only kanji in traditional vermilion ink, while
   kana, furigana and romaji keep their normal colours.
 - App language English or বাংলা.
@@ -118,16 +123,19 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
 ## Design
 The interface uses a Japanese print language — washi-paper ground, sumi-ink panels,
 a vermilion hanko seal, hairline rules, genkō (manuscript) cells and a related
-line icon on every feature tile — with **16 switchable color schemes** and
+line icon on every feature tile — with **17 switchable color schemes** and
 **Oxblood & Sand as the default**. The washi fibre is a real grain, not a flat
 colour, and the settings slider controls how visible it is on any palette. An
 optional red-ink mode draws kanji in vermilion while kana stay in normal ink. The
 mobile navigation is a translucent floating ink dock with a vermilion seal for the
 active tab, and dark mode always uses a charcoal-black ground (only the accent
-colors change per scheme). All of it lives in `src/css/style.css` and uses the
-existing CSS tokens, so no app feature depends on the skin. The full token
-contract, palette keys and rules for extending the design are documented in
-[AGENTS.md](AGENTS.md#visual-system).
+colors change per scheme). **Material You** opts into Material Design 3 instead:
+semantic color roles, filled tonal cards, pill buttons, outlined fields, a
+state-layer ripple, a full-width navigation bar and bottom-sheet dialogs — scoped
+to that theme so every other palette keeps the print look. All of it lives in
+`src/css/style.css` and uses the existing CSS tokens, so no app feature depends on
+the skin. The full token contract, palette keys and rules for extending the design
+are documented in [AGENTS.md](AGENTS.md#visual-system).
 
 ## Packaging
 
@@ -170,7 +178,8 @@ Hind Siliguri + Noto Sans Bengali for UI/Bangla) and loaded through
 - `src/fonts/*.woff2` — offline fonts
 - `src/data/*.js` — gzipped+base64 datasets (`d` app data, `so` stroke order,
   `fq` frequency corpus, `mn` Minna vocab, `dg` dialogue transcripts, `pd` podcast
-  transcripts, `sfx` suffix-swap forms, `px` prefix lists), decoded at runtime by `dec()` in `js/core.js`
+  transcripts, `sfx` suffix-swap forms, `px` prefix lists, `gc` grammar course),
+  decoded at runtime by `dec()` in `js/core.js`
 - `src/js/*.js` — app code (`core`, `ui`, `ai`, plus one `feature-*` per module)
 - `src/audio/` — podcast audio (Minna dialogues use the device's native TTS, no files)
 
