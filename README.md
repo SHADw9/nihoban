@@ -30,9 +30,12 @@ AI-generated JLPT practice — wrapped by Capacitor (Android) and Electron (Linu
   learning-state filters (New / Learning / Mastered / Saved), and search by Japanese,
   romaji, English or Bangla.
 - **Grammar** — 526 grammar points.
-- **Grammar course** — a complete 10-chapter Japanese grammar guide in Bengali: sentence
-  order, particles, politeness, verb groups and keigo, with tables, dialogues, self-check
-  drills, 25 translation exercises per chapter, read-aloud lines and saved reading progress.
+- **Grammar course (N5 & N4)** — Minna no Nihongo guides in Bengali. N5 covers
+  lessons 1–25 with grammar patterns, dialogues, drills with answers, read-aloud
+  lines, a flashcard/quiz practice centre, and an N5 book with vocabulary,
+  expressions and model tests. N4 covers lessons 26–50 with grammar explanations,
+  examples, practice/homework, conjugation tables, a differences recap and a
+  self-study routine.
 - **Custom decks** — build your own deck out of words, kanji, grammar, whole Minna lessons and kana sets, then study it like the main queue.
 - **Mistake notebook** — every wrong answer is kept for focused re-study.
 - **Swap the suffix** — 3,511 verbs and adjectives split into stem + ending, with casual/polite/more-forms walkthroughs, a six-second suffix quiz, and library example sentences where available.
@@ -178,7 +181,7 @@ Hind Siliguri + Noto Sans Bengali for UI/Bangla) and loaded through
 - `src/fonts/*.woff2` — offline fonts
 - `src/data/*.js` — gzipped+base64 datasets (`d` app data, `so` stroke order,
   `fq` frequency corpus, `mn` Minna vocab, `dg` dialogue transcripts, `pd` podcast
-  transcripts, `sfx` suffix-swap forms, `px` prefix lists, `gc` grammar course),
+  transcripts, `sfx` suffix-swap forms, `px` prefix lists, `gc`/`gc4` N5 and N4 grammar courses),
   decoded at runtime by `dec()` in `js/core.js`
 - `src/js/*.js` — app code (`core`, `ui`, `ai`, plus one `feature-*` per module)
 - `src/audio/` — podcast audio (Minna dialogues use the device's native TTS, no files)
